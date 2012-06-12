@@ -1,0 +1,8 @@
+syntax: glob
+*.vcxproj.user
+ipch/*
+Debug/*
+Release/*
+*.sdf
+*.obj
+*.lib
