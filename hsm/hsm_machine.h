@@ -11,11 +11,7 @@
 #ifndef __HSM_MACHINE_H__
 #define __HSM_MACHINE_H__
 
-#include "hsm_types.h"
-
-typedef struct hsm_machine hsm_machine_t;
-typedef void (*hsm_callback_context_popped)( struct hsm_context_stack*, struct hsm_context* );
-typedef void (*hsm_callback_unhandled_event)( struct hsm_machine*, struct hsm_event* );
+#include "hsm_forwards.h"
 
 struct hsm_machine
 {

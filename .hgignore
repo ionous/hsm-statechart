@@ -6,3 +6,6 @@ Release/*
 *.sdf
 *.obj
 *.lib
+build/*
+hsm-statechart.xcodeproj/*.*user
+hsm-statechart.xcodeproj/*.mode*

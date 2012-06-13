@@ -8,11 +8,21 @@
  * See License.txt for complete information.
  */
 #include "hsm_machine.h"
+
 #include <assert.h>
 #include <stdlib.h>
+#include <memory.h>
+
 #include "hsm_context.h"
 #include "hsm_info.h"
 #include "hsm_stack.h"
+
+// alloca is technically not an ANSI-C function, though it exists on most platforms
+#ifdef WIN32
+#ifndef alloca
+#define alloca _alloca 
+#endif
+#endif
 
 /**
  * macro for context stack refuseniks
@@ -130,7 +140,6 @@ hsm_bool HsmIsInState( hsm_machine_t * hsm, hsm_info_t* state )
 //---------------------------------------------------------------------------
 hsm_bool HsmStart( hsm_machine_t* hsm, hsm_context_t* ctx, hsm_info_t *first_state  )
 {
-    hsm_bool okay= HSM_FALSE;
     assert( hsm );
     assert( first_state && "expected valid first state for init" );
     assert( (!hsm || !hsm->current) && "already ran init" );
@@ -305,7 +314,7 @@ static hsm_bool HsmTransition( hsm_machine_t* hsm, hsm_info_t* source, hsm_info_
         // doesnt worry too much about stack overflow, 
         // instead it lets the user control it via HSM_MAX_DEPTH...
         int pt=0;
-        hsm_info_t** targets=(hsm_info_t**) _alloca( next->depth * sizeof(hsm_info_t*) );
+        hsm_info_t** targets=(hsm_info_t**) alloca( next->depth * sizeof(hsm_info_t*) );
         ERROR_IF_NULL( targets, "out of space" );
 
         // in case current started deeper than next, *exit* up to the same level

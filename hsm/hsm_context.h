@@ -11,12 +11,7 @@
 #ifndef __HSM_CONTEXT_H__
 #define __HSM_CONTEXT_H__
 
-#include "hsm_types.h"
-
-typedef struct hsm_context hsm_context_t;
-typedef struct hsm_context_stack hsm_context_stack_t;
-typedef struct hsm_context_iterator hsm_context_iterator_t;
-typedef void (*hsm_callback_context_popped)( hsm_context_stack_t*, hsm_context_t* );
+#include "hsm_forwards.h"
 
 //---------------------------------------------------------------------------
 /**
