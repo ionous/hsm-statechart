@@ -18,8 +18,8 @@
 
 typedef enum watch_events WatchEvents;
 
-// declare an enum of all possible watch events
-// this is just one way to declare events
+// declare an enum of all possible watch events.
+// this is just one way to declare events.
 // see also watch1_named_events.c
 enum watch_events {
     WATCH_RESET_PRESSED,
@@ -27,25 +27,26 @@ enum watch_events {
     WATCH_TICK,
 };
 
-// it's up to the user code to define the hsm_event structure
-// again, this is just one way to declare events
-// you could also wrap an another the event's of another framework if you wanted
+// it's up to the user code to define the hsm_event structure.
+// again, this is just one way to declare events,
+// you could also wrap the events of another framework if you wanted.
 typedef struct hsm_event WatchEvent;
 struct hsm_event {
     WatchEvents evt;
 };
 
-// the tick event extends the basic watch event to add elapsed time
-// you can have as many different kinds of event data as you want
+// the tick event extends the basic watch event to add elapsed time.
+// you can have as many different kinds of event data as you want.
 typedef struct tick_event TickEvent;
 struct tick_event {
     WatchEvent evt;
     int time;
 };
 
-// a context object it sent to every callback of the statemachine
+// a context object gets sent to every callback of the statemachine
 // you always need to have an hsm_context_t member as the first element
-// after that, it's up to you what you include.
+// after that, it's up to you what you want to include.
+// in this case: a pointer to the watch object.
 typedef struct watch_context WatchContext;
 struct watch_context {
     hsm_context_t ctx;
@@ -54,25 +55,33 @@ struct watch_context {
 
 //---------------------------------------------------------------------------
 // declare the states:
-// 
-// "ActiveState" is the root of this particular machine; 
-//  its parent state is the system state "HsmTopState"
-//  it lists 'StoppedState' as its last parameter inorder to move to that state first
 //
-// "Stopped" and "Running" are children of "Active"
+// all of the HSM_STATE* macros take: 
+//    1. the state being declared;
+//    2. the state's parent state;
+//    3. an initial child state to move into first.
+// 
+// in this example:
+//   1. "ActiveState" is the root of this particular machine; 
+//   2. its parent state is the system state "HsmTopState",
+//   3. it lists 'StoppedState' as its last parameter inorder to move to that state first.
+//
+// "StoppedState" and "RunningState" are also states, 
+// they are siblings and share the parent state: "ActiveState"
 // 
 // the only difference b/t HSM_STATE_ENTER and HSM_STATE is that HSM_ENTER 
-// declares a callback for ActiveState that gets called whenever the state gets entered
+// declares a callback that gets called whenever the state gets entered...
 // 
 HSM_STATE_ENTER( ActiveState, HsmTopState, StoppedState );
     HSM_STATE( StoppedState, ActiveState, 0 );
     HSM_STATE( RunningState, ActiveState, 0 );
 
 //---------------------------------------------------------------------------
-// here's that callback mentioned now...
-// all that the active state does is clear the watch timer
+// and here's that callback now...
 //
-// the convention: <StateName>Enter is used by the HSM_STATE_ENTER macro
+// on entry to the active state, it clears the watch's elapsed time
+//
+// the convention <StateName>Enter is used by the HSM_STATE_ENTER macro to designate the entry callback
 //
 hsm_context_t* ActiveStateEnter( hsm_machine_t*hsm, hsm_context_t*ctx, WatchEvent* evt )
 {
@@ -84,7 +93,7 @@ hsm_context_t* ActiveStateEnter( hsm_machine_t*hsm, hsm_context_t*ctx, WatchEven
 //---------------------------------------------------------------------------
 // this is the event handling function for active state
 //
-// the convention: <StateName>Event is used by the HSM_STATE macros to indicate the handler function
+// the convention <StateName>Event is used by the HSM_STATE macros to indicate the handler function
 //
 hsm_state ActiveStateEvent( hsm_machine_t*hsm, hsm_context_t*ctx, WatchEvent* evt )
 {
@@ -93,9 +102,12 @@ hsm_state ActiveStateEvent( hsm_machine_t*hsm, hsm_context_t*ctx, WatchEvent* ev
     switch ( evt->evt ) {
         // but, whenever the reset button is pressed...
         case WATCH_RESET_PRESSED:
-            // transition to ourself:
-            // self-transitions are used by statecharts to trigger exit and re-entry to the same state
+            // it transitions to itself.
             ret= ActiveState();
+            // self-transitions are used by statecharts to trigger exit and re-entry to the same state.
+            // that means we we'll soon get our ActiveStateEnter function called
+            // we will reset our watch timer, and b/c the macros above designated "StoppedState" as 
+            // Active's first state, the statemachine will move to "Stopped"
         break;
     }
     return ret;
@@ -108,12 +120,13 @@ hsm_state StoppedStateEvent( hsm_machine_t*hsm, hsm_context_t*ctx, WatchEvent* e
 {
     // by default this function does nothing....
     // note: anything that we don't handle goes straight to our parent
-    // neither Stopped, nor Running, handle 'RESET" they both let active do it for them.
+    // neither Stopped nor Running handle 'RESET".
+    // they both let ActiveStateEvent ( above ) do whatever it wants.
     hsm_state ret=NULL;
     switch (evt->evt) {
         // but, when the 'toggle' button gets pressed....
         case WATCH_TOGGLE_PRESSED:
-            // transition to the running state
+            // transition over to the running state
             ret= RunningState();
         break;
     }

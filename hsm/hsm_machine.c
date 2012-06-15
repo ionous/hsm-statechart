@@ -25,11 +25,6 @@
 #endif
 
 /**
- * macro for context stack refuseniks
- */
-#define HSM_CONTEXT( hsm ) ((hsm)->stack? (hsm)->stack->context: NULL)
-
-/**
  * macro for making a pseudostate:
  * 1. a function that does nothing
  * 2. a state info function to describe that state
@@ -218,6 +213,7 @@ hsm_bool HsmProcessEvent( hsm_machine_t* hsm, struct hsm_event* evt )
 }
 
 //---------------------------------------------------------------------------
+// warning: this indirectly alters the current state and context stack ( via HsmEnter )
 static void HsmInit( hsm_machine_t*hsm, struct hsm_event * cause )
 {
     //FIXME-stravis: handle invalid states NULL process pointer in someway?
@@ -232,48 +228,54 @@ static void HsmInit( hsm_machine_t*hsm, struct hsm_event * cause )
             break;
         }
         else {
-            // continue the enter=>init pattern ( the spec says enter runs before init ( which sounds insane ) but works out well. )
-            // ( each new state gets the context of its parent and generates a new context in turn )
+            // continue the enter=>init pattern 
+            // ( the spec says enter runs before init. it sounds insane, but works out well. )
             HsmEnter( hsm, initial_state, cause );
         }
     }
 }
 
 //---------------------------------------------------------------------------
+// warning: this directly alters the current state ( and also modifies the context stack. )
+// the original code did not, but this change help simplfies: init, exit, and transition.
 static void HsmEnter( hsm_machine_t* hsm, hsm_state state, struct hsm_event* cause )
 {
     //FIXME-stravis: handle invalid states better?
     const hsm_bool valid_state= (state && state->depth >=0 && state->process);
     assert( valid_state );
     if (valid_state) {
-        // i dont like that this directly alters current, but then the push *does* directly modify the stack, so....
-        // more importantly: since we are passing hsm into 'enter' i can imagine people might want to access their own state's info pointer
-        // 
-        // note: i've now adapted other functions ( inner, exit, transition ) to this same "alter current" pattern 
-        // ( and it does make things cleaner )
-        hsm_context_t* ctx= HSM_CONTEXT( hsm );
+        // note: each state gets the context of its parent in entry
+        // and can optionally generate a new context in turn
+        hsm_context_t* ctx= hsm->stack? hsm->stack->context: 0;
         hsm->current= state;
     
         if (state->enter) {
             ctx= state->enter( hsm, ctx, cause );
         }
+
+        // push the new context, the stack handles dupes.
         HsmContextPush( hsm->stack, ctx );    
     }
 }
 
 //---------------------------------------------------------------------------
+// warning: this directly alters the current state ( and also modifies the context stack. )
 static void HsmExit( hsm_machine_t*hsm, struct hsm_event* cause )
 {
     hsm_state state= hsm->current;
+    // note: exit, just like process, gets the context enter created
     hsm_context_t* ctx= hsm->stack ? hsm->stack->context :NULL;
     if (state->exit) {
         state->exit( hsm, ctx, cause );
     }
+
+    // exit pops the context that enter had created.
     HsmContextPop( hsm->stack );
     hsm->current= state->parent;
 }
 
 //---------------------------------------------------------------------------
+// warning: this indirectly alters the current state and context stack ( via HsmEnter  )
 static void HsmRecursiveEnter( hsm_machine_t*hsm, hsm_state state, struct hsm_event *cause )
 {
     if (state) {
@@ -324,7 +326,8 @@ static hsm_bool HsmTransition( hsm_machine_t* hsm, hsm_state source, hsm_state t
     // quick check for self transition: the source targeted itself ( III. above )
     if ( hsm->current == target ) {
         HsmExit( hsm, cause );
-        // ( <--- standard transitions would take place here )
+        // ( <--- note: in uml transitions actions would take place here )
+        // ( in hsm_statechart, they've already happened by now )
         HsmEnter( hsm, target, cause );
     }
     else {
@@ -333,9 +336,9 @@ static hsm_bool HsmTransition( hsm_machine_t* hsm, hsm_state source, hsm_state t
         // instead it lets the user control it via HSM_MAX_DEPTH...
         int pt=0;
         hsm_state track= target;
-        hsm_state* targets=(hsm_state*) alloca( target->depth * sizeof(hsm_state) );
+        hsm_state* path_to_target=(hsm_state*) alloca( target->depth * sizeof(hsm_state) );
         hsm_bool external_transition= 0;
-        ERROR_IF_NULL( targets, "out of space" );
+        ERROR_IF_NULL( path_to_target, "out of space" );
  
         // source deep than target?
         if (hsm->current->depth > track->depth) {
@@ -349,35 +352,41 @@ static hsm_bool HsmTransition( hsm_machine_t* hsm, hsm_state source, hsm_state t
         else {
             // *record* its path up to the same level
             while (track->depth > hsm->current->depth ) {
-                targets[pt++]= track;
+                path_to_target[pt++]= track;
                 track= track->parent;
                 ERROR_IF_NULL( track, "jumped past top" );
             }
 
-            // if target has risen now to the level of source, 
-            // and they re the same node, then source was an ancestor of target.
+        // trigger an external transition? (re: II. above)
+        // by design, in hsm-statechart all transitions are internal.
+        #ifdef HSM_USE_EXTERNAL_TRANSITIONS
+            // since track has now risen along the path of target-to-root
+            // and has reached the the level of source....
+            // if they are the same node, then source was an ancestor of target.
             if (hsm->current == track) {
-                // II. trigger an external transitions like this:
-                // HsmExit( hsm, cause ); 
-                // track= hsm->current;
+                HsmExit( hsm, cause );       // this bumps the current state up
+                path_to_target[pt++]= track; // record that we need to renter it
+                track= hsm->current;         // and bump track up to the same level
             }
+        #endif            
         }
             
         // keep going up together till current and track have found each other
-        // ( keep exiting 'current' as it goes up, and keep recording 'track' as *it* goes up )
+        // ( keep exiting 'current' as it goes up; keep recording 'track' as *it* goes up )
         while (hsm->current!= track) {
             HsmExit( hsm, cause ); 
-            targets[pt++]= track;
+            path_to_target[pt++]= track;
             track= track->parent;
             ERROR_IF_NULL( hsm->current&&track, "jumped past top" );
         }            
 
-        // ( <--- standard transitions would take place here )
+        // ( <--- note: in uml transitions actions would take place here )
+        // ( in hsm_statechart, they've already happened by now )
 
         // now have current use path the we just recorded:
         // it's turtles all the way down.
         while (pt>0) {
-            track= targets[--pt];
+            track= path_to_target[--pt];
             HsmEnter( hsm, track, cause );
         }
     }
