@@ -1,5 +1,5 @@
 /**
- * hsm_machine.h
+ * @file hsm_machine.h
  *
  * Copyright (c) 2012, everMany, LLC.
  * All rights reserved.
@@ -16,23 +16,17 @@
 struct hsm_machine
 {
     /**
-     * a shared event used to signal 'init'
-     * by default this is null
-     */
-    struct hsm_event * init;
-
-    /**
      * inner-most state currently active
      * null until HsmStart() called
      * @see  HsmIsInState
      */
-    struct hsm_info * current;
+    hsm_state current;
 
     /**
      * the machine's context stack 
      * ( if you want one )
      */
-    struct hsm_context_stack* stack;
+    hsm_context_stack_t* stack;
 
     /**
      * called whenever the machine doesnt handle an event
@@ -55,7 +49,7 @@ hsm_machine_t* HsmMachine( hsm_machine_t *, struct hsm_context_stack* , hsm_call
  * @param state The first state to move to.
  * @return HSM_FALSE on error ( ex. the machine was already started )
  */
-hsm_bool HsmStart( hsm_machine_t*, struct hsm_context*, struct hsm_info * );
+hsm_bool HsmStart( hsm_machine_t*, struct hsm_context*, hsm_state );
 
 /**
  * send the passed event to the machine.
@@ -73,19 +67,19 @@ hsm_bool HsmIsRunning( hsm_machine_t* );
 /**
  * traverses the hierarchy to determine if you are in the passed state
  */
-hsm_bool HsmIsInState( hsm_machine_t*, struct hsm_info*  );
+hsm_bool HsmIsInState( hsm_machine_t*, hsm_state );
 
 /**
  * a machine in the terminal state has deliberately killed itself.
  * @return the globally shared terminal pseduo-state.
  */
-struct hsm_info* HsmStateTerminated();
+hsm_state HsmStateTerminated();
 
 /**
  * pseudo state for when a machine has inadvertently killed itself. 
  * @return the globally shared error pseduo-state.
  */
-struct hsm_info* HsmStateError();
+hsm_state HsmStateError();
 
 /**
  * token state that can be used by event handler functions to indicate the event was handled
@@ -93,12 +87,23 @@ struct hsm_info* HsmStateError();
  *
  * @return a globally "its okay" token.
  */
-struct hsm_info* HsmStateHandled();
+hsm_state HsmStateHandled();
 
 /**
  * pseudo state for use with the HSM_STATE macros to represent the outer most state
  * @return the globally shared top most token.
  */
-struct hsm_info* HsmTopState();
+hsm_state HsmTopState();
+
+/**
+ * pseudo state for use with the HSM_STATE macros to represent no initial state
+ * @return the globally shared top most token.
+ */
+hsm_state HsmNull();
+
+/**
+ * magic constant
+ */
+static const int HsmTopStateDepth=0;
 
 #endif // #ifndef __HSM_MACHINE_H__

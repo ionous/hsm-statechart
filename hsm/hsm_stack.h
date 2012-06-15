@@ -1,5 +1,5 @@
 /**
- * hsm_stack.h
+ * @file hsm_stack.h
  *
  * Copyright (c) 2012, everMany, LLC.
  * All rights reserved.

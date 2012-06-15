@@ -3,7 +3,11 @@ syntax: glob
 ipch/*
 Debug/*
 Release/*
+ignore/*
 *.sdf
+*.suo
+*.opensdf
+hsm-statechart*.zip
 *.obj
 *.lib
 build/*

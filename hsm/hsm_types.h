@@ -1,4 +1,5 @@
 /**
+ * @file hsm_types.h
  * hsm_types.h
  *
  * Copyright (c) 2012, everMany, LLC.

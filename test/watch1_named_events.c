@@ -1,5 +1,5 @@
 /**
- * watch1_named_events.c
+ * @file watch1_named_events.c
  * Copyright everMany, LLC. 2012
  *
  * Copyright (c) 2012, everMany, LLC.
@@ -10,13 +10,16 @@
  */
 #include "hsm_machine.h"    // for the state machine
 #include "hsm_context.h"    // sample uses context data
-#include "hsm_info.h"       // for state declarations
+#include "hsm_state.h"       // for state declarations
 #include "watch.h"
 #include "platform.h"
 
 #include <stdlib.h>
 #include <stdio.h>
 
+//---------------------------------------------------------------------------
+// a simple example of shared strings just for this sample
+// in pure c, if these were included in multiple files, they'd all get their own copies
 static const char * WATCH_TICK= "Tick";
 static const char * WATCH_RESET_PRESSED= "Reset";
 static const char * WATCH_TOGGLE_PRESSED= "Toggle";
@@ -38,13 +41,12 @@ struct watch_context {
 };
 
 //---------------------------------------------------------------------------
-// declare the states
-HSM_STATE_ENTER( Active, HsmTopState );
-HSM_STATE( Stopped, Active );
-HSM_STATE( Running, Active );
-
+HSM_STATE_ENTER( ActiveState, HsmTopState, StoppedState  );
+    HSM_STATE( StoppedState, ActiveState, 0 ); 
+    HSM_STATE( RunningState, ActiveState, 0 );
+    
 //---------------------------------------------------------------------------
-hsm_context_t* ActiveEnter( hsm_machine_t*hsm, hsm_context_t*ctx, WatchEvent* evt )
+hsm_context_t* ActiveStateEnter( hsm_machine_t*hsm, hsm_context_t*ctx, WatchEvent* evt )
 {
     Watch* watch=((WatchContext*)ctx)->watch;
     ResetTime( watch );
@@ -52,51 +54,43 @@ hsm_context_t* ActiveEnter( hsm_machine_t*hsm, hsm_context_t*ctx, WatchEvent* ev
 }
 
 //---------------------------------------------------------------------------
-hsm_info_t* ActiveEvent( hsm_machine_t*hsm, hsm_context_t*ctx, WatchEvent* evt)
+hsm_state ActiveStateEvent( hsm_machine_t*hsm, hsm_context_t*ctx, WatchEvent* evt )
 {
-    hsm_info_t* ret=NULL;
-    // on init goto stopped
-    if (!evt) {
-        ret= Stopped(); 
-    }
-    else 
+    hsm_state ret=NULL;
     // on reset self-transition
     if (evt->name == WATCH_RESET_PRESSED) {
-        ret= Active();
+        ret= ActiveState();
     }
     return ret;
 }
 
 //---------------------------------------------------------------------------
-hsm_info_t* StoppedEvent( hsm_machine_t*hsm, hsm_context_t*ctx, WatchEvent* evt)
+hsm_state StoppedStateEvent( hsm_machine_t*hsm, hsm_context_t*ctx, WatchEvent* evt )
 {
-    hsm_info_t* ret=NULL;
-    if (evt) {
-        if (evt->name == WATCH_TOGGLE_PRESSED) {
-            ret= Running();
-        }            
-    }
+    hsm_state ret=NULL;
+    if (evt->name == WATCH_TOGGLE_PRESSED) {
+        ret= RunningState();
+    }            
     return ret;
 }
 
 //---------------------------------------------------------------------------
-hsm_info_t* RunningEvent( hsm_machine_t*hsm, hsm_context_t*ctx, WatchEvent* evt)
+hsm_state RunningStateEvent( hsm_machine_t*hsm, hsm_context_t*ctx, WatchEvent* evt )
 {
-    hsm_info_t* ret=NULL;
-    if (evt) {
-        if (evt->name == WATCH_TOGGLE_PRESSED) {
-            ret= Stopped();
-        }
-        if (evt->name == WATCH_TICK) {
-            Watch* watch=((WatchContext*)ctx)->watch;
-            TickEvent* tick= (TickEvent*)evt;
-            TickTime ( watch, tick->time );
-            printf("%d,", watch->elapsed_time );
-        }
+    hsm_state ret=NULL;
+    if (evt->name == WATCH_TOGGLE_PRESSED) {
+        ret= StoppedState();
+    }
+    else
+    if (evt->name == WATCH_TICK) {
+        Watch* watch=((WatchContext*)ctx)->watch;
+        TickEvent* tick= (TickEvent*)evt;
+        TickTime ( watch, tick->time );
+        printf("%d,", watch->elapsed_time );
+        ret= HsmStateHandled();
     }
     return ret;
 }
-
 
 //---------------------------------------------------------------------------
 /**
@@ -115,7 +109,7 @@ int watch1_named_events( int argc, char* argv[] )
             "\t'2': generic toggle button\n" );
     
     HsmMachine( &hsm, &stack, NULL );
-    HsmStart( &hsm, &ctx.ctx, Active() );
+    HsmStart( &hsm, &ctx.ctx, ActiveState() );
 
     while ( HsmIsRunning( &hsm ) ) {
         int ch= PlatformGetKey();
@@ -123,13 +117,13 @@ int watch1_named_events( int argc, char* argv[] )
             if (ch=='1') {
                 WatchEvent evt= { WATCH_RESET_PRESSED };
                 HsmProcessEvent( &hsm, &evt );
-                PlatformBeep();
+                printf(".");
             }
             else 
             if (ch=='2') {
                 WatchEvent evt= { WATCH_TOGGLE_PRESSED };
                 HsmProcessEvent( &hsm, &evt );
-                PlatformBeep();
+                printf(".");
             }
         }
         else {

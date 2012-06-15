@@ -6,7 +6,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="hsm\hsm_context.h" />
-    <ClInclude Include="hsm\hsm_info.h" />
+    <ClInclude Include="hsm\hsm_state.h" />
     <ClInclude Include="hsm\hsm_machine.h" />
   </ItemGroup>
   <ItemGroup>

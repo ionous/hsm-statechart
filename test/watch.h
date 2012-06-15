@@ -1,4 +1,5 @@
 /**
+ * @file watch.h
  * Copyright (c) 2012, everMany, LLC.
  * All rights reserved.
  * 
@@ -17,6 +18,5 @@ struct watch_object
 
 void ResetTime( Watch* );
 void TickTime( Watch*, int time );
-
 
 #endif // #ifndef __WATCH_H__

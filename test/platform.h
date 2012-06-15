@@ -1,4 +1,5 @@
 /**
+ * @file platform.h
  * Copyright (c) 2012, everMany, LLC.
  * All rights reserved.
  * 

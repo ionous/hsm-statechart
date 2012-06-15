@@ -1,5 +1,5 @@
 /**
- * hsm_context.c
+ * @file hsm_context.c
  *
  * Copyright (c) 2012, everMany, LLC.
  * All rights reserved.
