@@ -41,12 +41,12 @@ struct watch_context {
 };
 
 //---------------------------------------------------------------------------
-HSM_STATE_ENTER( ActiveState, HsmTopState, StoppedState  );
-    HSM_STATE( StoppedState, ActiveState, 0 ); 
-    HSM_STATE( RunningState, ActiveState, 0 );
+HSM_STATE_ENTER( Active, HsmTopState, Stopped  );
+    HSM_STATE( Stopped, Active, 0 ); 
+    HSM_STATE( Running, Active, 0 );
     
 //---------------------------------------------------------------------------
-hsm_context_t* ActiveStateEnter( hsm_machine_t*hsm, hsm_context_t*ctx, WatchEvent* evt )
+hsm_context_t* ActiveEnter( hsm_machine_t*hsm, hsm_context_t*ctx, WatchEvent* evt )
 {
     Watch* watch=((WatchContext*)ctx)->watch;
     ResetTime( watch );
@@ -54,32 +54,32 @@ hsm_context_t* ActiveStateEnter( hsm_machine_t*hsm, hsm_context_t*ctx, WatchEven
 }
 
 //---------------------------------------------------------------------------
-hsm_state ActiveStateEvent( hsm_machine_t*hsm, hsm_context_t*ctx, WatchEvent* evt )
+hsm_state ActiveEvent( hsm_machine_t*hsm, hsm_context_t*ctx, WatchEvent* evt )
 {
     hsm_state ret=NULL;
     // on reset self-transition
     if (evt->name == WATCH_RESET_PRESSED) {
-        ret= ActiveState();
+        ret= Active();
     }
     return ret;
 }
 
 //---------------------------------------------------------------------------
-hsm_state StoppedStateEvent( hsm_machine_t*hsm, hsm_context_t*ctx, WatchEvent* evt )
+hsm_state StoppedEvent( hsm_machine_t*hsm, hsm_context_t*ctx, WatchEvent* evt )
 {
     hsm_state ret=NULL;
     if (evt->name == WATCH_TOGGLE_PRESSED) {
-        ret= RunningState();
+        ret= Running();
     }            
     return ret;
 }
 
 //---------------------------------------------------------------------------
-hsm_state RunningStateEvent( hsm_machine_t*hsm, hsm_context_t*ctx, WatchEvent* evt )
+hsm_state RunningEvent( hsm_machine_t*hsm, hsm_context_t*ctx, WatchEvent* evt )
 {
     hsm_state ret=NULL;
     if (evt->name == WATCH_TOGGLE_PRESSED) {
-        ret= StoppedState();
+        ret= Stopped();
     }
     else
     if (evt->name == WATCH_TICK) {
@@ -109,7 +109,7 @@ int watch1_named_events( int argc, char* argv[] )
             "\t'2': generic toggle button\n" );
     
     HsmMachine( &hsm, &stack, NULL );
-    HsmStart( &hsm, &ctx.ctx, ActiveState() );
+    HsmStart( &hsm, &ctx.ctx, Active() );
 
     while ( HsmIsRunning( &hsm ) ) {
         int ch= PlatformGetKey();

@@ -125,7 +125,7 @@ struct hsm_state_rec
  * @param initial    First state this state should enter. can be NULL.
  */
 #define HSM_STATE( state, parent, initial ) \
-        hsm_state state##Event( struct hsm_context*, struct hsm_event* ); \
+        hsm_state state##Event( struct hsm_machine*, struct hsm_context*, struct hsm_event* ); \
         _HSM_STATE( state, parent, state##Event, 0, 0, initial )
 
 /**
@@ -138,8 +138,8 @@ struct hsm_state_rec
  * @param initial    First state this state should enter. can be NULL.
  */
 #define HSM_STATE_ENTER( state, parent, initial ) \
-        hsm_state state##Event( struct hsm_context*, struct hsm_event* ); \
-        struct hsm_context* state##Enter( struct hsm_context*, struct hsm_event* ); \
+        hsm_state state##Event( struct hsm_machine*, struct hsm_context*, struct hsm_event* ); \
+        struct hsm_context* state##Enter( struct hsm_machine*, struct hsm_context*, struct hsm_event* ); \
         _HSM_STATE( state, parent, state##Event, state##Enter, 0, initial );
 
 /**
@@ -153,9 +153,9 @@ struct hsm_state_rec
  * @param initial    First state this state should enter. can be NULL.
  */
 #define HSM_STATE_ENTERX( state, parent, initial ) \
-        hsm_state state##Event( struct hsm_context*, struct hsm_event* ); \
-        struct hsm_context* state##Enter( struct hsm_context*, struct hsm_event* ); \
-        void state##Exit ( struct hsm_context*, struct hsm_event* ); \
+        hsm_state state##Event( struct hsm_machine*, struct hsm_context*, struct hsm_event* ); \
+        struct hsm_context* state##Enter( struct hsm_machine*, struct hsm_context*, struct hsm_event* ); \
+        void state##Exit ( struct hsm_machine*, struct hsm_context*, struct hsm_event* ); \
         _HSM_STATE( state, parent, state##Event, state##Enter, state##Exit, initial );
 
 
