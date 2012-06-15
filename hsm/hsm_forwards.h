@@ -1,5 +1,5 @@
 /**
- * @file hsm_forwads.h
+ * @file hsm_forwards.h
  *
  * helps unwind dependencies b/t hsm header definitions in a friendly way.
  *

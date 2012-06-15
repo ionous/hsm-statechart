@@ -1,6 +1,8 @@
 /**
  * @file hsm_stack.h
  *
+ * Internal stack manipulation routines used by hsm_machine
+ *
  * Copyright (c) 2012, everMany, LLC.
  * All rights reserved.
  * 
@@ -39,8 +41,17 @@ void HsmContextPop( hsm_context_stack_t* stack );
  */
 struct hsm_context_iterator 
 {
+    /**
+     * pointer the the machine's stack
+     */
     hsm_context_stack_t *stack;
+    /**
+     * pointer to the current unique context data
+     */
     hsm_context_t *context;
+    /**
+     * index of depth into the stack
+     */
     int sparse_index;
 };
 

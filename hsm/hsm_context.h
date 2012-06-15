@@ -22,6 +22,9 @@
  */
 struct hsm_context
 {
+    /**
+     * @internal: pointer to next highest unique context
+     */
     hsm_context_t* parent;
 };
 
