@@ -107,6 +107,8 @@ hsm_state ActiveStateEvent( hsm_machine_t*hsm, hsm_context_t*ctx, WatchEvent* ev
 hsm_state StoppedStateEvent( hsm_machine_t*hsm, hsm_context_t*ctx, WatchEvent* evt )
 {
     // by default this function does nothing....
+    // note: anything that we don't handle goes straight to our parent
+    // neither Stopped, nor Running, handle 'RESET" they both let active do it for them.
     hsm_state ret=NULL;
     switch (evt->evt) {
         // but, when the 'toggle' button gets pressed....
@@ -152,7 +154,20 @@ hsm_state RunningStateEvent( hsm_machine_t*hsm, hsm_context_t*ctx, WatchEvent* e
 }
 //---------------------------------------------------------------------------
 /**
- * 
+ * the statechart that this sample implements:
+ *
+ *   Active:
+ *    - enter / watch->reset_timer();
+ *    - reset_button >> Active.
+ *    Stopped:
+ *      - toggle_button >> Running.
+ *    Running:
+ *      - toggle_button >> Stopped.
+ *      - timer / watch->tick();
+ *
+ * for more info see:
+ * http://code.google.com/p/hsm-statechart/wiki/StopWatch
+ *
  */
 int watch1_enum_events( int argc, char* argv[] )
 {   
@@ -184,7 +199,8 @@ int watch1_enum_events( int argc, char* argv[] )
         int index= ch-'1';
         if ((index >=0) && (index < sizeof(events)/sizeof(WatchEvents))) {
             // send the event to the state machine
-            // one of the handler functions, ( like for example, StoppedStateEvent ) will get called as a result
+            // one of the handler functions will get called as a result
+            // ( for example: StoppedStateEvent. ) 
             WatchEvent evt= { events[index] };
             HsmProcessEvent( &hsm, &evt );
             printf(".");
