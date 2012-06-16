@@ -30,7 +30,7 @@
  * 2. a state info function to describe that state
  */
 #define PSEUDO_STATE( Pseudo ) \
-    static hsm_state _##Pseudo( struct hsm_machine* hsm, struct hsm_context*ctx, struct hsm_event*evt ) { \
+    static hsm_state _##Pseudo( hsm_machine hsm, hsm_context ctx, hsm_event evt ) { \
         return Pseudo(); \
     } \
     hsm_state Pseudo() { \
@@ -42,7 +42,7 @@ PSEUDO_STATE( HsmStateTerminated );
 PSEUDO_STATE( HsmStateError );
 PSEUDO_STATE( HsmStateHandled );
 
-static hsm_state HsmDoNothing( struct hsm_machine* hsm, struct hsm_context*ctx, struct hsm_event*evt ) { 
+static hsm_state HsmDoNothing( hsm_machine hsm,  hsm_context ctx, hsm_event evt ) { 
     return NULL; 
 }
 
@@ -60,7 +60,7 @@ hsm_state HsmTopState() {
  * @param evt Event which caused the transition
  * @warning This modifies the stack and the machine as it processes
  */
-static hsm_bool HsmTransition( hsm_machine_t*, hsm_state, hsm_state, struct hsm_event* );
+static hsm_bool HsmTransition( hsm_machine , hsm_state, hsm_state, hsm_event  );
 
 /**
  * internal function:
@@ -70,7 +70,7 @@ static hsm_bool HsmTransition( hsm_machine_t*, hsm_state, hsm_state, struct hsm_
  * @param machine Machine that is transitioning
  * @param state Desired first state of the state chart
  */
-static void HsmRecursiveEnter( hsm_machine_t*, hsm_state, struct hsm_event* );
+static void HsmRecursiveEnter( hsm_machine , hsm_state, hsm_event  );
 
 /**
  * internal function: 
@@ -79,7 +79,7 @@ static void HsmRecursiveEnter( hsm_machine_t*, hsm_state, struct hsm_event* );
  * @param state State transitioing to
  * @param evt Event which caused the transition
  */
-static void HsmEnter( hsm_machine_t*, hsm_state, struct hsm_event* );
+static void HsmEnter( hsm_machine , hsm_state, hsm_event  );
 
 /* 
  * internal function:
@@ -87,7 +87,7 @@ static void HsmEnter( hsm_machine_t*, hsm_state, struct hsm_event* );
  * @return HSM_FALSE on error.
  * @note in statecharts, init happens after enter, and it can move ( often does move ) the current state to a new state
  */
-static void HsmInit( hsm_machine_t*, struct hsm_event*);
+static void HsmInit( hsm_machine , hsm_event );
 
 /**
  * internal function:
@@ -95,29 +95,38 @@ static void HsmInit( hsm_machine_t*, struct hsm_event*);
  * @param machine Machine that is transitioning
  * @param evt Event which caused the transition
  */
-static void HsmExit( hsm_machine_t*, struct hsm_event* );
+static void HsmExit( hsm_machine , hsm_event  );
 
 //---------------------------------------------------------------------------
-hsm_machine_t* HsmMachine( hsm_machine_t * hsm, hsm_context_stack_t* stack, hsm_callback_context_popped on_popped )
+hsm_machine HsmMachine( hsm_machine_t* hsm, hsm_context_stack_t* stack, hsm_callback_context_popped on_popped )
 {
     assert (hsm);
     if (hsm) {
         hsm->current= NULL;
-        hsm->on_unhandled_event= NULL;
         hsm->stack= HsmContextStack( stack, on_popped );
+        hsm->info= NULL;
     }
     return hsm;
 }
 
 //---------------------------------------------------------------------------
-hsm_bool HsmIsRunning( hsm_machine_t * hsm )
+hsm_machine HsmMachineWithInfo( hsm_machine_t* hsm, hsm_info_t* info, hsm_context_stack_t* stack, hsm_callback_context_popped on_popped )
+{
+    if (HsmMachine( hsm, stack, on_popped )) {
+        hsm->info= info;
+    }
+    return hsm;
+}
+
+//---------------------------------------------------------------------------
+hsm_bool HsmIsRunning( const hsm_machine hsm )
 {
     return hsm && ((hsm->current != HsmStateTerminated()) &&
                    (hsm->current != HsmStateError()));
 }
 
 //---------------------------------------------------------------------------
-hsm_bool HsmIsInState( hsm_machine_t * hsm, hsm_state state )
+hsm_bool HsmIsInState( const hsm_machine hsm, hsm_state state )
 {
     hsm_bool res=HSM_FALSE;
     if (hsm && state) {
@@ -132,7 +141,7 @@ hsm_bool HsmIsInState( hsm_machine_t * hsm, hsm_state state )
 }
 
 //---------------------------------------------------------------------------
-hsm_bool HsmStart( hsm_machine_t* hsm, hsm_context_t* ctx, hsm_state first_state  )
+hsm_bool HsmStart( hsm_machine hsm, hsm_context ctx, hsm_state first_state  )
 {
     assert( hsm );
     assert( first_state && "expected valid first state for init" );
@@ -156,7 +165,7 @@ hsm_bool HsmStart( hsm_machine_t* hsm, hsm_context_t* ctx, hsm_state first_state
 }
 
 //---------------------------------------------------------------------------
-hsm_bool HsmProcessEvent( hsm_machine_t* hsm, struct hsm_event* evt )
+hsm_bool HsmProcessEvent( hsm_machine hsm, hsm_event  evt )
 {
     hsm_bool okay= HSM_FALSE;
     if (hsm && hsm->current) 
@@ -166,7 +175,7 @@ hsm_bool HsmProcessEvent( hsm_machine_t* hsm, struct hsm_event* evt )
         hsm_state handler= hsm->current;
         hsm_state next_state;
         hsm_context_iterator_t it;
-        HsmContextIterator( hsm->stack, &it );
+        HsmContextIterator( &it, hsm->stack );
 
         // note: in theory, to have gotten this far with the current handler, 'process' must have existed.
         next_state= handler->process( hsm, it.context, evt );
@@ -182,8 +191,8 @@ hsm_bool HsmProcessEvent( hsm_machine_t* hsm, struct hsm_event* evt )
 
         // handlers are supposed to return HsmStateHandled
         if (!next_state) {
-            if (hsm->on_unhandled_event) {
-                hsm->on_unhandled_event( hsm, evt );
+            if (hsm->info && hsm->info->on_unhandled_event) {
+                hsm->info->on_unhandled_event( hsm, evt );
             }
         }
         else 
@@ -214,7 +223,7 @@ hsm_bool HsmProcessEvent( hsm_machine_t* hsm, struct hsm_event* evt )
 
 //---------------------------------------------------------------------------
 // warning: this indirectly alters the current state and context stack ( via HsmEnter )
-static void HsmInit( hsm_machine_t*hsm, struct hsm_event * cause )
+static void HsmInit( hsm_machine hsm, hsm_event  cause )
 {
     //FIXME-stravis: handle invalid states NULL process pointer in someway?
     hsm_state_fn want_state;
@@ -237,8 +246,8 @@ static void HsmInit( hsm_machine_t*hsm, struct hsm_event * cause )
 
 //---------------------------------------------------------------------------
 // warning: this directly alters the current state ( and also modifies the context stack. )
-// the original code did not, but this change help simplfies: init, exit, and transition.
-static void HsmEnter( hsm_machine_t* hsm, hsm_state state, struct hsm_event* cause )
+// the original code did not, but this change help simplify: init, exit, and transition.
+static void HsmEnter( hsm_machine hsm, hsm_state state, hsm_event  cause )
 {
     //FIXME-stravis: handle invalid states better?
     const hsm_bool valid_state= (state && state->depth >=0 && state->process);
@@ -246,7 +255,7 @@ static void HsmEnter( hsm_machine_t* hsm, hsm_state state, struct hsm_event* cau
     if (valid_state) {
         // note: each state gets the context of its parent in entry
         // and can optionally generate a new context in turn
-        hsm_context_t* ctx= hsm->stack? hsm->stack->context: 0;
+        hsm_context ctx= hsm->stack? hsm->stack->context: 0;
         hsm->current= state;
     
         if (state->enter) {
@@ -254,17 +263,29 @@ static void HsmEnter( hsm_machine_t* hsm, hsm_state state, struct hsm_event* cau
         }
 
         // push the new context, the stack handles dupes.
-        HsmContextPush( hsm->stack, ctx );    
+        HsmContextPush( hsm->stack, ctx ); 
+
+        // informational callback, passing in new context
+        if (hsm->info && hsm->info->on_entered) {
+            hsm->info->on_entered( hsm, state, ctx, cause );
+        }
     }
 }
 
 //---------------------------------------------------------------------------
 // warning: this directly alters the current state ( and also modifies the context stack. )
-static void HsmExit( hsm_machine_t*hsm, struct hsm_event* cause )
+static void HsmExit( hsm_machine hsm, hsm_event  cause )
 {
     hsm_state state= hsm->current;
+
     // note: exit, just like process, gets the context enter created
-    hsm_context_t* ctx= hsm->stack ? hsm->stack->context :NULL;
+    hsm_context ctx= hsm->stack ? hsm->stack->context :NULL;
+
+    // informational callback, passing in new context
+    if (hsm->info && hsm->info->on_entered) {
+        hsm->info->on_entered( hsm, state, ctx, cause );
+    }
+    
     if (state->exit) {
         state->exit( hsm, ctx, cause );
     }
@@ -276,7 +297,7 @@ static void HsmExit( hsm_machine_t*hsm, struct hsm_event* cause )
 
 //---------------------------------------------------------------------------
 // warning: this indirectly alters the current state and context stack ( via HsmEnter  )
-static void HsmRecursiveEnter( hsm_machine_t*hsm, hsm_state state, struct hsm_event *cause )
+static void HsmRecursiveEnter( hsm_machine hsm, hsm_state state, hsm_event cause )
 {
     if (state) {
         HsmRecursiveEnter( hsm, state->parent, cause);
@@ -310,7 +331,7 @@ static void HsmRecursiveEnter( hsm_machine_t*hsm, hsm_state state, struct hsm_ev
  */
 #define ERROR_IF_NULL( x, msg ) while(!x) { assert(msg); return HSM_FALSE; }
 
-static hsm_bool HsmTransition( hsm_machine_t* hsm, hsm_state source, hsm_state target, struct hsm_event* cause )
+static hsm_bool HsmTransition( hsm_machine hsm, hsm_state source, hsm_state target, hsm_event  cause )
 {
     // above ( I. ) specifically designates the lca of 'source' and 'target'.
     // which can only, then, be the same node as 'source' or, more likely, a node less deep than 'source'.

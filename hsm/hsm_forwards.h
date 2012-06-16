@@ -15,16 +15,16 @@
 
 #include "hsm_types.h"
 
-typedef struct hsm_context hsm_context_t;
-typedef struct hsm_context_stack hsm_context_stack_t;
-typedef struct hsm_context_iterator hsm_context_iterator_t;
-typedef struct hsm_event hsm_event_t;
-typedef struct hsm_machine hsm_machine_t;
+// meant to be defined to user code
+typedef const struct hsm_event_rec *hsm_event;
 
 // meant to be opaque to user code
-typedef const struct hsm_state_rec* hsm_state;
+typedef const struct hsm_state_rec *hsm_state;
 
-typedef void (*hsm_callback_context_popped)( hsm_context_stack_t*, hsm_context_t* );
-typedef void (*hsm_callback_unhandled_event)( hsm_machine_t*, hsm_event_t* );
+// meant to be opaque to user code
+typedef struct hsm_context_rec *hsm_context;
+
+// meant to be opaque to user code
+typedef struct hsm_machine_rec *hsm_machine;
 
 #endif // #ifndef __HSM_FORWARDS_H__

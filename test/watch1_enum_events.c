@@ -30,8 +30,8 @@ enum watch_events {
 // it's up to the user code to define the hsm_event structure.
 // again, this is just one way to declare events,
 // you could also wrap the events of another framework if you wanted.
-typedef struct hsm_event WatchEvent;
-struct hsm_event {
+typedef struct hsm_event_rec WatchEvent;
+struct hsm_event_rec {
     WatchEvents evt;
 };
 
@@ -83,7 +83,7 @@ HSM_STATE_ENTER( ActiveState, HsmTopState, StoppedState );
 //
 // the convention <StateName>Enter is used by the HSM_STATE_ENTER macro to designate the entry callback
 //
-hsm_context_t* ActiveStateEnter( hsm_machine_t*hsm, hsm_context_t*ctx, WatchEvent* evt )
+hsm_context ActiveStateEnter( hsm_machine hsm, hsm_context ctx, const WatchEvent* evt )
 {
     Watch* watch=((WatchContext*)ctx)->watch;
     ResetTime( watch );
@@ -95,7 +95,7 @@ hsm_context_t* ActiveStateEnter( hsm_machine_t*hsm, hsm_context_t*ctx, WatchEven
 //
 // the convention <StateName>Event is used by the HSM_STATE macros to indicate the handler function
 //
-hsm_state ActiveStateEvent( hsm_machine_t*hsm, hsm_context_t*ctx, WatchEvent* evt )
+hsm_state ActiveStateEvent( hsm_machine hsm, hsm_context_t*ctx, const WatchEvent* evt )
 {
     // by default this function does nothing....
     hsm_state ret=NULL;
@@ -116,7 +116,7 @@ hsm_state ActiveStateEvent( hsm_machine_t*hsm, hsm_context_t*ctx, WatchEvent* ev
 //---------------------------------------------------------------------------
 // event handler for the stoppped state
 //
-hsm_state StoppedStateEvent( hsm_machine_t*hsm, hsm_context_t*ctx, WatchEvent* evt )
+hsm_state StoppedStateEvent( hsm_machine hsm, hsm_context ctx, const WatchEvent* evt )
 {
     // by default this function does nothing....
     // note: anything that we don't handle goes straight to our parent
@@ -136,7 +136,7 @@ hsm_state StoppedStateEvent( hsm_machine_t*hsm, hsm_context_t*ctx, WatchEvent* e
 //---------------------------------------------------------------------------
 // event handler for the running state
 //
-hsm_state RunningStateEvent( hsm_machine_t*hsm, hsm_context_t*ctx, WatchEvent* evt )
+hsm_state RunningStateEvent( hsm_machine hsm, hsm_context ctx, WatchEvent* evt )
 {
     // by default this function does nothing....
     hsm_state ret=NULL;

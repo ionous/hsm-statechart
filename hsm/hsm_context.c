@@ -16,7 +16,7 @@
 //---------------------------------------------------------------------------
 // HsmContext
 //---------------------------------------------------------------------------
-hsm_context_t* HsmContext( hsm_context_t * ctx )
+hsm_context HsmContext( hsm_context_t * ctx )
 {
     assert( ctx );
     if (ctx) {
@@ -28,7 +28,7 @@ hsm_context_t* HsmContext( hsm_context_t * ctx )
 //---------------------------------------------------------------------------
 // HsmContextStack
 //---------------------------------------------------------------------------
-hsm_context_stack_t* HsmContextStack( hsm_context_stack_t* stack, hsm_callback_context_popped on_popped )
+hsm_context_stack HsmContextStack( hsm_context_stack_t* stack, hsm_callback_context_popped on_popped )
 {
     if(stack) {
         memset(stack, 0, sizeof(hsm_context_stack_t));
@@ -38,7 +38,7 @@ hsm_context_stack_t* HsmContextStack( hsm_context_stack_t* stack, hsm_callback_c
 }
 
 //---------------------------------------------------------------------------
-void HsmContextPush( hsm_context_stack_t* stack, hsm_context_t * ctx )
+void HsmContextPush( hsm_context_stack stack, hsm_context ctx )
 {
     if (stack) {
         // push if its a unique context:
@@ -55,9 +55,9 @@ void HsmContextPush( hsm_context_stack_t* stack, hsm_context_t * ctx )
 }
 
 // ---------------------------------------------------------------
-void HsmContextPop( hsm_context_stack_t* stack )
+void HsmContextPop( hsm_context_stack stack )
 {
-    hsm_context_t* prev;
+    hsm_context prev;
     if (stack && stack->count > 0) {
         // get the presence tester
         hsm_uint32 bit= (1 << --stack->count);
@@ -82,7 +82,7 @@ void HsmContextPop( hsm_context_stack_t* stack )
 //---------------------------------------------------------------------------
 //
 //---------------------------------------------------------------------------
-void HsmContextIterator( hsm_context_stack_t* stack, hsm_context_iterator_t * it )
+void HsmContextIterator( hsm_context_iterator_t* it, hsm_context_stack stack )
 {
     assert( it );
     if (it) {
@@ -105,7 +105,7 @@ void HsmContextIterator( hsm_context_stack_t* stack, hsm_context_iterator_t * it
    whenever you cross a new set bit, you move the context location.
    an iterator across a series of bits also needs the source bits.
  * --------------------------------------------------------------------------- */ 
-hsm_context_t* HsmParentContext( hsm_context_iterator_t* it )
+hsm_context_t* HsmParentContext( hsm_context_iterator it )
 {
     // does pointer possess potential parent presence? perhaps.
     if (it->sparse_index>0){

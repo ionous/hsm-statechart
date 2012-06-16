@@ -8,33 +8,35 @@
  * See License.txt for complete information.
  */
 #pragma once
-#ifndef __HSM_INFO_H__
-#define __HSM_INFO_H__
+#ifndef __HSM_STATE_H__
+#define __HSM_STATE_H__
+
+#include "hsm_forwards.h"
 
 /**
  * a state's incoming event handler signature
  */
-typedef hsm_state(*hsm_callback_process_event)( struct hsm_machine*, struct hsm_context*, struct hsm_event* );
+typedef hsm_state(*hsm_callback_process_event)( hsm_machine, hsm_context , hsm_event );
 
 /**
  * a state's action signature
  */
-typedef void(*hsm_callback_action)( struct hsm_machine*, struct hsm_context*, struct hsm_event* );
+typedef void(*hsm_callback_action)( hsm_machine, hsm_context , hsm_event );
 
 /**
  * a state's guard signature
  */
-typedef hsm_bool(*hsm_callback_guard)( struct hsm_machine*, struct hsm_context*, struct hsm_event* );
+typedef hsm_bool(*hsm_callback_guard)( hsm_machine, hsm_context , hsm_event );
 
 /**
  * a state's entry callback signature
  */
-typedef struct hsm_context*(*hsm_callback_enter)( struct hsm_machine*, struct hsm_context*, struct hsm_event* );
+typedef hsm_context (*hsm_callback_enter)( hsm_machine, hsm_context , hsm_event );
 
 /**
  * a state's exit callback signature
  */
-typedef void(*hsm_callback_exit)( struct hsm_machine*, struct hsm_context*, struct hsm_event* );
+typedef void(*hsm_callback_exit)( hsm_machine, hsm_context , hsm_event );
 
 /**
  * a state's info descriptor function signature
@@ -125,7 +127,7 @@ struct hsm_state_rec
  * @param initial    First state this state should enter. can be NULL.
  */
 #define HSM_STATE( state, parent, initial ) \
-        hsm_state state##Event( struct hsm_machine*, struct hsm_context*, struct hsm_event* ); \
+        hsm_state state##Event( hsm_machine, hsm_context , hsm_event ); \
         _HSM_STATE( state, parent, state##Event, 0, 0, initial )
 
 /**
@@ -138,8 +140,8 @@ struct hsm_state_rec
  * @param initial    First state this state should enter. can be NULL.
  */
 #define HSM_STATE_ENTER( state, parent, initial ) \
-        hsm_state state##Event( struct hsm_machine*, struct hsm_context*, struct hsm_event* ); \
-        struct hsm_context* state##Enter( struct hsm_machine*, struct hsm_context*, struct hsm_event* ); \
+        hsm_state state##Event( hsm_machine, hsm_context , hsm_event ); \
+        hsm_context state##Enter( hsm_machine, hsm_context , hsm_event ); \
         _HSM_STATE( state, parent, state##Event, state##Enter, 0, initial );
 
 /**
@@ -153,11 +155,11 @@ struct hsm_state_rec
  * @param initial    First state this state should enter. can be NULL.
  */
 #define HSM_STATE_ENTERX( state, parent, initial ) \
-        hsm_state state##Event( struct hsm_machine*, struct hsm_context*, struct hsm_event* ); \
-        struct hsm_context* state##Enter( struct hsm_machine*, struct hsm_context*, struct hsm_event* ); \
-        void state##Exit ( struct hsm_machine*, struct hsm_context*, struct hsm_event* ); \
+        hsm_state state##Event( hsm_machine, hsm_context , hsm_event ); \
+        hsm_context state##Enter( hsm_machine, hsm_context , hsm_event ); \
+        void state##Exit ( hsm_machine, hsm_context , hsm_event ); \
         _HSM_STATE( state, parent, state##Event, state##Enter, state##Exit, initial );
 
 
-#endif // #ifndef __HSM_INFO_H__
+#endif // #ifndef __HSM_STATE_H__
 

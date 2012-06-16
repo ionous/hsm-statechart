@@ -24,8 +24,8 @@ static const char * WATCH_TICK= "Tick";
 static const char * WATCH_RESET_PRESSED= "Reset";
 static const char * WATCH_TOGGLE_PRESSED= "Toggle";
 
-typedef struct hsm_event WatchEvent;
-struct hsm_event {
+typedef struct hsm_event_rec WatchEvent;
+struct hsm_event_rec {
     const char * name;
 };
 
@@ -46,7 +46,7 @@ HSM_STATE_ENTER( Active, HsmTopState, Stopped  );
     HSM_STATE( Running, Active, 0 );
     
 //---------------------------------------------------------------------------
-hsm_context_t* ActiveEnter( hsm_machine_t*hsm, hsm_context_t*ctx, WatchEvent* evt )
+hsm_context ActiveEnter( hsm_machine hsm, hsm_context ctx, const WatchEvent* evt )
 {
     Watch* watch=((WatchContext*)ctx)->watch;
     ResetTime( watch );
@@ -54,7 +54,7 @@ hsm_context_t* ActiveEnter( hsm_machine_t*hsm, hsm_context_t*ctx, WatchEvent* ev
 }
 
 //---------------------------------------------------------------------------
-hsm_state ActiveEvent( hsm_machine_t*hsm, hsm_context_t*ctx, WatchEvent* evt )
+hsm_state ActiveEvent( hsm_machine hsm, hsm_context ctx, const WatchEvent* evt )
 {
     hsm_state ret=NULL;
     // on reset self-transition
@@ -65,7 +65,7 @@ hsm_state ActiveEvent( hsm_machine_t*hsm, hsm_context_t*ctx, WatchEvent* evt )
 }
 
 //---------------------------------------------------------------------------
-hsm_state StoppedEvent( hsm_machine_t*hsm, hsm_context_t*ctx, WatchEvent* evt )
+hsm_state StoppedEvent( hsm_machine hsm, hsm_context ctx, const WatchEvent* evt )
 {
     hsm_state ret=NULL;
     if (evt->name == WATCH_TOGGLE_PRESSED) {
@@ -75,7 +75,7 @@ hsm_state StoppedEvent( hsm_machine_t*hsm, hsm_context_t*ctx, WatchEvent* evt )
 }
 
 //---------------------------------------------------------------------------
-hsm_state RunningEvent( hsm_machine_t*hsm, hsm_context_t*ctx, WatchEvent* evt )
+hsm_state RunningEvent( hsm_machine hsm, hsm_context ctx, const WatchEvent* evt )
 {
     hsm_state ret=NULL;
     if (evt->name == WATCH_TOGGLE_PRESSED) {

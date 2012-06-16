@@ -11,42 +11,53 @@
 #ifndef __HSM_MACHINE_H__
 #define __HSM_MACHINE_H__
 
-#include "hsm_forwards.h"
+#include "hsm_info.h"
+#include "hsm_stack.h"
+#include "hsm_state.h"
 
+typedef struct hsm_machine_rec hsm_machine_t;
 /**
  * The statemachine object. 
  * Not meant to be manipulated directly.
  */
-struct hsm_machine
+struct hsm_machine_rec
 {
     /**
      * inner-most state currently active
      * null until HsmStart() called
-     * @see  HsmIsInState
+     * @see HsmIsInState
      */
     hsm_state current;
 
     /**
-     * the machine's context stack 
-     * ( if you want one )
+     * optional context stack 
      */
-    hsm_context_stack_t* stack;
+    hsm_context_stack stack;
 
     /**
-     * called whenever the machine doesnt handle an event
-     * by default this is null
+     * optional callbacks
      */
-    hsm_callback_unhandled_event on_unhandled_event;
+    hsm_info_t* info;
 };
 
 /**
  * Initialize a statemachine to its default values
  *
  * @param hsm Machine to initialize.
- * @param stack Context stack used for per state instance data
+ * @param stack Context stack used for per state instance data.
  * @param popped_callback Called every time a piece of context data gets popped due to state exit.
  */
-hsm_machine_t* HsmMachine( hsm_machine_t * hsm, struct hsm_context_stack* stack, hsm_callback_context_popped  popped_callback );
+hsm_machine HsmMachine( hsm_machine_t* hsm, hsm_context_stack_t* stack, hsm_callback_context_popped popped_callback );
+
+/**
+ * Initialize a statemachine to its default values
+ *
+ * @param hsm Machine to initialize.
+ * @param info Callbacks for listening to machine internals.
+ * @param stack Context stack used for per state instance data.
+ * @param on_popped Called every time a piece of context data gets popped due to state exit.
+ */
+hsm_machine HsmMachineWithInfo( hsm_machine_t* hsm, hsm_info_t* info, hsm_context_stack_t* stack, hsm_callback_context_popped on_popped );
 
 /**
  * Start a machine.
@@ -56,7 +67,7 @@ hsm_machine_t* HsmMachine( hsm_machine_t * hsm, struct hsm_context_stack* stack,
  * @param state The first state to move to.
  * @return HSM_FALSE on error ( ex. the machine was already started )
  */
-hsm_bool HsmStart( hsm_machine_t* hsm, struct hsm_context* context, hsm_state staet );
+hsm_bool HsmStart( hsm_machine hsm, hsm_context context, hsm_state state );
 
 /**
  * Send the passed event to the machine.
@@ -67,7 +78,7 @@ hsm_bool HsmStart( hsm_machine_t* hsm, struct hsm_context* context, hsm_state st
  * The system will launch actions, trigger transitions, etc.
  * @return 'true' if handled
  */
-hsm_bool HsmProcessEvent( hsm_machine_t* hsm, struct hsm_event* event );
+hsm_bool HsmProcessEvent( hsm_machine hsm, hsm_event  event );
 
 /**
  * Determine if a machine has been started, and has not reached a terminal, nor an error state.
@@ -75,7 +86,7 @@ hsm_bool HsmProcessEvent( hsm_machine_t* hsm, struct hsm_event* event );
  * @param hsm
  * @return HSM_TRUE if running
  */
-hsm_bool HsmIsRunning( hsm_machine_t* hsm );
+hsm_bool HsmIsRunning( const hsm_machine hsm );
 
 /**
  * Traverses the active state hierarchy to determine if hsm is possibly in the passed state.
@@ -83,7 +94,7 @@ hsm_bool HsmIsRunning( hsm_machine_t* hsm );
  * @param hsm
  * @param state
  */
-hsm_bool HsmIsInState( hsm_machine_t* hsm, hsm_state state );
+hsm_bool HsmIsInState( const hsm_machine hsm, hsm_state state );
 
 /**
  * A machine in the terminal state has deliberately killed itself.
