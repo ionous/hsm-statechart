@@ -95,7 +95,7 @@ hsm_context ActiveStateEnter( hsm_machine hsm, hsm_context ctx, const WatchEvent
 //
 // the convention <StateName>Event is used by the HSM_STATE macros to indicate the handler function
 //
-hsm_state ActiveStateEvent( hsm_machine hsm, hsm_context_t*ctx, const WatchEvent* evt )
+hsm_state ActiveStateEvent( hsm_machine hsm, hsm_context ctx, const WatchEvent* evt )
 {
     // by default this function does nothing....
     hsm_state ret=NULL;
