@@ -22,13 +22,13 @@ typedef int hsm_bool;
 #endif
 
 typedef unsigned long hsm_uint32;
-
+typedef unsigned short hsm_uint16;
 
 /**
- * 32 is a *lot* of hiearchy depth, it's probably more than good enough
- * if not, though, the context stack will need changing.
+ * 16 is a decent amt of hiearchy depth, it's probably more than good enough
+ * nesting regions will yield new sets of 16.
  */
-#define HSM_MAX_DEPTH 32
+#define HSM_MAX_DEPTH 16
 
 
 #endif // #ifndef __HSM_TYPES_H__

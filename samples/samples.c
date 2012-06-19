@@ -1,5 +1,5 @@
 /**
- * @file main.c
+ * @file samples.c
  * Copyright (c) 2012, everMany, LLC.
  * All rights reserved.
  * 
@@ -9,7 +9,6 @@
 #include <stdio.h>
 
 typedef int(*test_function)( int argc, char* argv[] );
-
 
 int watch1_named_events( int argc, char* argv[] );
 int watch1_enum_events( int argc, char* argv[] );

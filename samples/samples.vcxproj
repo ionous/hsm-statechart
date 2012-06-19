@@ -11,7 +11,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{C114CFB8-8C70-420E-B2A9-6BB1544633D4}</ProjectGuid>
+    <ProjectGuid>{2CC122C4-D148-4D2C-B381-85489C2D97B8}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>samples</RootNamespace>
   </PropertyGroup>
@@ -80,8 +80,8 @@
     <ClInclude Include="watch.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="main.c" />
     <ClCompile Include="platform.c" />
+    <ClCompile Include="samples.c" />
     <ClCompile Include="watch.c" />
     <ClCompile Include="watch1_enum_events.c" />
     <ClCompile Include="watch1_named_events.c" />

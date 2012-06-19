@@ -28,11 +28,10 @@ hsm_context HsmContext( hsm_context_t * ctx )
 //---------------------------------------------------------------------------
 // HsmContextStack
 //---------------------------------------------------------------------------
-hsm_context_stack HsmContextStack( hsm_context_stack_t* stack, hsm_callback_context_popped on_popped )
+hsm_context_stack HsmContextStack( hsm_context_stack_t* stack )
 {
     if(stack) {
         memset(stack, 0, sizeof(hsm_context_stack_t));
-        stack->on_popped= on_popped;
     }        
     return stack;
 }
@@ -55,9 +54,9 @@ void HsmContextPush( hsm_context_stack stack, hsm_context ctx )
 }
 
 // ---------------------------------------------------------------
-void HsmContextPop( hsm_context_stack stack )
+hsm_context HsmContextPop( hsm_context_stack stack )
 {
-    hsm_context prev;
+    hsm_context prev= NULL;
     if (stack && stack->count > 0) {
         // get the presence tester
         hsm_uint32 bit= (1 << --stack->count);
@@ -71,12 +70,9 @@ void HsmContextPop( hsm_context_stack stack )
             if (prev) {
                 stack->context= prev->parent;
             }                
-            // finally: let the user know
-            if (stack->on_popped) {
-                stack->on_popped( stack, prev );
-            }
         }
     }
+    return prev;
 }
 
 //---------------------------------------------------------------------------

@@ -17,7 +17,6 @@
 
 typedef struct hsm_context_iterator_rec hsm_context_iterator_t;
 typedef struct hsm_context_iterator_rec* hsm_context_iterator;
-typedef void (*hsm_callback_context_popped)( hsm_context_stack, hsm_context );
 
 //---------------------------------------------------------------------------
 /**
@@ -35,7 +34,7 @@ void HsmContextPush( hsm_context_stack stack, hsm_context context );
  *
  * @param stack Stack to pop from. Can be NULL.
  */
-void HsmContextPop( hsm_context_stack stack );
+hsm_context HsmContextPop( hsm_context_stack stack );
 
 //---------------------------------------------------------------------------
 /**

@@ -112,7 +112,7 @@ struct hsm_state_rec
                 myinfo.exit= Exit; \
                 myinfo.initial= State##Lookup##Initial(); \
                 myinfo.parent= Parent(); \
-                myinfo.depth= myinfo.parent->depth+1; \
+                myinfo.depth= myinfo.parent ? myinfo.parent->depth+1 : 0; \
             } \
             return &myinfo; \
         } \

@@ -38,7 +38,7 @@
         return &info;   \
     }
 
-PSEUDO_STATE( HsmStateTerminated );
+PSEUDO_STATE( HsmStateFinal );
 PSEUDO_STATE( HsmStateError );
 PSEUDO_STATE( HsmStateHandled );
 
@@ -47,10 +47,11 @@ static hsm_state HsmDoNothing( hsm_machine hsm,  hsm_context ctx, hsm_event evt 
 }
 
 hsm_state HsmTopState() { 
-    static struct hsm_state_rec top_state= { "HsmTopState", HsmDoNothing };
-    return &top_state;
+    //static struct hsm_state_rec top_state= { "HsmTopState", HsmDoNothing };
+    return 0;//&top_state;
 }
 
+#define HSM_STACK( hsm ) ((((hsm)->flags & HSM_FLAGS_CTX)==HSM_FLAGS_CTX) ? &((hsm_context_machine_t*)(hsm))->stack : 0)
 
 /**
  * internal function:
@@ -95,33 +96,51 @@ static void HsmInit( hsm_machine , hsm_event );
  * @param machine Machine that is transitioning
  * @param evt Event which caused the transition
  */
-static void HsmExit( hsm_machine , hsm_event  );
+//static  <- disabled for regions test. TODO: renable here and below.
+void HsmExit( hsm_machine, hsm_event  );
+
 
 //---------------------------------------------------------------------------
-hsm_machine HsmMachine( hsm_machine_t* hsm, hsm_context_stack_t* stack, hsm_callback_context_popped on_popped )
+static hsm_info_t hsm_global_callbacks= {0};
+
+void HsmSetInfoCallbacks( hsm_info_t* info, hsm_info_t* old_callbacks )
+{
+    if (old_callbacks) {
+        *old_callbacks= hsm_global_callbacks;
+    }
+    hsm_global_callbacks= *info;
+}
+
+//---------------------------------------------------------------------------
+hsm_machine HsmMachine( hsm_machine_t* hsm )
 {
     assert (hsm);
     if (hsm) {
+        hsm->flags=0;
         hsm->current= NULL;
-        hsm->stack= HsmContextStack( stack, on_popped );
-        hsm->info= NULL;
     }
     return hsm;
 }
 
 //---------------------------------------------------------------------------
-hsm_machine HsmMachineWithInfo( hsm_machine_t* hsm, hsm_info_t* info, hsm_context_stack_t* stack, hsm_callback_context_popped on_popped )
+hsm_machine HsmMachineWithContext( hsm_context_machine_t* hsm, hsm_context ctx )
 {
-    if (HsmMachine( hsm, stack, on_popped )) {
-        hsm->info= info;
+    assert( hsm );
+    if (hsm && HsmMachine( &(hsm->core) )) {
+        // flag that this has a context stack
+        hsm->core.flags|= HSM_FLAGS_CTX;
+        // initialize the stack
+        HsmContextStack( &(hsm->stack) );
+        // add the outermost context
+        HsmContextPush( &(hsm->stack), ctx );
     }
-    return hsm;
+    return &(hsm->core);
 }
 
 //---------------------------------------------------------------------------
 hsm_bool HsmIsRunning( const hsm_machine hsm )
 {
-    return hsm && ((hsm->current != HsmStateTerminated()) &&
+    return hsm && ((hsm->current != HsmStateFinal()) &&
                    (hsm->current != HsmStateError()));
 }
 
@@ -141,7 +160,7 @@ hsm_bool HsmIsInState( const hsm_machine hsm, hsm_state state )
 }
 
 //---------------------------------------------------------------------------
-hsm_bool HsmStart( hsm_machine hsm, hsm_context ctx, hsm_state first_state  )
+hsm_bool HsmStart( hsm_machine hsm, hsm_state first_state )
 {
     assert( hsm );
     assert( first_state && "expected valid first state for init" );
@@ -149,12 +168,9 @@ hsm_bool HsmStart( hsm_machine hsm, hsm_context ctx, hsm_state first_state  )
     
     if (hsm && !hsm->current && first_state ) 
     {
-        // add the outermost context
-        HsmContextPush( hsm->stack, ctx );
-        
         // the specified starting state isn't necessarily the *top* state:
         // we need to walk up to the top state, then walk down to and including our first state
-        HsmRecursiveEnter( hsm, first_state, NULL  );
+        HsmRecursiveEnter( hsm, first_state, NULL );
 
         // statecharts run enter *then* init
         // ( note: init can move us into a new state )
@@ -175,24 +191,19 @@ hsm_bool HsmProcessEvent( hsm_machine hsm, hsm_event  evt )
         hsm_state handler= hsm->current;
         hsm_state next_state;
         hsm_context_iterator_t it;
-        HsmContextIterator( &it, hsm->stack );
+        HsmContextIterator( &it, HSM_STACK( hsm ) );
 
-        // note: in theory, to have gotten this far with the current handler, 'process' must have existed.
-        next_state= handler->process( hsm, it.context, evt );
-        while (!next_state && ((handler= handler->parent) != NULL)) 
+        // surely this would look nice as a do/while
+        next_state= handler->process ? handler->process( hsm, it.context, evt ) : NULL;
+        while (!next_state && ((handler= handler->parent) != NULL))
         {
-            if (!handler->process) {
-                next_state= HsmStateError();
-            }
-            else {
-                next_state= handler->process( hsm, HsmParentContext( &it ), evt );
-            }
+            next_state= handler->process ? handler->process( hsm, HsmParentContext( &it ), evt ) : NULL;
         }            
 
         // handlers are supposed to return HsmStateHandled
         if (!next_state) {
-            if (hsm->info && hsm->info->on_unhandled_event) {
-                hsm->info->on_unhandled_event( hsm, evt );
+            if (hsm_global_callbacks.on_unhandled_event) {
+                hsm_global_callbacks.on_unhandled_event( hsm, evt, hsm_global_callbacks.user_data );
             }
         }
         else 
@@ -200,7 +211,7 @@ hsm_bool HsmProcessEvent( hsm_machine hsm, hsm_event  evt )
             okay= HSM_TRUE;
         }
         else 
-        if (next_state== HsmStateTerminated() || next_state==HsmStateError()) {
+        if (next_state== HsmStateFinal() || next_state==HsmStateError()) {
             // we say this is okay, in the sense that something happened.
             // trigger a callback to inform the user?
             if (hsm->current != next_state) {
@@ -223,14 +234,19 @@ hsm_bool HsmProcessEvent( hsm_machine hsm, hsm_event  evt )
 
 //---------------------------------------------------------------------------
 // warning: this indirectly alters the current state and context stack ( via HsmEnter )
-static void HsmInit( hsm_machine hsm, hsm_event  cause )
+static void HsmInit( hsm_machine hsm, hsm_event cause )
 {
-    //FIXME-stravis: handle invalid states NULL process pointer in someway?
     hsm_state_fn want_state;
     while ( want_state= hsm->current->initial ) 
     {
         const hsm_state initial_state= hsm->current->initial();
-        hsm_bool init_moves_to_child= initial_state->parent == hsm->current;
+        hsm_bool init_moves_to_child;
+
+        if (hsm_global_callbacks.on_init) {
+            hsm_global_callbacks.on_init( hsm, initial_state, hsm_global_callbacks.user_data );
+        }
+        
+        init_moves_to_child= initial_state->parent == hsm->current;
         assert( init_moves_to_child && "malformed statechart: init doesnt move to child state" );
         if (!init_moves_to_child) {
             hsm->current= HsmStateError();
@@ -240,6 +256,7 @@ static void HsmInit( hsm_machine hsm, hsm_event  cause )
             // continue the enter=>init pattern 
             // ( the spec says enter runs before init. it sounds insane, but works out well. )
             HsmEnter( hsm, initial_state, cause );
+
         }
     }
 }
@@ -250,12 +267,13 @@ static void HsmInit( hsm_machine hsm, hsm_event  cause )
 static void HsmEnter( hsm_machine hsm, hsm_state state, hsm_event  cause )
 {
     //FIXME-stravis: handle invalid states better?
-    const hsm_bool valid_state= (state && state->depth >=0 && state->process);
+    const hsm_bool valid_state= (state && state->depth >=0);
     assert( valid_state );
     if (valid_state) {
         // note: each state gets the context of its parent in entry
         // and can optionally generate a new context in turn
-        hsm_context ctx= hsm->stack? hsm->stack->context: 0;
+        hsm_context_stack_t* stack= HSM_STACK( hsm );
+        hsm_context ctx= stack ? stack->context: 0;
         hsm->current= state;
     
         if (state->enter) {
@@ -263,27 +281,29 @@ static void HsmEnter( hsm_machine hsm, hsm_state state, hsm_event  cause )
         }
 
         // push the new context, the stack handles dupes.
-        HsmContextPush( hsm->stack, ctx ); 
+        HsmContextPush( stack, ctx ); 
 
         // informational callback, passing in new context
-        if (hsm->info && hsm->info->on_entered) {
-            hsm->info->on_entered( hsm, state, ctx, cause );
+        if (hsm_global_callbacks.on_entered) {
+            hsm_global_callbacks.on_entered( hsm, cause, hsm_global_callbacks.user_data );
         }
     }
 }
 
 //---------------------------------------------------------------------------
 // warning: this directly alters the current state ( and also modifies the context stack. )
-static void HsmExit( hsm_machine hsm, hsm_event  cause )
+// static 
+void HsmExit( hsm_machine hsm, hsm_event  cause )
 {
     hsm_state state= hsm->current;
 
     // note: exit, just like process, gets the context enter created
-    hsm_context ctx= hsm->stack ? hsm->stack->context :NULL;
+    hsm_context_stack_t * stack= HSM_STACK( hsm );
+    hsm_context ctx= stack ? stack->context :NULL;
 
-    // informational callback, passing in new context
-    if (hsm->info && hsm->info->on_entered) {
-        hsm->info->on_entered( hsm, state, ctx, cause );
+    // informational callback, passing the old context
+    if (hsm_global_callbacks.on_exiting) {
+        hsm_global_callbacks.on_exiting( hsm, cause, hsm_global_callbacks.user_data );
     }
     
     if (state->exit) {
@@ -291,7 +311,12 @@ static void HsmExit( hsm_machine hsm, hsm_event  cause )
     }
 
     // exit pops the context that enter had created.
-    HsmContextPop( hsm->stack );
+    ctx= HsmContextPop( stack );
+
+    // finally: let the user know
+    if (hsm_global_callbacks.on_context_popped) {
+        hsm_global_callbacks.on_context_popped( hsm, ctx, hsm_global_callbacks.user_data );
+    }
     hsm->current= state->parent;
 }
 

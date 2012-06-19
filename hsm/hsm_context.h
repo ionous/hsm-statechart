@@ -14,10 +14,8 @@
 #include "hsm_forwards.h"
 
 typedef struct hsm_context_rec hsm_context_t;
-
 typedef struct hsm_context_stack_rec hsm_context_stack_t;
 typedef struct hsm_context_stack_rec *hsm_context_stack;
-typedef void (*hsm_callback_context_popped)( hsm_context_stack, hsm_context );
 
 //---------------------------------------------------------------------------
 /**
@@ -57,29 +55,23 @@ struct hsm_context_stack_rec
     hsm_context context;
 
     /**
-     * a handy hook to free any context data you've allocated
-     */
-    hsm_callback_context_popped on_popped;  
-    
-    /**
      * total number of pushes that have occured
      * ( always >= the depth of the statemachine's deepest state )
      */
-    hsm_uint32 count;
+    hsm_uint16 count;
 
     /**
      * bit flags for whether a push added unique data
      */
-    hsm_uint32 presence;
+    hsm_uint16 presence;
 };
 
 //---------------------------------------------------------------------------
 /**
  * Resets the hsm_context_stack structure.
  * @param stack Stack to initialize.
- * @param on_popped Hook called every time the stack.
  * @return the stack passed in.
  */
-hsm_context_stack HsmContextStack( hsm_context_stack_t* stack, hsm_callback_context_popped on_popped );
+hsm_context_stack HsmContextStack( hsm_context_stack_t* stack );
 
 #endif // __HSM_CONTEXT_H__
