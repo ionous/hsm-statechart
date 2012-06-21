@@ -3,7 +3,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
-<title>hsm-statechart: Main Page</title>
+<title>hsm-statechart: hsmstate-chart</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -26,6 +26,7 @@
 <table cellspacing="0" cellpadding="0">
  <tbody>
  <tr style="height: 56px;">
+  <td id="projectlogo"><img alt="Logo" src="hsm-statechart.png"/></td>
   <td style="padding-left: 0.5em;">
    <div id="projectname">hsm-statechart
    &#160;<span id="projectnumber">0.01</span>
@@ -83,7 +84,7 @@ $(document).ready(function(){initNavTree('index.html','');});
      onmouseover="return searchBox.OnSearchSelectShow()"
      onmouseout="return searchBox.OnSearchSelectHide()"
      onkeydown="return searchBox.OnSearchSelectKey(event)">
-<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Data Structures</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Macros</a></div>
+<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Data Structures</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&#160;</span>Macros</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(8)"><span class="SelectionMark">&#160;</span>Pages</a></div>
 
 <!-- iframe showing the search results (closed by default) -->
 <div id="MSearchResultsWindow">
@@ -94,15 +95,30 @@ $(document).ready(function(){initNavTree('index.html','');});
 
 <div class="header">
   <div class="headertitle">
-<div class="title">hsm-statechart Documentation</div>  </div>
+<div class="title">hsmstate-chart </div>  </div>
 </div><!--header-->
 <div class="contents">
-</div><!-- contents -->
+<div class="textblock"><h1><a class="anchor" id="Introduction"></a>
+Introduction</h1>
+<p><b>hsm-statechart</b> is an easy to use hiearchical state machine for C and C++. It's hosted on google code at <a href="http://code.google.com/p/hsm-statechart/">http://code.google.com/p/hsm-statechart/</a>.<br/>
+</p>
+<h1><a class="anchor" id="Overview"></a>
+Overview</h1>
+<ul>
+<li>See <a class="el" href="hsm__state_8h.html#a13ea60f370fd7663153ad6d7fb7c73e1" title="Macro for declaring a state.">HSM_STATE</a> for information about declaring new states. </li>
+<li>See <a class="el" href="hsm__machine_8h.html#structhsm__machine__rec" title="The statemachine object.">hsm_machine_rec</a> or <a class="el" href="hsm__machine_8h.html#structhsm__context__machine__rec" title="Extends hsm_machine_rec with a context stack.">hsm_context_machine_rec</a> for info on creating a state machine. </li>
+<li>See <a class="el" href="hsm__info_8h.html" title="Callbacks for listening to internal statemachine processing.">hsm_info.h</a> for ways to spy on the internal processing of running machines. </li>
+<li>See <a class="el" href="hsm__builder_8h.html" title="Alternate method for declaring and defining states.">hsm_builder.h</a> on the new builder interface.</li>
+</ul>
+<h1><a class="anchor" id="License"></a>
+License</h1>
+<p>hsm-statechart is copyright (c) 2012, everMany, LLC and is licensed under the "New BSD" (BSD 3-Clause) License, except <a class="el" href="hsm__builder_8c.html">hsm_builder.c</a> which uses hash table code from the University of California, Berkeley and its contributors, and FNVa crc geneneration code. FNVa is in the public domain. See License.txt for complete information. </p>
+</div></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="footer">Generated on Thu Jun 14 2012 18:18:51 for hsm-statechart by
+    <li class="footer">Generated on Thu Jun 21 2012 12:22:56 for hsm-statechart by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.1.1 </li>
   </ul>

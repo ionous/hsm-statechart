@@ -1,15 +1,18 @@
 var hsm__machine_8h =
 [
-    [ "hsm_machine", "structhsm__machine.html", "structhsm__machine" ],
-    [ "__HSM_MACHINE_H__", "hsm__machine_8h.html#a04dcf8ae01b66e797296ee9025468ddb", null ],
-    [ "HsmMachine", "hsm__machine_8h.html#a87819af2b30f726e51feeca8d069ea23", null ],
-    [ "HsmStart", "hsm__machine_8h.html#a5580d250992eda0c05ac62d6e8cd86cd", null ],
-    [ "HsmProcessEvent", "hsm__machine_8h.html#a26d6fb9b8de097aad64da7ef922a4a9e", null ],
-    [ "HsmIsRunning", "hsm__machine_8h.html#ae8ac3aec6500cec0b5bb156c2fe0042d", null ],
-    [ "HsmIsInState", "hsm__machine_8h.html#a80dbefc8fc61614434d5f73525f12263", null ],
-    [ "HsmStateTerminated", "hsm__machine_8h.html#ab69ffd312882f9d46a7cec6d20bfe0c8", null ],
+    [ "hsm_machine_rec", "hsm__machine_8h.html#structhsm__machine__rec", "hsm__machine_8h_dup" ],
+    [ "hsm_context_machine_rec", "hsm__machine_8h.html#structhsm__context__machine__rec", "hsm__machine_8h_dup" ],
+    [ "HSM_FLAGS_CTX", "hsm__machine_8h.html#a8b8bfbd8f3b8730c1080533d6aa7a0c5", null ],
+    [ "hsm_machine_t", "hsm__machine_8h.html#a16797383cfbc9ac2fab7e9c063619f18", null ],
+    [ "hsm_context_machine_t", "hsm__machine_8h.html#ace7dfeb29f41e91eee9b16260b3e825b", null ],
+    [ "HsmMachine", "hsm__machine_8h.html#a1d929cdbbb5066bd93e2f7f196394230", null ],
+    [ "HsmMachineWithContext", "hsm__machine_8h.html#a7b65eb9c8ba636189595f96e90081bbb", null ],
+    [ "HsmStart", "hsm__machine_8h.html#a3bb4f85b389637492451bf6e5429eaa2", null ],
+    [ "HsmProcessEvent", "hsm__machine_8h.html#a3f02ed86bdd1d778e3ccc0c38cebebb6", null ],
+    [ "HsmIsRunning", "hsm__machine_8h.html#a893207a7a8345aad604bd01a84ee9eb4", null ],
+    [ "HsmIsInState", "hsm__machine_8h.html#a3463ad5a97144c3c652b4f677644bcba", null ],
+    [ "HsmStateFinal", "hsm__machine_8h.html#a385e51689fbbf6376b00a27029b7f79a", null ],
     [ "HsmStateError", "hsm__machine_8h.html#a5574ce97f59edf4b77fafabc6ea36e54", null ],
     [ "HsmStateHandled", "hsm__machine_8h.html#a3a16509f8bea2bca3f7b3f36525cc243", null ],
-    [ "HsmTopState", "hsm__machine_8h.html#a1ba67e8e0edddad002d4f4c44d0e73db", null ],
-    [ "HsmNull", "hsm__machine_8h.html#a1360d2a95d6c0d5421a9870753a54efc", null ]
+    [ "HsmTopState", "hsm__machine_8h.html#a1ba67e8e0edddad002d4f4c44d0e73db", null ]
 ];

@@ -26,6 +26,7 @@
 <table cellspacing="0" cellpadding="0">
  <tbody>
  <tr style="height: 56px;">
+  <td id="projectlogo"><img alt="Logo" src="hsm-statechart.png"/></td>
   <td style="padding-left: 0.5em;">
    <div id="projectname">hsm-statechart
    &#160;<span id="projectnumber">0.01</span>
@@ -89,7 +90,7 @@ $(document).ready(function(){initNavTree('hsm__context_8h.html','');});
      onmouseover="return searchBox.OnSearchSelectShow()"
      onmouseout="return searchBox.OnSearchSelectHide()"
      onkeydown="return searchBox.OnSearchSelectKey(event)">
-<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Data Structures</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Macros</a></div>
+<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Data Structures</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&#160;</span>Macros</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(8)"><span class="SelectionMark">&#160;</span>Pages</a></div>
 
 <!-- iframe showing the search results (closed by default) -->
 <div id="MSearchResultsWindow">
@@ -104,43 +105,45 @@ $(document).ready(function(){initNavTree('hsm__context_8h.html','');});
 </div><!--header-->
 <div class="contents">
 <a href="hsm__context_8h.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;</div>
-<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="preprocessor">#pragma once</span></div>
-<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#ifndef __HSM_CONTEXT_H__</span></div>
-<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define __HSM_CONTEXT_H__</span></div>
-<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="preprocessor"></span></div>
-<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="hsm__forwards_8h.html">hsm_forwards.h</a>&quot;</span></div>
-<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;</div>
-<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;<span class="comment">//---------------------------------------------------------------------------</span></div>
-<div class="line"><a name="l00023"></a><span class="lineno"><a class="code" href="structhsm__context.html">   23</a></span>&#160;<span class="comment"></span><span class="keyword">struct </span><a class="code" href="structhsm__context.html">hsm_context</a></div>
-<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;{</div>
-<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;    <a class="code" href="structhsm__context.html">hsm_context_t</a>* parent;</div>
-<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;};</div>
-<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;</div>
-<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;<a class="code" href="structhsm__context.html">hsm_context_t</a> * <a class="code" href="hsm__context_8c.html#a82ddecef2e4ebece2d4ffcec4bf079d9">HsmContext</a>( <a class="code" href="structhsm__context.html">hsm_context_t</a> * );</div>
-<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;</div>
-<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;<span class="comment">//---------------------------------------------------------------------------</span></div>
-<div class="line"><a name="l00046"></a><span class="lineno"><a class="code" href="structhsm__context__stack.html">   46</a></span>&#160;<span class="comment"></span><span class="keyword">struct </span><a class="code" href="structhsm__context__stack.html">hsm_context_stack</a> </div>
-<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;{</div>
-<div class="line"><a name="l00051"></a><span class="lineno"><a class="code" href="structhsm__context__stack.html#ad9959a7f69e83980f6f1b372d2715ebf">   51</a></span>&#160;    <a class="code" href="structhsm__context.html">hsm_context_t</a> * <a class="code" href="structhsm__context__stack.html#ad9959a7f69e83980f6f1b372d2715ebf">context</a>;</div>
-<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;</div>
-<div class="line"><a name="l00056"></a><span class="lineno"><a class="code" href="structhsm__context__stack.html#a0d911673ea20978577b666b034a7b6e3">   56</a></span>&#160;    hsm_callback_context_popped <a class="code" href="structhsm__context__stack.html#a0d911673ea20978577b666b034a7b6e3">on_popped</a>;  </div>
-<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;    </div>
-<div class="line"><a name="l00062"></a><span class="lineno"><a class="code" href="structhsm__context__stack.html#a33dadf75ec89cba8ebfe1d0e4d1db267">   62</a></span>&#160;    hsm_uint32 <a class="code" href="structhsm__context__stack.html#a33dadf75ec89cba8ebfe1d0e4d1db267">count</a>;</div>
-<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;</div>
-<div class="line"><a name="l00067"></a><span class="lineno"><a class="code" href="structhsm__context__stack.html#a0687cc7b04947a8e7fdea6bc6b4af9a0">   67</a></span>&#160;    hsm_uint32 <a class="code" href="structhsm__context__stack.html#a0687cc7b04947a8e7fdea6bc6b4af9a0">presence</a>;</div>
-<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;};</div>
-<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;</div>
-<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;<span class="comment">//---------------------------------------------------------------------------</span></div>
-<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;<span class="comment"></span><a class="code" href="structhsm__context__stack.html">hsm_context_stack_t</a>* <a class="code" href="hsm__context_8c.html#a3319f1519b55f77d5242500706a1546e">HsmContextStack</a>( <a class="code" href="structhsm__context__stack.html">hsm_context_stack_t</a>* stack, hsm_callback_context_popped on_popped );</div>
-<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;</div>
-<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;<span class="preprocessor">#endif // __HSM_CONTEXT_H__</span></div>
+<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="preprocessor">#pragma once</span></div>
+<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#ifndef __HSM_CONTEXT_H__</span></div>
+<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define __HSM_CONTEXT_H__</span></div>
+<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;<span class="preprocessor"></span></div>
+<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="hsm__forwards_8h.html" title="Unwind dependencies b/t hsm header definitions in a friendly way.">hsm_forwards.h</a>&quot;</span></div>
+<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;</div>
+<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;<span class="keyword">typedef</span> <span class="keyword">struct </span><a class="code" href="hsm__context_8h.html#structhsm__context__rec" title="A per state instance context object.">hsm_context_rec</a> <a class="code" href="hsm__context_8h.html#structhsm__context__rec" title="A per state instance context object.">hsm_context_t</a>;</div>
+<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;<span class="keyword">typedef</span> <span class="keyword">struct </span><a class="code" href="hsm__context_8h.html#structhsm__context__stack__rec" title="Per state machine instance manager of context data.">hsm_context_stack_rec</a> <a class="code" href="hsm__context_8h.html#structhsm__context__stack__rec" title="Per state machine instance manager of context data.">hsm_context_stack_t</a>;</div>
+<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;<span class="keyword">typedef</span> <span class="keyword">struct </span><a class="code" href="hsm__context_8h.html#structhsm__context__stack__rec" title="Per state machine instance manager of context data.">hsm_context_stack_rec</a> *<a class="code" href="hsm__context_8h.html#structhsm__context__stack__rec" title="Per state machine instance manager of context data.">hsm_context_stack</a>;</div>
+<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;</div>
+<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;<span class="comment">//---------------------------------------------------------------------------</span></div>
+<div class="line"><a name="l00030"></a><span class="lineno"><a class="code" href="hsm__context_8h.html">   30</a></span>&#160;<span class="comment"></span><span class="keyword">struct </span><a class="code" href="hsm__context_8h.html#structhsm__context__rec" title="A per state instance context object.">hsm_context_rec</a></div>
+<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;{</div>
+<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;    <a class="code" href="hsm__context_8h.html#structhsm__context__rec" title="A per state instance context object.">hsm_context_t</a>* parent;</div>
+<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;};</div>
+<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;</div>
+<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;<a class="code" href="hsm__context_8h.html#structhsm__context__rec" title="A per state instance context object.">hsm_context</a> <a class="code" href="hsm__context_8c.html#ad9fe5c6b456b7672b534e15dbc29166c" title="Initializes the context structure ( not strictly necessary )">HsmContext</a>( <a class="code" href="hsm__context_8h.html#structhsm__context__rec" title="A per state instance context object.">hsm_context_t</a> * );</div>
+<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;</div>
+<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;<span class="comment">//---------------------------------------------------------------------------</span></div>
+<div class="line"><a name="l00053"></a><span class="lineno"><a class="code" href="hsm__context_8h.html">   53</a></span>&#160;<span class="comment"></span><span class="keyword">struct </span><a class="code" href="hsm__context_8h.html#structhsm__context__stack__rec" title="Per state machine instance manager of context data.">hsm_context_stack_rec</a></div>
+<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;{</div>
+<div class="line"><a name="l00058"></a><span class="lineno"><a class="code" href="hsm__context_8h.html#a74b87d8a36ddc6006b1f4511c8b2b48f">   58</a></span>&#160;    <a class="code" href="hsm__context_8h.html#structhsm__context__rec" title="A per state instance context object.">hsm_context</a> <a class="code" href="hsm__context_8h.html#a74b87d8a36ddc6006b1f4511c8b2b48f" title="most recently added unique context pointer">context</a>;</div>
+<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;</div>
+<div class="line"><a name="l00064"></a><span class="lineno"><a class="code" href="hsm__context_8h.html#a1e97dda6f0163b4a8b24d430ed603b93">   64</a></span>&#160;    <a class="code" href="hsm__types_8h.html#aaa094fe6ac1bf8728ffc38f2a7ef5703" title="16 bit unsigned integer">hsm_uint16</a> <a class="code" href="hsm__context_8h.html#a1e97dda6f0163b4a8b24d430ed603b93" title="total number of pushes that have occured ( always &gt;= the depth of the statemachine&#39;s deepest state )...">count</a>;</div>
+<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;</div>
+<div class="line"><a name="l00069"></a><span class="lineno"><a class="code" href="hsm__context_8h.html#a1483325021805936ca81887f962c621d">   69</a></span>&#160;    <a class="code" href="hsm__types_8h.html#aaa094fe6ac1bf8728ffc38f2a7ef5703" title="16 bit unsigned integer">hsm_uint16</a> <a class="code" href="hsm__context_8h.html#a1483325021805936ca81887f962c621d" title="bit flags for whether a push added unique data">presence</a>;</div>
+<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;};</div>
+<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;</div>
+<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;<span class="comment">//---------------------------------------------------------------------------</span></div>
+<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;<span class="comment"></span>hsm_context_stack <a class="code" href="hsm__context_8c.html#a3bf4d9a77484ff5e5d12cf8e0776d937" title="Resets the hsm_context_stack structure.">HsmContextStack</a>( <a class="code" href="hsm__context_8h.html#structhsm__context__stack__rec" title="Per state machine instance manager of context data.">hsm_context_stack_t</a>* stack );</div>
+<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;</div>
+<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;<span class="preprocessor">#endif // __HSM_CONTEXT_H__</span></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="dir_6c36b64852547327283732128225c9d7.html">hsm</a></li><li class="navelem"><a class="el" href="hsm__context_8h.html">hsm_context.h</a></li>
-    <li class="footer">Generated on Thu Jun 14 2012 18:18:51 for hsm-statechart by
+    <li class="footer">Generated on Thu Jun 21 2012 12:22:55 for hsm-statechart by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.1.1 </li>
   </ul>

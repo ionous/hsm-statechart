@@ -26,6 +26,7 @@
 <table cellspacing="0" cellpadding="0">
  <tbody>
  <tr style="height: 56px;">
+  <td id="projectlogo"><img alt="Logo" src="hsm-statechart.png"/></td>
   <td style="padding-left: 0.5em;">
    <div id="projectname">hsm-statechart
    &#160;<span id="projectnumber">0.01</span>
@@ -75,6 +76,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
       <li><a href="globals.html"><span>All</span></a></li>
       <li><a href="globals_func.html"><span>Functions</span></a></li>
       <li class="current"><a href="globals_type.html"><span>Typedefs</span></a></li>
+      <li><a href="globals_enum.html"><span>Enumerations</span></a></li>
       <li><a href="globals_defs.html"><span>Macros</span></a></li>
     </ul>
   </div>
@@ -97,7 +99,7 @@ $(document).ready(function(){initNavTree('globals_type.html','');});
      onmouseover="return searchBox.OnSearchSelectShow()"
      onmouseout="return searchBox.OnSearchSelectHide()"
      onkeydown="return searchBox.OnSearchSelectKey(event)">
-<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Data Structures</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Macros</a></div>
+<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Data Structures</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&#160;</span>Macros</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(8)"><span class="SelectionMark">&#160;</span>Pages</a></div>
 
 <!-- iframe showing the search results (closed by default) -->
 <div id="MSearchResultsWindow">
@@ -109,22 +111,52 @@ $(document).ready(function(){initNavTree('globals_type.html','');});
 <div class="contents">
 &#160;<ul>
 <li>hsm_callback_action
-: <a class="el" href="hsm__state_8h.html#ae2da21456dd03b8909de95088012c7bc">hsm_state.h</a>
+: <a class="el" href="hsm__builder_8h.html#a3be4666e7ca8ccefe48afc782c370e27">hsm_builder.h</a>
+</li>
+<li>hsm_callback_context_popped
+: <a class="el" href="hsm__info_8h.html#a08cdcda2fe48cc8c1514c902d69f5465">hsm_info.h</a>
 </li>
 <li>hsm_callback_enter
-: <a class="el" href="hsm__state_8h.html#a0774c2f5b40e935091067d4f8fffbb1c">hsm_state.h</a>
+: <a class="el" href="hsm__state_8h.html#a7a1b7d6e09cadb4fc2359c224016c4ab">hsm_state.h</a>
+</li>
+<li>hsm_callback_entered
+: <a class="el" href="hsm__info_8h.html#a1f7c1ad13194cd13cf4a3897fffd0ffb">hsm_info.h</a>
 </li>
 <li>hsm_callback_exit
-: <a class="el" href="hsm__state_8h.html#a5035da01febbc80f4073f4766898c71f">hsm_state.h</a>
+: <a class="el" href="hsm__state_8h.html#afc32688666d94c3a7a6d1d45d9a83807">hsm_state.h</a>
+</li>
+<li>hsm_callback_exiting
+: <a class="el" href="hsm__info_8h.html#a4e22a88507e4e2441303dedf308e06ab">hsm_info.h</a>
 </li>
 <li>hsm_callback_guard
-: <a class="el" href="hsm__state_8h.html#adfa37e3b231c39d5550c23b302cc5f0d">hsm_state.h</a>
+: <a class="el" href="hsm__builder_8h.html#aff1f4234c81501b60e243c3f70d277bf">hsm_builder.h</a>
+</li>
+<li>hsm_callback_initing
+: <a class="el" href="hsm__info_8h.html#a6ea3639ac8c00ff4699d2a769cb5fd18">hsm_info.h</a>
 </li>
 <li>hsm_callback_process_event
-: <a class="el" href="hsm__state_8h.html#a805b792ce950c8ca349d4e02feb81fce">hsm_state.h</a>
+: <a class="el" href="hsm__state_8h.html#a2a67c1d1f88bad7e5448ab4f667e224c">hsm_state.h</a>
 </li>
-<li>hsm_state_fn
-: <a class="el" href="hsm__state_8h.html#ac30f200debcdd8860837552b2772daac">hsm_state.h</a>
+<li>hsm_callback_unhandled_event
+: <a class="el" href="hsm__info_8h.html#aa74be5e9bbe02d332ce0cce61f07841d">hsm_info.h</a>
+</li>
+<li>hsm_context
+: <a class="el" href="hsm__forwards_8h.html#aa0e37ff043d2dd5216cc762ca03046cb">hsm_forwards.h</a>
+</li>
+<li>hsm_event
+: <a class="el" href="hsm__forwards_8h.html#ab8e8ab8d2eb97eb5cc6331d85262fb76">hsm_forwards.h</a>
+</li>
+<li>hsm_machine
+: <a class="el" href="hsm__forwards_8h.html#a9d4b46508b6a2ff6aa734d3b6a3c24fc">hsm_forwards.h</a>
+</li>
+<li>hsm_state
+: <a class="el" href="hsm__forwards_8h.html#aaf8612f2e29f91153ebf2c076aa68030">hsm_forwards.h</a>
+</li>
+<li>hsm_uint16
+: <a class="el" href="hsm__types_8h.html#aaa094fe6ac1bf8728ffc38f2a7ef5703">hsm_types.h</a>
+</li>
+<li>hsm_uint32
+: <a class="el" href="hsm__types_8h.html#a5041728bd5890050e49ba4506a83f86f">hsm_types.h</a>
 </li>
 </ul>
 </div><!-- contents -->
@@ -132,7 +164,7 @@ $(document).ready(function(){initNavTree('globals_type.html','');});
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="footer">Generated on Thu Jun 14 2012 18:18:51 for hsm-statechart by
+    <li class="footer">Generated on Thu Jun 21 2012 12:22:56 for hsm-statechart by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.1.1 </li>
   </ul>

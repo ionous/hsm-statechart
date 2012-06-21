@@ -26,6 +26,7 @@
 <table cellspacing="0" cellpadding="0">
  <tbody>
  <tr style="height: 56px;">
+  <td id="projectlogo"><img alt="Logo" src="hsm-statechart.png"/></td>
   <td style="padding-left: 0.5em;">
    <div id="projectname">hsm-statechart
    &#160;<span id="projectnumber">0.01</span>
@@ -89,7 +90,7 @@ $(document).ready(function(){initNavTree('hsm__state_8h.html','');});
      onmouseover="return searchBox.OnSearchSelectShow()"
      onmouseout="return searchBox.OnSearchSelectHide()"
      onkeydown="return searchBox.OnSearchSelectKey(event)">
-<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Data Structures</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Macros</a></div>
+<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Data Structures</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&#160;</span>Macros</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(8)"><span class="SelectionMark">&#160;</span>Pages</a></div>
 
 <!-- iframe showing the search results (closed by default) -->
 <div id="MSearchResultsWindow">
@@ -108,113 +109,100 @@ $(document).ready(function(){initNavTree('hsm__state_8h.html','');});
 </div><!--header-->
 <div class="contents">
 
+<p>Macros and typedefs used for declaring states.  
+<a href="#details">More...</a></p>
+
 <p><a href="hsm__state_8h_source.html">Go to the source code of this file.</a></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2><a name="nested-classes"></a>
 Data Structures</h2></td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structhsm__state__rec.html">hsm_state_rec</a></td></tr>
+<tr class="memitem:structhsm__state__rec"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="hsm__state_8h.html#structhsm__state__rec">hsm_state_rec</a></td></tr>
+<tr class="memdesc:structhsm__state__rec"><td class="mdescLeft">&#160;</td><td class="mdescRight">a state descriptor <a href="http://dev.ionous.net/2012/06/state-descriptors.html">http://dev.ionous.net/2012/06/state-descriptors.html</a>  <a href="hsm__state_8h.html#structhsm__state__rec">More...</a><br/></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2><a name="define-members"></a>
 Macros</h2></td></tr>
-<tr class="memitem:ad31d034de9d980438031b37b7ec75560"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ad31d034de9d980438031b37b7ec75560"></a>
-#define&#160;</td><td class="memItemRight" valign="bottom"><b>__HSM_INFO_H__</b></td></tr>
-<tr class="memitem:af67fed27704933cb81dffe693588cb14"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="hsm__state_8h.html#af67fed27704933cb81dffe693588cb14">_HSM_STATE</a>(State, Parent, Process, Enter, Exit, Initial)</td></tr>
 <tr class="memitem:a13ea60f370fd7663153ad6d7fb7c73e1"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="hsm__state_8h.html#a13ea60f370fd7663153ad6d7fb7c73e1">HSM_STATE</a>(state, parent, initial)</td></tr>
+<tr class="memdesc:a13ea60f370fd7663153ad6d7fb7c73e1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Macro for declaring a state.  <a href="#a13ea60f370fd7663153ad6d7fb7c73e1"></a><br/></td></tr>
 <tr class="memitem:a0cb7e4f750bdd83a03d75df4714f2efa"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="hsm__state_8h.html#a0cb7e4f750bdd83a03d75df4714f2efa">HSM_STATE_ENTER</a>(state, parent, initial)</td></tr>
+<tr class="memdesc:a0cb7e4f750bdd83a03d75df4714f2efa"><td class="mdescLeft">&#160;</td><td class="mdescRight">Macro for declaring a state + enter callback.  <a href="#a0cb7e4f750bdd83a03d75df4714f2efa"></a><br/></td></tr>
 <tr class="memitem:a3263608681f4ec0b1075cb3c9c0a9280"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="hsm__state_8h.html#a3263608681f4ec0b1075cb3c9c0a9280">HSM_STATE_ENTERX</a>(state, parent, initial)</td></tr>
+<tr class="memdesc:a3263608681f4ec0b1075cb3c9c0a9280"><td class="mdescLeft">&#160;</td><td class="mdescRight">Macro for declaring a state + enter and exit callbacks.  <a href="#a3263608681f4ec0b1075cb3c9c0a9280"></a><br/></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2><a name="typedef-members"></a>
 Typedefs</h2></td></tr>
-<tr class="memitem:a805b792ce950c8ca349d4e02feb81fce"><td class="memItemLeft" align="right" valign="top">typedef <a class="el" href="structhsm__state__rec.html">hsm_state</a>(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="hsm__state_8h.html#a805b792ce950c8ca349d4e02feb81fce">hsm_callback_process_event</a> )(struct <a class="el" href="structhsm__machine.html">hsm_machine</a> *, struct <a class="el" href="structhsm__context.html">hsm_context</a> *, struct hsm_event *)</td></tr>
-<tr class="memitem:ae2da21456dd03b8909de95088012c7bc"><td class="memItemLeft" align="right" valign="top">typedef void(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="hsm__state_8h.html#ae2da21456dd03b8909de95088012c7bc">hsm_callback_action</a> )(struct <a class="el" href="structhsm__machine.html">hsm_machine</a> *, struct <a class="el" href="structhsm__context.html">hsm_context</a> *, struct hsm_event *)</td></tr>
-<tr class="memitem:adfa37e3b231c39d5550c23b302cc5f0d"><td class="memItemLeft" align="right" valign="top">typedef hsm_bool(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="hsm__state_8h.html#adfa37e3b231c39d5550c23b302cc5f0d">hsm_callback_guard</a> )(struct <a class="el" href="structhsm__machine.html">hsm_machine</a> *, struct <a class="el" href="structhsm__context.html">hsm_context</a> *, struct hsm_event *)</td></tr>
-<tr class="memitem:a0774c2f5b40e935091067d4f8fffbb1c"><td class="memItemLeft" align="right" valign="top">typedef struct <a class="el" href="structhsm__context.html">hsm_context</a> *(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="hsm__state_8h.html#a0774c2f5b40e935091067d4f8fffbb1c">hsm_callback_enter</a> )(struct <a class="el" href="structhsm__machine.html">hsm_machine</a> *, struct <a class="el" href="structhsm__context.html">hsm_context</a> *, struct hsm_event *)</td></tr>
-<tr class="memitem:a5035da01febbc80f4073f4766898c71f"><td class="memItemLeft" align="right" valign="top">typedef void(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="hsm__state_8h.html#a5035da01febbc80f4073f4766898c71f">hsm_callback_exit</a> )(struct <a class="el" href="structhsm__machine.html">hsm_machine</a> *, struct <a class="el" href="structhsm__context.html">hsm_context</a> *, struct hsm_event *)</td></tr>
-<tr class="memitem:ac30f200debcdd8860837552b2772daac"><td class="memItemLeft" align="right" valign="top">typedef <a class="el" href="structhsm__state__rec.html">hsm_state</a>(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="hsm__state_8h.html#ac30f200debcdd8860837552b2772daac">hsm_state_fn</a> )()</td></tr>
+<tr class="memitem:a2a67c1d1f88bad7e5448ab4f667e224c"><td class="memItemLeft" align="right" valign="top">typedef <a class="el" href="hsm__forwards_8h.html#aaf8612f2e29f91153ebf2c076aa68030">hsm_state</a>(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="hsm__state_8h.html#a2a67c1d1f88bad7e5448ab4f667e224c">hsm_callback_process_event</a> )(<a class="el" href="hsm__forwards_8h.html#a9d4b46508b6a2ff6aa734d3b6a3c24fc">hsm_machine</a> hsm, <a class="el" href="hsm__forwards_8h.html#aa0e37ff043d2dd5216cc762ca03046cb">hsm_context</a> ctx, <a class="el" href="hsm__forwards_8h.html#ab8e8ab8d2eb97eb5cc6331d85262fb76">hsm_event</a> evt)</td></tr>
+<tr class="memdesc:a2a67c1d1f88bad7e5448ab4f667e224c"><td class="mdescLeft">&#160;</td><td class="mdescRight">A state's event handler callback.  <a href="#a2a67c1d1f88bad7e5448ab4f667e224c"></a><br/></td></tr>
+<tr class="memitem:a7a1b7d6e09cadb4fc2359c224016c4ab"><td class="memItemLeft" align="right" valign="top">typedef <a class="el" href="hsm__forwards_8h.html#aa0e37ff043d2dd5216cc762ca03046cb">hsm_context</a>(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="hsm__state_8h.html#a7a1b7d6e09cadb4fc2359c224016c4ab">hsm_callback_enter</a> )(<a class="el" href="hsm__forwards_8h.html#a9d4b46508b6a2ff6aa734d3b6a3c24fc">hsm_machine</a> hsm, <a class="el" href="hsm__forwards_8h.html#aa0e37ff043d2dd5216cc762ca03046cb">hsm_context</a> ctx, <a class="el" href="hsm__forwards_8h.html#ab8e8ab8d2eb97eb5cc6331d85262fb76">hsm_event</a> evt)</td></tr>
+<tr class="memdesc:a7a1b7d6e09cadb4fc2359c224016c4ab"><td class="mdescLeft">&#160;</td><td class="mdescRight">A state's enter callback.  <a href="#a7a1b7d6e09cadb4fc2359c224016c4ab"></a><br/></td></tr>
+<tr class="memitem:afc32688666d94c3a7a6d1d45d9a83807"><td class="memItemLeft" align="right" valign="top">typedef void(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="hsm__state_8h.html#afc32688666d94c3a7a6d1d45d9a83807">hsm_callback_exit</a> )(<a class="el" href="hsm__forwards_8h.html#a9d4b46508b6a2ff6aa734d3b6a3c24fc">hsm_machine</a>, <a class="el" href="hsm__forwards_8h.html#aa0e37ff043d2dd5216cc762ca03046cb">hsm_context</a>, <a class="el" href="hsm__forwards_8h.html#ab8e8ab8d2eb97eb5cc6331d85262fb76">hsm_event</a>)</td></tr>
+<tr class="memdesc:afc32688666d94c3a7a6d1d45d9a83807"><td class="mdescLeft">&#160;</td><td class="mdescRight">A state's exit callback.  <a href="#afc32688666d94c3a7a6d1d45d9a83807"></a><br/></td></tr>
 </table>
 <hr/><a name="details" id="details"></a><h2>Detailed Description</h2>
-<div class="textblock"><p>Copyright (c) 2012, everMany, LLC. All rights reserved.</p>
-<p>All code licensed under the "New BSD" (BSD 3-Clause) License See License.txt for complete information. </p>
-</div><hr/><h2>Macro Definition Documentation</h2>
-<a class="anchor" id="af67fed27704933cb81dffe693588cb14"></a>
+<div class="textblock"><p>Macros and typedefs used for declaring states. </p>
+
+<p>Definition in file <a class="el" href="hsm__state_8h_source.html">hsm_state.h</a>.</p>
+</div><hr/><h2>Data Structure Documentation</h2>
+<a name="structhsm__state__rec" id="structhsm__state__rec"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">#define _HSM_STATE</td>
-          <td>(</td>
-          <td class="paramtype">&#160;</td>
-          <td class="paramname">State, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">&#160;</td>
-          <td class="paramname">Parent, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">&#160;</td>
-          <td class="paramname">Process, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">&#160;</td>
-          <td class="paramname">Enter, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">&#160;</td>
-          <td class="paramname">Exit, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">&#160;</td>
-          <td class="paramname">Initial&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
+          <td class="memname">struct hsm_state_rec</td>
         </tr>
       </table>
 </div><div class="memdoc">
-<b>Value:</b><div class="fragment"><div class="line"><a class="code" href="structhsm__state__rec.html">hsm_state</a> Parent(); \</div>
-<div class="line">        hsm_state_fn State##Lookup##Initial(); \</div>
-<div class="line">        hsm_state_fn State##Lookup##0() { <span class="keywordflow">return</span> 0; } <a class="code" href="structhsm__state__rec.html">\</a></div>
-<div class="line"><a class="code" href="structhsm__state__rec.html">        hsm_state</a> State() { \</div>
-<div class="line">            static <span class="keyword">struct </span><a class="code" href="structhsm__state__rec.html">hsm_state_rec</a> myinfo= { 0 }; \</div>
-<div class="line">            if (!myinfo.<a class="code" href="structhsm__state__rec.html#a8f8f80d37794cde9472343e4487ba3eb">name</a>) { \</div>
-<div class="line">                myinfo.<a class="code" href="structhsm__state__rec.html#a8f8f80d37794cde9472343e4487ba3eb">name</a>= #State; \</div>
-<div class="line">                myinfo.process= Process; \</div>
-<div class="line">                myinfo.enter= Enter; \</div>
-<div class="line">                myinfo.exit= Exit; \</div>
-<div class="line">                myinfo.initial= State##Lookup##Initial(); \</div>
-<div class="line">                myinfo.parent= Parent(); \</div>
-<div class="line">                myinfo.depth= myinfo.<a class="code" href="structhsm__state__rec.html#aa4980a3eab7184813f0cd0a98a201fcb">parent</a>-&gt;<a class="code" href="structhsm__state__rec.html#acb5ba97551079e0b072c62c21d784ac5">depth</a>+1; \</div>
-<div class="line">            } \</div>
-<div class="line">            return &amp;myinfo; \</div>
-<div class="line">        } \</div>
-<div class="line">        hsm_state_fn Parent##Lookup##State() { <span class="keywordflow">return</span> State; }</div>
-</div><!-- fragment --><p>macro for defining a state info see additional </p>
-<pre class="fragment"></pre><p>.</p>
-<dl class="params"><dt>Parameters:</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">state</td><td>User defined name for the state. </td></tr>
-    <tr><td class="paramname">parent</td><td>a user defined state name, or HsmTopState. </td></tr>
-    <tr><td class="paramname">process</td><td>Event handler function. </td></tr>
-    <tr><td class="paramname">enter</td><td>Function to call on state enter. </td></tr>
-    <tr><td class="paramname">exit</td><td>Function to call on state exit. </td></tr>
-  </table>
-  </dd>
-</dl>
+<div class="textblock"><p>a state descriptor <a href="http://dev.ionous.net/2012/06/state-descriptors.html">http://dev.ionous.net/2012/06/state-descriptors.html</a> </p>
+
+<p>Definition at line <a class="el" href="hsm__state_8h_source.html#l00071">71</a> of file <a class="el" href="hsm__state_8h_source.html">hsm_state.h</a>.</p>
+</div><table class="fieldtable">
+<tr><th colspan="3">Data Fields</th></tr>
+<tr><td class="fieldtype">
+<a class="anchor" id="a8f8f80d37794cde9472343e4487ba3eb"></a>const char *</td>
+<td class="fieldname">
+name</td>
+<td class="fielddoc">
+name of the state ( useful for debugging ) </td></tr>
+<tr><td class="fieldtype">
+<a class="anchor" id="a33029b0d2695fe40010884b199bd7546"></a><a class="el" href="hsm__state_8h.html#a2a67c1d1f88bad7e5448ab4f667e224c">hsm_callback_process_event</a></td>
+<td class="fieldname">
+process</td>
+<td class="fielddoc">
+the state's event handler callback </td></tr>
+<tr><td class="fieldtype">
+<a class="anchor" id="aa6a1c3b1e97b0015afee5573fb3ddc78"></a><a class="el" href="hsm__state_8h.html#a7a1b7d6e09cadb4fc2359c224016c4ab">hsm_callback_enter</a></td>
+<td class="fieldname">
+enter</td>
+<td class="fielddoc">
+enter action handler </td></tr>
+<tr><td class="fieldtype">
+<a class="anchor" id="af28bc68a562cca87d34f862c6ba6d3d6"></a><a class="el" href="hsm__state_8h.html#afc32688666d94c3a7a6d1d45d9a83807">hsm_callback_exit</a></td>
+<td class="fieldname">
+exit</td>
+<td class="fielddoc">
+exit action handler </td></tr>
+<tr><td class="fieldtype">
+<a class="anchor" id="a10929a7991ad674eff573c17e9e85181"></a>hsm_state_fn</td>
+<td class="fieldname">
+initial</td>
+<td class="fielddoc">
+default sub-state (if any) for this state </td></tr>
+<tr><td class="fieldtype">
+<a class="anchor" id="aa4980a3eab7184813f0cd0a98a201fcb"></a><a class="el" href="hsm__forwards_8h.html#aaf8612f2e29f91153ebf2c076aa68030">hsm_state</a></td>
+<td class="fieldname">
+parent</td>
+<td class="fielddoc">
+parent of this state </td></tr>
+<tr><td class="fieldtype">
+<a class="anchor" id="acb5ba97551079e0b072c62c21d784ac5"></a>int</td>
+<td class="fieldname">
+depth</td>
+<td class="fielddoc">
+distance to the root state this-&gt;depth = this-&gt;parent-&gt;depth+1; root most state's depth == 0 </td></tr>
+</table>
 
 </div>
 </div>
+<hr/><h2>Macro Definition Documentation</h2>
 <a class="anchor" id="a13ea60f370fd7663153ad6d7fb7c73e1"></a>
 <div class="memitem">
 <div class="memproto">
@@ -244,17 +232,42 @@ Typedefs</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<b>Value:</b><div class="fragment"><div class="line"><a class="code" href="structhsm__state__rec.html">hsm_state</a> state##Event( <span class="keyword">struct</span> <a class="code" href="structhsm__context.html">hsm_context</a>*, <span class="keyword">struct</span> hsm_event* ); \</div>
-<div class="line">        _HSM_STATE( state, <a class="code" href="structhsm__state__rec.html#aa4980a3eab7184813f0cd0a98a201fcb">parent</a>, state##Event, 0, 0, <a class="code" href="structhsm__state__rec.html#a10929a7991ad674eff573c17e9e85181">initial</a> )</div>
-</div><!-- fragment --><p>helper macro for defining an hsm_state ( aka a state ). requires an event handler function: &lt;state&gt;Event</p>
-<dl class="params"><dt>Parameters:</dt><dd>
+
+<p>Macro for declaring a state. </p>
+<p>Requires: </p>
+<ul>
+<li>A event handler function: MyStateEvent</li>
+</ul>
+<div class="fragment"><div class="line"><span class="comment">/*</span></div>
+<div class="line"><span class="comment"> * an example of using #HSM_STATE</span></div>
+<div class="line"><span class="comment"> */</span></div>
+<div class="line"><a class="code" href="hsm__state_8h.html#a13ea60f370fd7663153ad6d7fb7c73e1" title="Macro for declaring a state.">HSM_STATE</a>( MyState,     <span class="comment">// name of state</span></div>
+<div class="line">            <a class="code" href="hsm__machine_8c.html#a1ba67e8e0edddad002d4f4c44d0e73db" title="Token state for use with the HSM_STATE macros to represent the outer most state.">HsmTopState</a>,<span class="comment">// parent state, or HsmTopState for no parent </span></div>
+<div class="line">            0 );        <span class="comment">// initial state to enter</span></div>
+<div class="line"></div>
+<div class="line"><span class="comment">/*</span></div>
+<div class="line"><span class="comment"> * event handler for the above HSM_STATE declaration</span></div>
+<div class="line"><span class="comment"> */</span></div>
+<div class="line"><a class="code" href="hsm__state_8h.html#structhsm__state__rec" title="a state descriptor http://dev.ionous.net/2012/06/state-descriptors.html">hsm_state</a> MyStateEvent( <a class="code" href="hsm__machine_8h.html#structhsm__machine__rec" title="The statemachine object.">hsm_machine</a> hsm, <a class="code" href="hsm__context_8h.html#structhsm__context__rec" title="A per state instance context object.">hsm_context</a> ctx, <a class="code" href="hsm__forwards_8h.html#ab8e8ab8d2eb97eb5cc6331d85262fb76" title="Pointer to an hsm_event_rec.">hsm_event</a> evt )</div>
+<div class="line">{</div>
+<div class="line">    <a class="code" href="hsm__state_8h.html#structhsm__state__rec" title="a state descriptor http://dev.ionous.net/2012/06/state-descriptors.html">hsm_state</a> ret= NULL; <span class="comment">// return NULL if unhandled, or</span></div>
+<div class="line">                         <span class="comment">// HsmStateHandled(), or</span></div>
+<div class="line">                         <span class="comment">// HsmStateError(), or</span></div>
+<div class="line">                         <span class="comment">// HsmStateFinal(), or</span></div>
+<div class="line">                         <span class="comment">// some other state declared by #HSM_STATE</span></div>
+<div class="line">    <span class="keywordflow">return</span> ret;</div>
+<div class="line">}</div>
+</div><!-- fragment --><dl class="params"><dt>Parameters:</dt><dd>
   <table class="params">
     <tr><td class="paramname">state</td><td>User defined name for the state. </td></tr>
     <tr><td class="paramname">parent</td><td>HsmTopState or a previously declared user defined state name. </td></tr>
-    <tr><td class="paramname">initial</td><td>First state this state should enter. can be NULL. </td></tr>
+    <tr><td class="paramname">initial</td><td>First state this state should enter. can be NULL.</td></tr>
   </table>
   </dd>
 </dl>
+<dl class="section see"><dt>See also:</dt><dd><a class="el" href="hsm__state_8h.html#a2a67c1d1f88bad7e5448ab4f667e224c" title="A state&#39;s event handler callback.">hsm_callback_process_event</a> </dd></dl>
+
+<p>Definition at line <a class="el" href="hsm__state_8h_source.html#l00156">156</a> of file <a class="el" href="hsm__state_8h_source.html">hsm_state.h</a>.</p>
 
 </div>
 </div>
@@ -287,18 +300,24 @@ Typedefs</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<b>Value:</b><div class="fragment"><div class="line"><a class="code" href="structhsm__state__rec.html">hsm_state</a> state##Event( <span class="keyword">struct</span> <a class="code" href="structhsm__context.html">hsm_context</a>*, <span class="keyword">struct</span> hsm_event* ); \</div>
-<div class="line">        struct <a class="code" href="structhsm__context.html">hsm_context</a>* state##Enter( <span class="keyword">struct</span> <a class="code" href="structhsm__context.html">hsm_context</a>*, <span class="keyword">struct</span> hsm_event* ); \</div>
-<div class="line">        _HSM_STATE( state, <a class="code" href="structhsm__state__rec.html#aa4980a3eab7184813f0cd0a98a201fcb">parent</a>, state##Event, state##Enter, 0, <a class="code" href="structhsm__state__rec.html#a10929a7991ad674eff573c17e9e85181">initial</a> );</div>
-</div><!-- fragment --><p>helper macro for defining an hsm_state ( aka a state ). requires an event handler function: &lt;state&gt;Event requires an entry function : &lt;state&gt;Enter</p>
+
+<p>Macro for declaring a state + enter callback. </p>
+<p>Requires: </p>
+<ul>
+<li>An event handler function: MyStateEvent </li>
+<li>An entry function : MyStateEnter</li>
+</ul>
 <dl class="params"><dt>Parameters:</dt><dd>
   <table class="params">
     <tr><td class="paramname">state</td><td>User defined name for the state. </td></tr>
     <tr><td class="paramname">parent</td><td>a user defined state name, or HsmTopState. </td></tr>
-    <tr><td class="paramname">initial</td><td>First state this state should enter. can be NULL. </td></tr>
+    <tr><td class="paramname">initial</td><td>First state this state should enter. can be NULL.</td></tr>
   </table>
   </dd>
 </dl>
+<dl class="section see"><dt>See also:</dt><dd><a class="el" href="hsm__state_8h.html#a7a1b7d6e09cadb4fc2359c224016c4ab" title="A state&#39;s enter callback.">hsm_callback_enter</a>, <a class="el" href="hsm__state_8h.html#a2a67c1d1f88bad7e5448ab4f667e224c" title="A state&#39;s event handler callback.">hsm_callback_process_event</a> </dd></dl>
+
+<p>Definition at line <a class="el" href="hsm__state_8h_source.html#l00174">174</a> of file <a class="el" href="hsm__state_8h_source.html">hsm_state.h</a>.</p>
 
 </div>
 </div>
@@ -331,98 +350,104 @@ Typedefs</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<b>Value:</b><div class="fragment"><div class="line"><a class="code" href="structhsm__state__rec.html">hsm_state</a> state##Event( <span class="keyword">struct</span> <a class="code" href="structhsm__context.html">hsm_context</a>*, <span class="keyword">struct</span> hsm_event* ); \</div>
-<div class="line">        struct <a class="code" href="structhsm__context.html">hsm_context</a>* state##Enter( <span class="keyword">struct</span> <a class="code" href="structhsm__context.html">hsm_context</a>*, <span class="keyword">struct</span> hsm_event* ); \</div>
-<div class="line">        void state##Exit ( <span class="keyword">struct</span> <a class="code" href="structhsm__context.html">hsm_context</a>*, <span class="keyword">struct</span> hsm_event* ); \</div>
-<div class="line">        _HSM_STATE( state, <a class="code" href="structhsm__state__rec.html#aa4980a3eab7184813f0cd0a98a201fcb">parent</a>, state##Event, state##Enter, state##Exit, <a class="code" href="structhsm__state__rec.html#a10929a7991ad674eff573c17e9e85181">initial</a> );</div>
-</div><!-- fragment --><p>helper macro for defining an hsm_state ( aka a state ). requires an event handler function: &lt;state&gt;Event requires an entry function : &lt;state&gt;Enter requires an exit function : &lt;state&gt;Exit</p>
+
+<p>Macro for declaring a state + enter and exit callbacks. </p>
+<p>Requires: </p>
+<ul>
+<li>An event handler function: MyStateEvent </li>
+<li>An entry function : MyStateEnter </li>
+<li>An exit function : MyStateExit</li>
+</ul>
 <dl class="params"><dt>Parameters:</dt><dd>
   <table class="params">
     <tr><td class="paramname">state</td><td>User defined name for the state. </td></tr>
     <tr><td class="paramname">parent</td><td>HsmTopState or a previously declared user defined state name. </td></tr>
-    <tr><td class="paramname">initial</td><td>First state this state should enter. can be NULL. </td></tr>
+    <tr><td class="paramname">initial</td><td>First state this state should enter. can be NULL.</td></tr>
   </table>
   </dd>
 </dl>
+<dl class="section see"><dt>See also:</dt><dd><a class="el" href="hsm__state_8h.html#afc32688666d94c3a7a6d1d45d9a83807" title="A state&#39;s exit callback.">hsm_callback_exit</a>, <a class="el" href="hsm__state_8h.html#a7a1b7d6e09cadb4fc2359c224016c4ab" title="A state&#39;s enter callback.">hsm_callback_enter</a>, <a class="el" href="hsm__state_8h.html#a2a67c1d1f88bad7e5448ab4f667e224c" title="A state&#39;s event handler callback.">hsm_callback_process_event</a> </dd></dl>
+
+<p>Definition at line <a class="el" href="hsm__state_8h_source.html#l00193">193</a> of file <a class="el" href="hsm__state_8h_source.html">hsm_state.h</a>.</p>
 
 </div>
 </div>
 <hr/><h2>Typedef Documentation</h2>
-<a class="anchor" id="a805b792ce950c8ca349d4e02feb81fce"></a>
+<a class="anchor" id="a2a67c1d1f88bad7e5448ab4f667e224c"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">typedef <a class="el" href="structhsm__state__rec.html">hsm_state</a>(* hsm_callback_process_event)(struct <a class="el" href="structhsm__machine.html">hsm_machine</a> *, struct <a class="el" href="structhsm__context.html">hsm_context</a> *, struct hsm_event *)</td>
+          <td class="memname">typedef <a class="el" href="hsm__forwards_8h.html#aaf8612f2e29f91153ebf2c076aa68030">hsm_state</a>(* hsm_callback_process_event)(<a class="el" href="hsm__forwards_8h.html#a9d4b46508b6a2ff6aa734d3b6a3c24fc">hsm_machine</a> hsm, <a class="el" href="hsm__forwards_8h.html#aa0e37ff043d2dd5216cc762ca03046cb">hsm_context</a> ctx, <a class="el" href="hsm__forwards_8h.html#ab8e8ab8d2eb97eb5cc6331d85262fb76">hsm_event</a> evt)</td>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>a state's incoming event handler signature </p>
+
+<p>A state's event handler callback. </p>
+<p>A function of this signature is required for every state declared via <a class="el" href="hsm__state_8h.html#a13ea60f370fd7663153ad6d7fb7c73e1" title="Macro for declaring a state.">HSM_STATE</a>.</p>
+<dl class="params"><dt>Parameters:</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">hsm</td><td>The <a class="el" href="hsm__forwards_8h.html#a9d4b46508b6a2ff6aa734d3b6a3c24fc" title="Pointer to an hsm_machine_rec.">hsm_machine</a> processing the event. </td></tr>
+    <tr><td class="paramname">ctx</td><td>The <a class="el" href="hsm__forwards_8h.html#aa0e37ff043d2dd5216cc762ca03046cb" title="Pointer to an hsm_context_rec.">hsm_context</a> object returned by the state enter callback. </td></tr>
+    <tr><td class="paramname">evt</td><td>The <a class="el" href="hsm__forwards_8h.html#ab8e8ab8d2eb97eb5cc6331d85262fb76" title="Pointer to an hsm_event_rec.">hsm_event</a> that needs handling.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns:</dt><dd>NULL, a state to transition to, or a predefined state token.</dd></dl>
+<dl class="section note"><dt>Note:</dt><dd>You should return NULL from an event handler by default to indicate the event was not handled. To transition to a new state, return the name of the new state as previously declared via a <a class="el" href="hsm__state_8h.html#a13ea60f370fd7663153ad6d7fb7c73e1" title="Macro for declaring a state.">HSM_STATE</a> macro. To indicate an event has been handled, but no transition is required: you should return <a class="el" href="hsm__machine_8h.html#a3a16509f8bea2bca3f7b3f36525cc243" title="Token state that can be used by event handler functions to indicate the event was handled and no furt...">HsmStateHandled()</a>. Returning <a class="el" href="hsm__machine_8h.html#a5574ce97f59edf4b77fafabc6ea36e54" title="Token state for when a machine has inadvertently killed itself.">HsmStateError()</a> indicates a critical error has occured and the statemachine can no longer function. Returning <a class="el" href="hsm__machine_8h.html#a385e51689fbbf6376b00a27029b7f79a" title="A machine in a final state has deliberately killed itself.">HsmStateFinal()</a> indicates the statemachine has terminated and event callbacks are no longer desired. </dd></dl>
+
+<p>Definition at line <a class="el" href="hsm__state_8h_source.html#l00035">35</a> of file <a class="el" href="hsm__state_8h_source.html">hsm_state.h</a>.</p>
 
 </div>
 </div>
-<a class="anchor" id="ae2da21456dd03b8909de95088012c7bc"></a>
+<a class="anchor" id="a7a1b7d6e09cadb4fc2359c224016c4ab"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">typedef void(* hsm_callback_action)(struct <a class="el" href="structhsm__machine.html">hsm_machine</a> *, struct <a class="el" href="structhsm__context.html">hsm_context</a> *, struct hsm_event *)</td>
+          <td class="memname">typedef <a class="el" href="hsm__forwards_8h.html#aa0e37ff043d2dd5216cc762ca03046cb">hsm_context</a>(* hsm_callback_enter)(<a class="el" href="hsm__forwards_8h.html#a9d4b46508b6a2ff6aa734d3b6a3c24fc">hsm_machine</a> hsm, <a class="el" href="hsm__forwards_8h.html#aa0e37ff043d2dd5216cc762ca03046cb">hsm_context</a> ctx, <a class="el" href="hsm__forwards_8h.html#ab8e8ab8d2eb97eb5cc6331d85262fb76">hsm_event</a> evt)</td>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>a state's action signature </p>
+
+<p>A state's enter callback. </p>
+<p>A function of this signature is required for every state declared via <a class="el" href="hsm__state_8h.html#a0cb7e4f750bdd83a03d75df4714f2efa" title="Macro for declaring a state + enter callback.">HSM_STATE_ENTER</a>.</p>
+<dl class="params"><dt>Parameters:</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">hsm</td><td>The <a class="el" href="hsm__forwards_8h.html#a9d4b46508b6a2ff6aa734d3b6a3c24fc" title="Pointer to an hsm_machine_rec.">hsm_machine</a> processing the event. </td></tr>
+    <tr><td class="paramname">ctx</td><td>The <a class="el" href="hsm__forwards_8h.html#aa0e37ff043d2dd5216cc762ca03046cb" title="Pointer to an hsm_context_rec.">hsm_context</a> return the parent state's <a class="el" href="hsm__state_8h.html#a7a1b7d6e09cadb4fc2359c224016c4ab" title="A state&#39;s enter callback.">hsm_callback_enter</a>, or if no parent state: the context passed to <a class="el" href="hsm__machine_8c.html#ac3c05a1d7215bdf5f9e4132a26dafca2" title="Initialize a statemachine with a context stack to its default values.">HsmMachineWithContext()</a>. </td></tr>
+    <tr><td class="paramname">evt</td><td>The <a class="el" href="hsm__forwards_8h.html#ab8e8ab8d2eb97eb5cc6331d85262fb76" title="Pointer to an hsm_event_rec.">hsm_event</a> that needs handling.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns:</dt><dd>Optionally: a new <a class="el" href="hsm__forwards_8h.html#aa0e37ff043d2dd5216cc762ca03046cb" title="Pointer to an hsm_context_rec.">hsm_context</a>. The context will be passed to all sequequent calls to the state's <a class="el" href="hsm__state_8h.html#a2a67c1d1f88bad7e5448ab4f667e224c" title="A state&#39;s event handler callback.">hsm_callback_process_event</a> and the state's <a class="el" href="hsm__state_8h.html#afc32688666d94c3a7a6d1d45d9a83807" title="A state&#39;s exit callback.">hsm_callback_exit</a>. </dd></dl>
+
+<p>Definition at line <a class="el" href="hsm__state_8h_source.html#l00047">47</a> of file <a class="el" href="hsm__state_8h_source.html">hsm_state.h</a>.</p>
 
 </div>
 </div>
-<a class="anchor" id="adfa37e3b231c39d5550c23b302cc5f0d"></a>
+<a class="anchor" id="afc32688666d94c3a7a6d1d45d9a83807"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">typedef hsm_bool(* hsm_callback_guard)(struct <a class="el" href="structhsm__machine.html">hsm_machine</a> *, struct <a class="el" href="structhsm__context.html">hsm_context</a> *, struct hsm_event *)</td>
+          <td class="memname">typedef void(* hsm_callback_exit)(<a class="el" href="hsm__forwards_8h.html#a9d4b46508b6a2ff6aa734d3b6a3c24fc">hsm_machine</a>, <a class="el" href="hsm__forwards_8h.html#aa0e37ff043d2dd5216cc762ca03046cb">hsm_context</a>, <a class="el" href="hsm__forwards_8h.html#ab8e8ab8d2eb97eb5cc6331d85262fb76">hsm_event</a>)</td>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>a state's guard signature </p>
 
-</div>
-</div>
-<a class="anchor" id="a0774c2f5b40e935091067d4f8fffbb1c"></a>
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">typedef struct <a class="el" href="structhsm__context.html">hsm_context</a>*(* hsm_callback_enter)(struct <a class="el" href="structhsm__machine.html">hsm_machine</a> *, struct <a class="el" href="structhsm__context.html">hsm_context</a> *, struct hsm_event *)</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>a state's entry callback signature </p>
+<p>A state's exit callback. </p>
+<p>A function of this signature is required for every state declared via <a class="el" href="hsm__state_8h.html#a3263608681f4ec0b1075cb3c9c0a9280" title="Macro for declaring a state + enter and exit callbacks.">HSM_STATE_ENTERX</a>.</p>
+<dl class="params"><dt>Parameters:</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">hsm</td><td>The <a class="el" href="hsm__forwards_8h.html#a9d4b46508b6a2ff6aa734d3b6a3c24fc" title="Pointer to an hsm_machine_rec.">hsm_machine</a> processing the event. </td></tr>
+    <tr><td class="paramname">ctx</td><td>The <a class="el" href="hsm__forwards_8h.html#aa0e37ff043d2dd5216cc762ca03046cb" title="Pointer to an hsm_context_rec.">hsm_context</a> object returned by the state enter callback. </td></tr>
+    <tr><td class="paramname">evt</td><td>The <a class="el" href="hsm__forwards_8h.html#ab8e8ab8d2eb97eb5cc6331d85262fb76" title="Pointer to an hsm_event_rec.">hsm_event</a> that needs handling. </td></tr>
+  </table>
+  </dd>
+</dl>
 
-</div>
-</div>
-<a class="anchor" id="a5035da01febbc80f4073f4766898c71f"></a>
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">typedef void(* hsm_callback_exit)(struct <a class="el" href="structhsm__machine.html">hsm_machine</a> *, struct <a class="el" href="structhsm__context.html">hsm_context</a> *, struct hsm_event *)</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>a state's exit callback signature </p>
-
-</div>
-</div>
-<a class="anchor" id="ac30f200debcdd8860837552b2772daac"></a>
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">typedef <a class="el" href="structhsm__state__rec.html">hsm_state</a>(* hsm_state_fn)()</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>a state's info descriptor function signature </p>
+<p>Definition at line <a class="el" href="hsm__state_8h_source.html#l00057">57</a> of file <a class="el" href="hsm__state_8h_source.html">hsm_state.h</a>.</p>
 
 </div>
 </div>
@@ -432,7 +457,7 @@ Typedefs</h2></td></tr>
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="dir_6c36b64852547327283732128225c9d7.html">hsm</a></li><li class="navelem"><a class="el" href="hsm__state_8h.html">hsm_state.h</a></li>
-    <li class="footer">Generated on Thu Jun 14 2012 18:18:51 for hsm-statechart by
+    <li class="footer">Generated on Thu Jun 21 2012 12:22:55 for hsm-statechart by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.1.1 </li>
   </ul>

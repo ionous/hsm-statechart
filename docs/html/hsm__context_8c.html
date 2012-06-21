@@ -26,6 +26,7 @@
 <table cellspacing="0" cellpadding="0">
  <tbody>
  <tr style="height: 56px;">
+  <td id="projectlogo"><img alt="Logo" src="hsm-statechart.png"/></td>
   <td style="padding-left: 0.5em;">
    <div id="projectname">hsm-statechart
    &#160;<span id="projectnumber">0.01</span>
@@ -89,7 +90,7 @@ $(document).ready(function(){initNavTree('hsm__context_8c.html','');});
      onmouseover="return searchBox.OnSearchSelectShow()"
      onmouseout="return searchBox.OnSearchSelectHide()"
      onkeydown="return searchBox.OnSearchSelectKey(event)">
-<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Data Structures</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Macros</a></div>
+<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Data Structures</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&#160;</span>Macros</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(8)"><span class="SelectionMark">&#160;</span>Pages</a></div>
 
 <!-- iframe showing the search results (closed by default) -->
 <div id="MSearchResultsWindow">
@@ -105,86 +106,95 @@ $(document).ready(function(){initNavTree('hsm__context_8c.html','');});
 <div class="title">hsm_context.c File Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
+
+<p>Copyright (c) 2012, everMany, LLC.  
+<a href="#details">More...</a></p>
+
+<p><a href="hsm__context_8c_source.html">Go to the source code of this file.</a></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2><a name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:a82ddecef2e4ebece2d4ffcec4bf079d9"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structhsm__context.html">hsm_context_t</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="hsm__context_8c.html#a82ddecef2e4ebece2d4ffcec4bf079d9">HsmContext</a> (<a class="el" href="structhsm__context.html">hsm_context_t</a> *ctx)</td></tr>
-<tr class="memitem:a3319f1519b55f77d5242500706a1546e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structhsm__context__stack.html">hsm_context_stack_t</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="hsm__context_8c.html#a3319f1519b55f77d5242500706a1546e">HsmContextStack</a> (<a class="el" href="structhsm__context__stack.html">hsm_context_stack_t</a> *stack, hsm_callback_context_popped on_popped)</td></tr>
-<tr class="memitem:a3851446ad83d71a5a53f2e6949f96bb1"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="hsm__context_8c.html#a3851446ad83d71a5a53f2e6949f96bb1">HsmContextPush</a> (<a class="el" href="structhsm__context__stack.html">hsm_context_stack_t</a> *stack, <a class="el" href="structhsm__context.html">hsm_context_t</a> *ctx)</td></tr>
-<tr class="memitem:a8b5b88061c64444ec4f5f93d8c916c6f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="hsm__context_8c.html#a8b5b88061c64444ec4f5f93d8c916c6f">HsmContextPop</a> (<a class="el" href="structhsm__context__stack.html">hsm_context_stack_t</a> *stack)</td></tr>
-<tr class="memitem:a842da3ce8fc002c668086ed08ff9a878"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="hsm__context_8c.html#a842da3ce8fc002c668086ed08ff9a878">HsmContextIterator</a> (<a class="el" href="structhsm__context__stack.html">hsm_context_stack_t</a> *stack, <a class="el" href="structhsm__context__iterator.html">hsm_context_iterator_t</a> *it)</td></tr>
-<tr class="memitem:af2ab7ee7336b64cd8943880f58fda96a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structhsm__context.html">hsm_context_t</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="hsm__context_8c.html#af2ab7ee7336b64cd8943880f58fda96a">HsmParentContext</a> (<a class="el" href="structhsm__context__iterator.html">hsm_context_iterator_t</a> *it)</td></tr>
+<tr class="memitem:ad9fe5c6b456b7672b534e15dbc29166c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="hsm__forwards_8h.html#aa0e37ff043d2dd5216cc762ca03046cb">hsm_context</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="hsm__context_8c.html#ad9fe5c6b456b7672b534e15dbc29166c">HsmContext</a> (<a class="el" href="hsm__context_8h.html#structhsm__context__rec">hsm_context_t</a> *ctx)</td></tr>
+<tr class="memdesc:ad9fe5c6b456b7672b534e15dbc29166c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initializes the context structure ( not strictly necessary )  <a href="#ad9fe5c6b456b7672b534e15dbc29166c"></a><br/></td></tr>
+<tr class="memitem:a3bf4d9a77484ff5e5d12cf8e0776d937"><td class="memItemLeft" align="right" valign="top"><a class="el" href="hsm__context_8h.html#structhsm__context__stack__rec">hsm_context_stack</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="hsm__context_8c.html#a3bf4d9a77484ff5e5d12cf8e0776d937">HsmContextStack</a> (<a class="el" href="hsm__context_8h.html#structhsm__context__stack__rec">hsm_context_stack_t</a> *stack)</td></tr>
+<tr class="memdesc:a3bf4d9a77484ff5e5d12cf8e0776d937"><td class="mdescLeft">&#160;</td><td class="mdescRight">Resets the hsm_context_stack structure.  <a href="#a3bf4d9a77484ff5e5d12cf8e0776d937"></a><br/></td></tr>
+<tr class="memitem:ae38c05493a767abe0262890262492a99"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="hsm__context_8c.html#ae38c05493a767abe0262890262492a99">HsmContextPush</a> (<a class="el" href="hsm__context_8h.html#structhsm__context__stack__rec">hsm_context_stack</a> stack, <a class="el" href="hsm__forwards_8h.html#aa0e37ff043d2dd5216cc762ca03046cb">hsm_context</a> ctx)</td></tr>
+<tr class="memdesc:ae38c05493a767abe0262890262492a99"><td class="mdescLeft">&#160;</td><td class="mdescRight">Add a new context to the stack.  <a href="#ae38c05493a767abe0262890262492a99"></a><br/></td></tr>
+<tr class="memitem:aee4fad29d8526e04c590847a69e9ed50"><td class="memItemLeft" align="right" valign="top"><a class="el" href="hsm__forwards_8h.html#aa0e37ff043d2dd5216cc762ca03046cb">hsm_context</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="hsm__context_8c.html#aee4fad29d8526e04c590847a69e9ed50">HsmContextPop</a> (<a class="el" href="hsm__context_8h.html#structhsm__context__stack__rec">hsm_context_stack</a> stack)</td></tr>
+<tr class="memdesc:aee4fad29d8526e04c590847a69e9ed50"><td class="mdescLeft">&#160;</td><td class="mdescRight">Remove the most recently added context.  <a href="#aee4fad29d8526e04c590847a69e9ed50"></a><br/></td></tr>
+<tr class="memitem:a92505c79691b3926022a74c9657c12bd"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="hsm__context_8c.html#a92505c79691b3926022a74c9657c12bd">HsmContextIterator</a> (<a class="el" href="hsm__stack_8h.html#structhsm__context__iterator__rec">hsm_context_iterator_t</a> *it, <a class="el" href="hsm__context_8h.html#structhsm__context__stack__rec">hsm_context_stack</a> stack)</td></tr>
+<tr class="memdesc:a92505c79691b3926022a74c9657c12bd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initialize the iterator to the most recent state's context.  <a href="#a92505c79691b3926022a74c9657c12bd"></a><br/></td></tr>
+<tr class="memitem:a2d77747e2f011c189e20001f3bbd4a68"><td class="memItemLeft" align="right" valign="top"><a class="el" href="hsm__context_8h.html#structhsm__context__rec">hsm_context_t</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="hsm__context_8c.html#a2d77747e2f011c189e20001f3bbd4a68">HsmParentContext</a> (<a class="el" href="hsm__stack_8h.html#structhsm__context__iterator__rec">hsm_context_iterator</a> it)</td></tr>
+<tr class="memdesc:a2d77747e2f011c189e20001f3bbd4a68"><td class="mdescLeft">&#160;</td><td class="mdescRight">Advance the iterator to the parent state's context, return the parent context.  <a href="#a2d77747e2f011c189e20001f3bbd4a68"></a><br/></td></tr>
 </table>
 <hr/><a name="details" id="details"></a><h2>Detailed Description</h2>
-<div class="textblock"><p>Copyright (c) 2012, everMany, LLC. All rights reserved.</p>
-<p>All code licensed under the "New BSD" (BSD 3-Clause) License See License.txt for complete information. </p>
+<div class="textblock"><p>Copyright (c) 2012, everMany, LLC. </p>
+<p>All rights reserved.</p>
+<p>Code licensed under the "New BSD" (BSD 3-Clause) License See License.txt for complete information. </p>
+
+<p>Definition in file <a class="el" href="hsm__context_8c_source.html">hsm_context.c</a>.</p>
 </div><hr/><h2>Function Documentation</h2>
-<a class="anchor" id="a82ddecef2e4ebece2d4ffcec4bf079d9"></a>
+<a class="anchor" id="ad9fe5c6b456b7672b534e15dbc29166c"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="structhsm__context.html">hsm_context_t</a>* HsmContext </td>
+          <td class="memname"><a class="el" href="hsm__forwards_8h.html#aa0e37ff043d2dd5216cc762ca03046cb">hsm_context</a> HsmContext </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="structhsm__context.html">hsm_context_t</a> *&#160;</td>
-          <td class="paramname"></td><td>)</td>
+          <td class="paramtype"><a class="el" href="hsm__context_8h.html#structhsm__context__rec">hsm_context_t</a> *&#160;</td>
+          <td class="paramname"><em>ctx</em></td><td>)</td>
           <td></td>
         </tr>
       </table>
 </div><div class="memdoc">
+
 <p>Initializes the context structure ( not strictly necessary ) </p>
+
+<p>Definition at line <a class="el" href="hsm__context_8c_source.html#l00019">19</a> of file <a class="el" href="hsm__context_8c_source.html">hsm_context.c</a>.</p>
 
 </div>
 </div>
-<a class="anchor" id="a3319f1519b55f77d5242500706a1546e"></a>
+<a class="anchor" id="a3bf4d9a77484ff5e5d12cf8e0776d937"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="structhsm__context__stack.html">hsm_context_stack_t</a>* HsmContextStack </td>
+          <td class="memname"><a class="el" href="hsm__context_8h.html#structhsm__context__stack__rec">hsm_context_stack</a> HsmContextStack </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="structhsm__context__stack.html">hsm_context_stack_t</a> *&#160;</td>
-          <td class="paramname"><em>stack</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
+          <td class="paramtype"><a class="el" href="hsm__context_8h.html#structhsm__context__stack__rec">hsm_context_stack_t</a> *&#160;</td>
+          <td class="paramname"><em>stack</em></td><td>)</td>
           <td></td>
-          <td class="paramtype">hsm_callback_context_popped&#160;</td>
-          <td class="paramname"><em>on_popped</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Resets the <a class="el" href="structhsm__context__stack.html">hsm_context_stack</a> structure. </p>
+
+<p>Resets the hsm_context_stack structure. </p>
 <dl class="params"><dt>Parameters:</dt><dd>
   <table class="params">
     <tr><td class="paramname">stack</td><td>Stack to initialize. </td></tr>
-    <tr><td class="paramname">on_popped</td><td>Hook called every time the stack. </td></tr>
   </table>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns:</dt><dd>the stack passed in. </dd></dl>
 
+<p>Definition at line <a class="el" href="hsm__context_8c_source.html#l00031">31</a> of file <a class="el" href="hsm__context_8c_source.html">hsm_context.c</a>.</p>
+
 </div>
 </div>
-<a class="anchor" id="a3851446ad83d71a5a53f2e6949f96bb1"></a>
+<a class="anchor" id="ae38c05493a767abe0262890262492a99"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
           <td class="memname">void HsmContextPush </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="structhsm__context__stack.html">hsm_context_stack_t</a> *&#160;</td>
+          <td class="paramtype"><a class="el" href="hsm__context_8h.html#structhsm__context__stack__rec">hsm_context_stack</a>&#160;</td>
           <td class="paramname"><em>stack</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="structhsm__context.html">hsm_context_t</a> *&#160;</td>
+          <td class="paramtype"><a class="el" href="hsm__forwards_8h.html#aa0e37ff043d2dd5216cc762ca03046cb">hsm_context</a>&#160;</td>
           <td class="paramname"><em>context</em>&#160;</td>
         </tr>
         <tr>
@@ -194,7 +204,8 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Add a new context to the stack.</p>
+
+<p>Add a new context to the stack. </p>
 <dl class="params"><dt>Parameters:</dt><dd>
   <table class="params">
     <tr><td class="paramname">stack</td><td>Can be NULL. </td></tr>
@@ -204,22 +215,25 @@ Functions</h2></td></tr>
 </dl>
 <dl class="section note"><dt>Note:</dt><dd>The current implementation uses a linked list of pointers, so handling NULL is necessary or the list would break. currently, therefore, a context of NULL means "reuse the parent context", but it's possible this behavior may change in the future. </dd></dl>
 
+<p>Definition at line <a class="el" href="hsm__context_8c_source.html#l00040">40</a> of file <a class="el" href="hsm__context_8c_source.html">hsm_context.c</a>.</p>
+
 </div>
 </div>
-<a class="anchor" id="a8b5b88061c64444ec4f5f93d8c916c6f"></a>
+<a class="anchor" id="aee4fad29d8526e04c590847a69e9ed50"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">void HsmContextPop </td>
+          <td class="memname"><a class="el" href="hsm__forwards_8h.html#aa0e37ff043d2dd5216cc762ca03046cb">hsm_context</a> HsmContextPop </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="structhsm__context__stack.html">hsm_context_stack_t</a> *&#160;</td>
+          <td class="paramtype"><a class="el" href="hsm__context_8h.html#structhsm__context__stack__rec">hsm_context_stack</a>&#160;</td>
           <td class="paramname"><em>stack</em></td><td>)</td>
           <td></td>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Remove the most recently added context.</p>
+
+<p>Remove the most recently added context. </p>
 <dl class="params"><dt>Parameters:</dt><dd>
   <table class="params">
     <tr><td class="paramname">stack</td><td>Stack to pop from. Can be NULL. </td></tr>
@@ -227,23 +241,25 @@ Functions</h2></td></tr>
   </dd>
 </dl>
 
+<p>Definition at line <a class="el" href="hsm__context_8c_source.html#l00057">57</a> of file <a class="el" href="hsm__context_8c_source.html">hsm_context.c</a>.</p>
+
 </div>
 </div>
-<a class="anchor" id="a842da3ce8fc002c668086ed08ff9a878"></a>
+<a class="anchor" id="a92505c79691b3926022a74c9657c12bd"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
           <td class="memname">void HsmContextIterator </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="structhsm__context__stack.html">hsm_context_stack_t</a> *&#160;</td>
-          <td class="paramname">, </td>
+          <td class="paramtype"><a class="el" href="hsm__stack_8h.html#structhsm__context__iterator__rec">hsm_context_iterator_t</a> *&#160;</td>
+          <td class="paramname"><em>it</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="structhsm__context__iterator.html">hsm_context_iterator_t</a> *&#160;</td>
-          <td class="paramname">&#160;</td>
+          <td class="paramtype"><a class="el" href="hsm__context_8h.html#structhsm__context__stack__rec">hsm_context_stack</a>&#160;</td>
+          <td class="paramname"><em>stack</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -252,24 +268,30 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
 <p>Initialize the iterator to the most recent state's context. </p>
+
+<p>Definition at line <a class="el" href="hsm__context_8c_source.html#l00081">81</a> of file <a class="el" href="hsm__context_8c_source.html">hsm_context.c</a>.</p>
 
 </div>
 </div>
-<a class="anchor" id="af2ab7ee7336b64cd8943880f58fda96a"></a>
+<a class="anchor" id="a2d77747e2f011c189e20001f3bbd4a68"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="structhsm__context.html">hsm_context_t</a>* HsmParentContext </td>
+          <td class="memname"><a class="el" href="hsm__context_8h.html#structhsm__context__rec">hsm_context_t</a>* HsmParentContext </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="structhsm__context__iterator.html">hsm_context_iterator_t</a> *&#160;</td>
-          <td class="paramname"></td><td>)</td>
+          <td class="paramtype"><a class="el" href="hsm__stack_8h.html#structhsm__context__iterator__rec">hsm_context_iterator</a>&#160;</td>
+          <td class="paramname"><em>it</em></td><td>)</td>
           <td></td>
         </tr>
       </table>
 </div><div class="memdoc">
+
 <p>Advance the iterator to the parent state's context, return the parent context. </p>
+
+<p>Definition at line <a class="el" href="hsm__context_8c_source.html#l00104">104</a> of file <a class="el" href="hsm__context_8c_source.html">hsm_context.c</a>.</p>
 
 </div>
 </div>
@@ -279,7 +301,7 @@ Functions</h2></td></tr>
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="dir_6c36b64852547327283732128225c9d7.html">hsm</a></li><li class="navelem"><a class="el" href="hsm__context_8c.html">hsm_context.c</a></li>
-    <li class="footer">Generated on Thu Jun 14 2012 18:18:51 for hsm-statechart by
+    <li class="footer">Generated on Thu Jun 21 2012 12:22:55 for hsm-statechart by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.1.1 </li>
   </ul>

@@ -1,8 +1,10 @@
 var hsm__context_8h =
 [
-    [ "hsm_context", "structhsm__context.html", "structhsm__context" ],
-    [ "hsm_context_stack", "structhsm__context__stack.html", "structhsm__context__stack" ],
-    [ "__HSM_CONTEXT_H__", "hsm__context_8h.html#ab33827feaa6cc31d715c50c9368e40dd", null ],
-    [ "HsmContext", "hsm__context_8h.html#a5e8e98a849921f2e7aca4f87f33b6a5e", null ],
-    [ "HsmContextStack", "hsm__context_8h.html#a3319f1519b55f77d5242500706a1546e", null ]
+    [ "hsm_context_rec", "hsm__context_8h.html#structhsm__context__rec", "hsm__context_8h_dup" ],
+    [ "hsm_context_stack_rec", "hsm__context_8h.html#structhsm__context__stack__rec", "hsm__context_8h_dup" ],
+    [ "hsm_context_t", "hsm__context_8h.html#a82fee793826f5c4272843a4087f10fd6", null ],
+    [ "hsm_context_stack_t", "hsm__context_8h.html#ac9638758e8957633c2d7396865a3befa", null ],
+    [ "hsm_context_stack", "hsm__context_8h.html#a8f66bf506bf421ed020ec201f4e5db1f", null ],
+    [ "HsmContext", "hsm__context_8h.html#a767601181421c4624f6ef3e473900c36", null ],
+    [ "HsmContextStack", "hsm__context_8h.html#a3bf4d9a77484ff5e5d12cf8e0776d937", null ]
 ];

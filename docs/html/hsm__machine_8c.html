@@ -26,6 +26,7 @@
 <table cellspacing="0" cellpadding="0">
  <tbody>
  <tr style="height: 56px;">
+  <td id="projectlogo"><img alt="Logo" src="hsm-statechart.png"/></td>
   <td style="padding-left: 0.5em;">
    <div id="projectname">hsm-statechart
    &#160;<span id="projectnumber">0.01</span>
@@ -89,7 +90,7 @@ $(document).ready(function(){initNavTree('hsm__machine_8c.html','');});
      onmouseover="return searchBox.OnSearchSelectShow()"
      onmouseout="return searchBox.OnSearchSelectHide()"
      onkeydown="return searchBox.OnSearchSelectKey(event)">
-<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Data Structures</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Macros</a></div>
+<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Data Structures</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&#160;</span>Macros</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(8)"><span class="SelectionMark">&#160;</span>Pages</a></div>
 
 <!-- iframe showing the search results (closed by default) -->
 <div id="MSearchResultsWindow">
@@ -106,49 +107,39 @@ $(document).ready(function(){initNavTree('hsm__machine_8c.html','');});
 <div class="title">hsm_machine.c File Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
+
+<p><a href="hsm__machine_8c_source.html">Go to the source code of this file.</a></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2><a name="define-members"></a>
 Macros</h2></td></tr>
-<tr class="memitem:af82c374899ecc3b8faae4ec2a8f61a73"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="hsm__machine_8c.html#af82c374899ecc3b8faae4ec2a8f61a73">HSM_CONTEXT</a>(hsm)&#160;&#160;&#160;((hsm)-&gt;stack? (hsm)-&gt;stack-&gt;context: NULL)</td></tr>
 <tr class="memitem:ae27734e5582668debb68db973903e2f9"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="hsm__machine_8c.html#ae27734e5582668debb68db973903e2f9">PSEUDO_STATE</a>(Pseudo)</td></tr>
-<tr class="memitem:ac60c7ee57c5f298f1893bb26620e25e4"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="hsm__machine_8c.html#ac60c7ee57c5f298f1893bb26620e25e4">ERROR_IF_NULL</a>(x, msg)&#160;&#160;&#160;while(!x) { assert(msg); return HSM_FALSE; }</td></tr>
+<tr class="memdesc:ae27734e5582668debb68db973903e2f9"><td class="mdescLeft">&#160;</td><td class="mdescRight">macro for making a pseudostate:  <a href="#ae27734e5582668debb68db973903e2f9"></a><br/></td></tr>
+<tr class="memitem:ac60c7ee57c5f298f1893bb26620e25e4"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="hsm__machine_8c.html#ac60c7ee57c5f298f1893bb26620e25e4">ERROR_IF_NULL</a>(x, msg)</td></tr>
+<tr class="memdesc:ac60c7ee57c5f298f1893bb26620e25e4"><td class="mdescLeft">&#160;</td><td class="mdescRight">According to the <a href="http://www.w3.org/TR/scxml/#SelectingTransitions:">http://www.w3.org/TR/scxml/#SelectingTransitions:</a> I.  <a href="#ac60c7ee57c5f298f1893bb26620e25e4"></a><br/></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2><a name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:a19d8d530a474ea86d492f817dec7741a"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a19d8d530a474ea86d492f817dec7741a"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>PSEUDO_STATE</b> (<a class="el" href="hsm__machine_8h.html#ab69ffd312882f9d46a7cec6d20bfe0c8">HsmStateTerminated</a>)</td></tr>
-<tr class="memitem:a8aede98737cb5e60f8ed2c50cd000152"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a8aede98737cb5e60f8ed2c50cd000152"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>PSEUDO_STATE</b> (<a class="el" href="hsm__machine_8h.html#a5574ce97f59edf4b77fafabc6ea36e54">HsmStateError</a>)</td></tr>
-<tr class="memitem:ae2cacb5221fc4044f168b46b691c29d7"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ae2cacb5221fc4044f168b46b691c29d7"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>PSEUDO_STATE</b> (<a class="el" href="hsm__machine_8h.html#a3a16509f8bea2bca3f7b3f36525cc243">HsmStateHandled</a>)</td></tr>
-<tr class="memitem:a1ba67e8e0edddad002d4f4c44d0e73db"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structhsm__state__rec.html">hsm_state</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="hsm__machine_8c.html#a1ba67e8e0edddad002d4f4c44d0e73db">HsmTopState</a> ()</td></tr>
-<tr class="memitem:a4c80274ec127bd85447ae22d8d3d39c3"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structhsm__machine.html">hsm_machine_t</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="hsm__machine_8c.html#a4c80274ec127bd85447ae22d8d3d39c3">HsmMachine</a> (<a class="el" href="structhsm__machine.html">hsm_machine_t</a> *hsm, <a class="el" href="structhsm__context__stack.html">hsm_context_stack_t</a> *stack, hsm_callback_context_popped on_popped)</td></tr>
-<tr class="memitem:ae8ac3aec6500cec0b5bb156c2fe0042d"><td class="memItemLeft" align="right" valign="top">hsm_bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="hsm__machine_8c.html#ae8ac3aec6500cec0b5bb156c2fe0042d">HsmIsRunning</a> (<a class="el" href="structhsm__machine.html">hsm_machine_t</a> *hsm)</td></tr>
-<tr class="memitem:a80dbefc8fc61614434d5f73525f12263"><td class="memItemLeft" align="right" valign="top">hsm_bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="hsm__machine_8c.html#a80dbefc8fc61614434d5f73525f12263">HsmIsInState</a> (<a class="el" href="structhsm__machine.html">hsm_machine_t</a> *hsm, <a class="el" href="structhsm__state__rec.html">hsm_state</a> state)</td></tr>
-<tr class="memitem:a44ff1ce2fd182dc518404da5f04a78ef"><td class="memItemLeft" align="right" valign="top">hsm_bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="hsm__machine_8c.html#a44ff1ce2fd182dc518404da5f04a78ef">HsmStart</a> (<a class="el" href="structhsm__machine.html">hsm_machine_t</a> *hsm, <a class="el" href="structhsm__context.html">hsm_context_t</a> *ctx, <a class="el" href="structhsm__state__rec.html">hsm_state</a> first_state)</td></tr>
-<tr class="memitem:ace2ab8e07c21e06d057628f36eb7e66b"><td class="memItemLeft" align="right" valign="top">hsm_bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="hsm__machine_8c.html#ace2ab8e07c21e06d057628f36eb7e66b">HsmProcessEvent</a> (<a class="el" href="structhsm__machine.html">hsm_machine_t</a> *hsm, struct hsm_event *evt)</td></tr>
+<tr class="memitem:a1ba67e8e0edddad002d4f4c44d0e73db"><td class="memItemLeft" align="right" valign="top"><a class="el" href="hsm__forwards_8h.html#aaf8612f2e29f91153ebf2c076aa68030">hsm_state</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="hsm__machine_8c.html#a1ba67e8e0edddad002d4f4c44d0e73db">HsmTopState</a> ()</td></tr>
+<tr class="memdesc:a1ba67e8e0edddad002d4f4c44d0e73db"><td class="mdescLeft">&#160;</td><td class="mdescRight">Token state for use with the <a class="el" href="hsm__state_8h.html#a13ea60f370fd7663153ad6d7fb7c73e1" title="Macro for declaring a state.">HSM_STATE</a> macros to represent the outer most state.  <a href="#a1ba67e8e0edddad002d4f4c44d0e73db"></a><br/></td></tr>
+<tr class="memitem:aa76acf4404c88430c55d971d99c60e04"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="hsm__machine_8c.html#aa76acf4404c88430c55d971d99c60e04">HsmSetInfoCallbacks</a> (<a class="el" href="hsm__info_8h.html#structhsm__info__rec">hsm_info_t</a> *info, <a class="el" href="hsm__info_8h.html#structhsm__info__rec">hsm_info_t</a> *old_callbacks)</td></tr>
+<tr class="memdesc:aa76acf4404c88430c55d971d99c60e04"><td class="mdescLeft">&#160;</td><td class="mdescRight">Install a new set of callbacks for spying on internal statemachine processing.  <a href="#aa76acf4404c88430c55d971d99c60e04"></a><br/></td></tr>
+<tr class="memitem:a620a775df3ad215e489a9b487245749f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="hsm__forwards_8h.html#a9d4b46508b6a2ff6aa734d3b6a3c24fc">hsm_machine</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="hsm__machine_8c.html#a620a775df3ad215e489a9b487245749f">HsmMachine</a> (<a class="el" href="hsm__machine_8h.html#structhsm__machine__rec">hsm_machine_t</a> *hsm)</td></tr>
+<tr class="memdesc:a620a775df3ad215e489a9b487245749f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initialize a statemachine to its default values.  <a href="#a620a775df3ad215e489a9b487245749f"></a><br/></td></tr>
+<tr class="memitem:ac3c05a1d7215bdf5f9e4132a26dafca2"><td class="memItemLeft" align="right" valign="top"><a class="el" href="hsm__forwards_8h.html#a9d4b46508b6a2ff6aa734d3b6a3c24fc">hsm_machine</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="hsm__machine_8c.html#ac3c05a1d7215bdf5f9e4132a26dafca2">HsmMachineWithContext</a> (<a class="el" href="hsm__machine_8h.html#structhsm__context__machine__rec">hsm_context_machine_t</a> *hsm, <a class="el" href="hsm__forwards_8h.html#aa0e37ff043d2dd5216cc762ca03046cb">hsm_context</a> ctx)</td></tr>
+<tr class="memdesc:ac3c05a1d7215bdf5f9e4132a26dafca2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initialize a statemachine with a context stack to its default values.  <a href="#ac3c05a1d7215bdf5f9e4132a26dafca2"></a><br/></td></tr>
+<tr class="memitem:a893207a7a8345aad604bd01a84ee9eb4"><td class="memItemLeft" align="right" valign="top">hsm_bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="hsm__machine_8c.html#a893207a7a8345aad604bd01a84ee9eb4">HsmIsRunning</a> (const <a class="el" href="hsm__forwards_8h.html#a9d4b46508b6a2ff6aa734d3b6a3c24fc">hsm_machine</a> hsm)</td></tr>
+<tr class="memdesc:a893207a7a8345aad604bd01a84ee9eb4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Determine if a machine has been started, and has not reached a terminal, nor an error state.  <a href="#a893207a7a8345aad604bd01a84ee9eb4"></a><br/></td></tr>
+<tr class="memitem:a3463ad5a97144c3c652b4f677644bcba"><td class="memItemLeft" align="right" valign="top">hsm_bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="hsm__machine_8c.html#a3463ad5a97144c3c652b4f677644bcba">HsmIsInState</a> (const <a class="el" href="hsm__forwards_8h.html#a9d4b46508b6a2ff6aa734d3b6a3c24fc">hsm_machine</a> hsm, <a class="el" href="hsm__forwards_8h.html#aaf8612f2e29f91153ebf2c076aa68030">hsm_state</a> state)</td></tr>
+<tr class="memdesc:a3463ad5a97144c3c652b4f677644bcba"><td class="mdescLeft">&#160;</td><td class="mdescRight">Traverses the active state hierarchy to determine if hsm is possibly in the passed state.  <a href="#a3463ad5a97144c3c652b4f677644bcba"></a><br/></td></tr>
+<tr class="memitem:a7117ece3956d53414f80e1a340161f8a"><td class="memItemLeft" align="right" valign="top">hsm_bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="hsm__machine_8c.html#a7117ece3956d53414f80e1a340161f8a">HsmStart</a> (<a class="el" href="hsm__forwards_8h.html#a9d4b46508b6a2ff6aa734d3b6a3c24fc">hsm_machine</a> hsm, <a class="el" href="hsm__forwards_8h.html#aaf8612f2e29f91153ebf2c076aa68030">hsm_state</a> first_state)</td></tr>
+<tr class="memdesc:a7117ece3956d53414f80e1a340161f8a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Start a machine.  <a href="#a7117ece3956d53414f80e1a340161f8a"></a><br/></td></tr>
+<tr class="memitem:a3f02ed86bdd1d778e3ccc0c38cebebb6"><td class="memItemLeft" align="right" valign="top">hsm_bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="hsm__machine_8c.html#a3f02ed86bdd1d778e3ccc0c38cebebb6">HsmProcessEvent</a> (<a class="el" href="hsm__forwards_8h.html#a9d4b46508b6a2ff6aa734d3b6a3c24fc">hsm_machine</a> hsm, <a class="el" href="hsm__forwards_8h.html#ab8e8ab8d2eb97eb5cc6331d85262fb76">hsm_event</a> evt)</td></tr>
+<tr class="memdesc:a3f02ed86bdd1d778e3ccc0c38cebebb6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Send the passed event to the machine.  <a href="#a3f02ed86bdd1d778e3ccc0c38cebebb6"></a><br/></td></tr>
 </table>
 <hr/><a name="details" id="details"></a><h2>Detailed Description</h2>
-<div class="textblock"><p>Copyright (c) 2012, everMany, LLC. All rights reserved.</p>
-<p>All code licensed under the "New BSD" (BSD 3-Clause) License See License.txt for complete information. </p>
+<div class="textblock">
+<p>Definition in file <a class="el" href="hsm__machine_8c_source.html">hsm_machine.c</a>.</p>
 </div><hr/><h2>Macro Definition Documentation</h2>
-<a class="anchor" id="af82c374899ecc3b8faae4ec2a8f61a73"></a>
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">#define HSM_CONTEXT</td>
-          <td>(</td>
-          <td class="paramtype">&#160;</td>
-          <td class="paramname">hsm</td><td>)</td>
-          <td>&#160;&#160;&#160;((hsm)-&gt;stack? (hsm)-&gt;stack-&gt;context: NULL)</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>macro for context stack refuseniks </p>
-
-</div>
-</div>
 <a class="anchor" id="ae27734e5582668debb68db973903e2f9"></a>
 <div class="memitem">
 <div class="memproto">
@@ -162,18 +153,14 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<b>Value:</b><div class="fragment"><div class="line"><span class="keyword">static</span> <a class="code" href="structhsm__state__rec.html">hsm_state</a> _##Pseudo( <span class="keyword">struct</span> <a class="code" href="structhsm__machine.html">hsm_machine</a>* hsm, <span class="keyword">struct</span> <a class="code" href="structhsm__context.html">hsm_context</a>*ctx, <span class="keyword">struct</span> hsm_event*evt ) { \</div>
-<div class="line">        return Pseudo(); \</div>
-<div class="line">    } <a class="code" href="structhsm__state__rec.html">\</a></div>
-<div class="line"><a class="code" href="structhsm__state__rec.html">    hsm_state</a> Pseudo() { \</div>
-<div class="line">        static <span class="keyword">struct </span><a class="code" href="structhsm__state__rec.html">hsm_state_rec</a> info= { #Pseudo, _##Pseudo };\</div>
-<div class="line">        return &amp;info;   \</div>
-<div class="line">    }</div>
-</div><!-- fragment --><p>macro for making a pseudostate:</p>
+
+<p>macro for making a pseudostate: </p>
 <ol type="1">
 <li>a function that does nothing</li>
 <li>a state info function to describe that state </li>
 </ol>
+
+<p>Definition at line <a class="el" href="hsm__machine_8c_source.html#l00033">33</a> of file <a class="el" href="hsm__machine_8c_source.html">hsm_machine.c</a>.</p>
 
 </div>
 </div>
@@ -196,17 +183,21 @@ Functions</h2></td></tr>
         <tr>
           <td></td>
           <td>)</td>
-          <td></td><td>&#160;&#160;&#160;while(!x) { assert(msg); return HSM_FALSE; }</td>
+          <td></td><td></td>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>According to the <a href="http://www.w3.org/TR/scxml/#SelectingTransitions:">http://www.w3.org/TR/scxml/#SelectingTransitions:</a> I. """ The behavior of a transition with 'type' of "external" (the default) is defined in terms of the transition's source state (which is the state that contains the transition), the transition's target state(or states), and the Least Common Compound Ancestor (LCCA) of the source and target states When a transition is taken, the state machine will exit all active states that are proper descendants of the LCCA, starting with the innermost one(s) and working up to the immediate descendant(s) of the LCCA.</p>
+
+<p>According to the <a href="http://www.w3.org/TR/scxml/#SelectingTransitions:">http://www.w3.org/TR/scxml/#SelectingTransitions:</a> I. </p>
+<p>""" The behavior of a transition with 'type' of "external" (the default) is defined in terms of the transition's source state (which is the state that contains the transition), the transition's target state(or states), and the Least Common Compound Ancestor (LCCA) of the source and target states When a transition is taken, the state machine will exit all active states that are proper descendants of the LCCA, starting with the innermost one(s) and working up to the immediate descendant(s) of the LCCA.</p>
 <p>Then the state machine enters the target state(s), plus any states that are between it and the LCCA, starting with the outermost one (i.e., the immediate descendant of the LCCA) and working down to the target state(s).</p>
-<p>As states are exited, their &lt;onexit&gt; handlers are executed. Then the executable content in the transition is executed, followed by the &lt;onentry&gt; handlers of the states that are entered. If the target state(s) of the transition is not atomic, the state machine will enter their default initial states recursively until it reaches an atomic state(s).</p>
+<p>As states are exited, their onexit handlers are executed. Then the executable content in the transition is executed, followed by the onentry handlers of the states that are entered. If the target state(s) of the transition is not atomic, the state machine will enter their default initial states recursively until it reaches an atomic state(s).</p>
 <p>Note that the LCCA is neither entered nor exited."""</p>
 <p>II. When target is a descendant of source.... "an internal transition will not exit and re-enter its source state, while an external one will."</p>
-<p>III. """ [For] a &lt;transition&gt; whose target is its source state.... the state is exited and reentered, 
-     triggering execution of its &lt;onentry&gt; and &lt;onexit&gt; executable content.""" </p>
+<p>III. """ [For] a transition whose target is its source state.... the state is exited and reentered, 
+     triggering execution of its onentry and onexit executable content.""" </p>
+
+<p>Definition at line <a class="el" href="hsm__machine_8c_source.html#l00357">357</a> of file <a class="el" href="hsm__machine_8c_source.html">hsm_machine.c</a>.</p>
 
 </div>
 </div>
@@ -216,39 +207,36 @@ Functions</h2></td></tr>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="structhsm__state__rec.html">hsm_state</a> HsmTopState </td>
+          <td class="memname"><a class="el" href="hsm__forwards_8h.html#aaf8612f2e29f91153ebf2c076aa68030">hsm_state</a> HsmTopState </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Pseudo state for use with the HSM_STATE macros to represent the outer most state </p>
-<dl class="section return"><dt>Returns:</dt><dd>the globally shared top most token. </dd></dl>
+
+<p>Token state for use with the <a class="el" href="hsm__state_8h.html#a13ea60f370fd7663153ad6d7fb7c73e1" title="Macro for declaring a state.">HSM_STATE</a> macros to represent the outer most state. </p>
+<dl class="section return"><dt>Returns:</dt><dd>The globally shared top most state token. </dd></dl>
+
+<p>Definition at line <a class="el" href="hsm__machine_8c_source.html#l00050">50</a> of file <a class="el" href="hsm__machine_8c_source.html">hsm_machine.c</a>.</p>
 
 </div>
 </div>
-<a class="anchor" id="a4c80274ec127bd85447ae22d8d3d39c3"></a>
+<a class="anchor" id="aa76acf4404c88430c55d971d99c60e04"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="structhsm__machine.html">hsm_machine_t</a>* HsmMachine </td>
+          <td class="memname">void HsmSetInfoCallbacks </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="structhsm__machine.html">hsm_machine_t</a> *&#160;</td>
-          <td class="paramname"><em>hsm</em>, </td>
+          <td class="paramtype"><a class="el" href="hsm__info_8h.html#structhsm__info__rec">hsm_info_t</a> *&#160;</td>
+          <td class="paramname"><em>callbacks</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">struct <a class="el" href="structhsm__context__stack.html">hsm_context_stack</a> *&#160;</td>
-          <td class="paramname"><em>stack</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">hsm_callback_context_popped&#160;</td>
-          <td class="paramname"><em>popped_callback</em>&#160;</td>
+          <td class="paramtype"><a class="el" href="hsm__info_8h.html#structhsm__info__rec">hsm_info_t</a> *&#160;</td>
+          <td class="paramname"><em>old_callbacks</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -257,56 +245,127 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Initialize a statemachine to its default values</p>
+
+<p>Install a new set of callbacks for spying on internal statemachine processing. </p>
+<p>Currently there's just one set of callbacks for all threads; this is not locked or synchronized in anyway.</p>
 <dl class="params"><dt>Parameters:</dt><dd>
   <table class="params">
-    <tr><td class="paramname">hsm</td><td>Machine to initialize. </td></tr>
-    <tr><td class="paramname">stack</td><td>Context stack used for per state instance data </td></tr>
-    <tr><td class="paramname">popped_callback</td><td>Called every time a piece of context data gets popped due to state exit. </td></tr>
+    <tr><td class="paramname">callbacks</td><td>The set of callbacks; individual callbacks can be NULL, as can the callbacks pointer itself. </td></tr>
+    <tr><td class="paramname">old_callbacks</td><td>The last set of callbacks passed to HsmSetInfoCallbacks. Its recommended that you should record, and later restore the old callbacks. </td></tr>
   </table>
   </dd>
 </dl>
 
+<p>Definition at line <a class="el" href="hsm__machine_8c_source.html#l00107">107</a> of file <a class="el" href="hsm__machine_8c_source.html">hsm_machine.c</a>.</p>
+
 </div>
 </div>
-<a class="anchor" id="ae8ac3aec6500cec0b5bb156c2fe0042d"></a>
+<a class="anchor" id="a620a775df3ad215e489a9b487245749f"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="hsm__forwards_8h.html#a9d4b46508b6a2ff6aa734d3b6a3c24fc">hsm_machine</a> HsmMachine </td>
+          <td>(</td>
+          <td class="paramtype">struct <a class="el" href="hsm__machine_8h.html#structhsm__machine__rec">hsm_machine_rec</a> *&#160;</td>
+          <td class="paramname"><em>machine</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Initialize a statemachine to its default values. </p>
+<dl class="params"><dt>Parameters:</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">machine</td><td><a class="el" href="hsm__machine_8h.html#structhsm__machine__rec" title="The statemachine object.">hsm_machine_rec</a> to initialize.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns:</dt><dd><a class="el" href="hsm__forwards_8h.html#a9d4b46508b6a2ff6aa734d3b6a3c24fc" title="Pointer to an hsm_machine_rec.">hsm_machine</a> pointer </dd></dl>
+
+<p>Definition at line <a class="el" href="hsm__machine_8c_source.html#l00116">116</a> of file <a class="el" href="hsm__machine_8c_source.html">hsm_machine.c</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="ac3c05a1d7215bdf5f9e4132a26dafca2"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="hsm__forwards_8h.html#a9d4b46508b6a2ff6aa734d3b6a3c24fc">hsm_machine</a> HsmMachineWithContext </td>
+          <td>(</td>
+          <td class="paramtype">struct <a class="el" href="hsm__machine_8h.html#structhsm__context__machine__rec">hsm_context_machine_rec</a> *&#160;</td>
+          <td class="paramname"><em>machine</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="hsm__forwards_8h.html#aa0e37ff043d2dd5216cc762ca03046cb">hsm_context</a>&#160;</td>
+          <td class="paramname"><em>ctx</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Initialize a statemachine with a context stack to its default values. </p>
+<dl class="params"><dt>Parameters:</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">machine</td><td><a class="el" href="hsm__machine_8h.html#structhsm__context__machine__rec" title="Extends hsm_machine_rec with a context stack.">hsm_context_machine_rec</a> to initialize. </td></tr>
+    <tr><td class="paramname">ctx</td><td>Optional context for the entire machine.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns:</dt><dd><a class="el" href="hsm__forwards_8h.html#a9d4b46508b6a2ff6aa734d3b6a3c24fc" title="Pointer to an hsm_machine_rec.">hsm_machine</a> pointer </dd></dl>
+
+<p>Definition at line <a class="el" href="hsm__machine_8c_source.html#l00127">127</a> of file <a class="el" href="hsm__machine_8c_source.html">hsm_machine.c</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a893207a7a8345aad604bd01a84ee9eb4"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
           <td class="memname">hsm_bool HsmIsRunning </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="structhsm__machine.html">hsm_machine_t</a> *&#160;</td>
+          <td class="paramtype">const <a class="el" href="hsm__forwards_8h.html#a9d4b46508b6a2ff6aa734d3b6a3c24fc">hsm_machine</a>&#160;</td>
           <td class="paramname"><em>hsm</em></td><td>)</td>
           <td></td>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Determine if a machine has been started, and has not reached a terminal, nor an error state.</p>
+
+<p>Determine if a machine has been started, and has not reached a terminal, nor an error state. </p>
 <dl class="params"><dt>Parameters:</dt><dd>
   <table class="params">
-    <tr><td class="paramname">hsm</td><td></td></tr>
+    <tr><td class="paramname">hsm</td><td><a class="el" href="hsm__forwards_8h.html#a9d4b46508b6a2ff6aa734d3b6a3c24fc" title="Pointer to an hsm_machine_rec.">hsm_machine</a> </td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns:</dt><dd>HSM_TRUE if running </dd></dl>
+<dl class="section return"><dt>Returns:</dt><dd><a class="el" href="hsm__types_8h.html#ae231908aca4879403ae108cf0f5c7a9c" title="1">HSM_TRUE</a> if running </dd></dl>
+
+<p>Definition at line <a class="el" href="hsm__machine_8c_source.html#l00142">142</a> of file <a class="el" href="hsm__machine_8c_source.html">hsm_machine.c</a>.</p>
 
 </div>
 </div>
-<a class="anchor" id="a80dbefc8fc61614434d5f73525f12263"></a>
+<a class="anchor" id="a3463ad5a97144c3c652b4f677644bcba"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
           <td class="memname">hsm_bool HsmIsInState </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="structhsm__machine.html">hsm_machine_t</a> *&#160;</td>
+          <td class="paramtype">const <a class="el" href="hsm__forwards_8h.html#a9d4b46508b6a2ff6aa734d3b6a3c24fc">hsm_machine</a>&#160;</td>
           <td class="paramname"><em>hsm</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="structhsm__state__rec.html">hsm_state</a>&#160;</td>
+          <td class="paramtype"><a class="el" href="hsm__forwards_8h.html#aaf8612f2e29f91153ebf2c076aa68030">hsm_state</a>&#160;</td>
           <td class="paramname"><em>state</em>&#160;</td>
         </tr>
         <tr>
@@ -316,38 +375,35 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Traverses the active state hierarchy to determine if hsm is possibly in the passed state.</p>
+
+<p>Traverses the active state hierarchy to determine if hsm is possibly in the passed state. </p>
 <dl class="params"><dt>Parameters:</dt><dd>
   <table class="params">
-    <tr><td class="paramname">hsm</td><td></td></tr>
-    <tr><td class="paramname">state</td><td></td></tr>
+    <tr><td class="paramname">hsm</td><td><a class="el" href="hsm__forwards_8h.html#a9d4b46508b6a2ff6aa734d3b6a3c24fc" title="Pointer to an hsm_machine_rec.">hsm_machine</a> </td></tr>
+    <tr><td class="paramname">state</td><td><a class="el" href="hsm__forwards_8h.html#aaf8612f2e29f91153ebf2c076aa68030" title="Pointer to an hsm_state_rec.">hsm_state</a> </td></tr>
   </table>
   </dd>
 </dl>
 
+<p>Definition at line <a class="el" href="hsm__machine_8c_source.html#l00149">149</a> of file <a class="el" href="hsm__machine_8c_source.html">hsm_machine.c</a>.</p>
+
 </div>
 </div>
-<a class="anchor" id="a44ff1ce2fd182dc518404da5f04a78ef"></a>
+<a class="anchor" id="a7117ece3956d53414f80e1a340161f8a"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
           <td class="memname">hsm_bool HsmStart </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="structhsm__machine.html">hsm_machine_t</a> *&#160;</td>
+          <td class="paramtype"><a class="el" href="hsm__forwards_8h.html#a9d4b46508b6a2ff6aa734d3b6a3c24fc">hsm_machine</a>&#160;</td>
           <td class="paramname"><em>hsm</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">struct <a class="el" href="structhsm__context.html">hsm_context</a> *&#160;</td>
-          <td class="paramname"><em>context</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="structhsm__state__rec.html">hsm_state</a>&#160;</td>
-          <td class="paramname"><em>staet</em>&#160;</td>
+          <td class="paramtype"><a class="el" href="hsm__forwards_8h.html#aaf8612f2e29f91153ebf2c076aa68030">hsm_state</a>&#160;</td>
+          <td class="paramname"><em>state</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -356,34 +412,36 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Start a machine.</p>
+
+<p>Start a machine. </p>
 <dl class="params"><dt>Parameters:</dt><dd>
   <table class="params">
-    <tr><td class="paramname">hsm</td><td>The machine to start. </td></tr>
-    <tr><td class="paramname">context</td><td>Optional context for the entire machine. </td></tr>
+    <tr><td class="paramname">hsm</td><td>The <a class="el" href="hsm__forwards_8h.html#a9d4b46508b6a2ff6aa734d3b6a3c24fc" title="Pointer to an hsm_machine_rec.">hsm_machine</a> to start. </td></tr>
     <tr><td class="paramname">state</td><td>The first state to move to. </td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns:</dt><dd>HSM_FALSE on error ( ex. the machine was already started ) </dd></dl>
+<dl class="section return"><dt>Returns:</dt><dd><a class="el" href="hsm__types_8h.html#a661d07d1e0324624dd94942951801df4" title="0">HSM_FALSE</a> on error ( ex. the machine was already started ) </dd></dl>
+
+<p>Definition at line <a class="el" href="hsm__machine_8c_source.html#l00164">164</a> of file <a class="el" href="hsm__machine_8c_source.html">hsm_machine.c</a>.</p>
 
 </div>
 </div>
-<a class="anchor" id="ace2ab8e07c21e06d057628f36eb7e66b"></a>
+<a class="anchor" id="a3f02ed86bdd1d778e3ccc0c38cebebb6"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
           <td class="memname">hsm_bool HsmProcessEvent </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="structhsm__machine.html">hsm_machine_t</a> *&#160;</td>
+          <td class="paramtype"><a class="el" href="hsm__forwards_8h.html#a9d4b46508b6a2ff6aa734d3b6a3c24fc">hsm_machine</a>&#160;</td>
           <td class="paramname"><em>hsm</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">struct hsm_event *&#160;</td>
-          <td class="paramname"><em>event</em>&#160;</td>
+          <td class="paramtype"><a class="el" href="hsm__forwards_8h.html#ab8e8ab8d2eb97eb5cc6331d85262fb76">hsm_event</a>&#160;</td>
+          <td class="paramname"><em>evt</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -392,16 +450,19 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Send the passed event to the machine.</p>
+
+<p>Send the passed event to the machine. </p>
 <dl class="params"><dt>Parameters:</dt><dd>
   <table class="params">
-    <tr><td class="paramname">hsm</td><td>The machine targeted. </td></tr>
-    <tr><td class="paramname">event</td><td>A user defined event.</td></tr>
+    <tr><td class="paramname">hsm</td><td>The <a class="el" href="hsm__forwards_8h.html#a9d4b46508b6a2ff6aa734d3b6a3c24fc" title="Pointer to an hsm_machine_rec.">hsm_machine</a> targeted. </td></tr>
+    <tr><td class="paramname">evt</td><td>A user defined event.</td></tr>
   </table>
   </dd>
 </dl>
 <p>The system will launch actions, trigger transitions, etc. </p>
-<dl class="section return"><dt>Returns:</dt><dd>'true' if handled </dd></dl>
+<dl class="section return"><dt>Returns:</dt><dd><a class="el" href="hsm__types_8h.html#ae231908aca4879403ae108cf0f5c7a9c" title="1">HSM_TRUE</a> if handled </dd></dl>
+
+<p>Definition at line <a class="el" href="hsm__machine_8c_source.html#l00185">185</a> of file <a class="el" href="hsm__machine_8c_source.html">hsm_machine.c</a>.</p>
 
 </div>
 </div>
@@ -411,7 +472,7 @@ Functions</h2></td></tr>
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="dir_6c36b64852547327283732128225c9d7.html">hsm</a></li><li class="navelem"><a class="el" href="hsm__machine_8c.html">hsm_machine.c</a></li>
-    <li class="footer">Generated on Thu Jun 14 2012 18:18:51 for hsm-statechart by
+    <li class="footer">Generated on Thu Jun 21 2012 12:22:55 for hsm-statechart by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.1.1 </li>
   </ul>

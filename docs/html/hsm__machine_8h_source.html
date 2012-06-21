@@ -26,6 +26,7 @@
 <table cellspacing="0" cellpadding="0">
  <tbody>
  <tr style="height: 56px;">
+  <td id="projectlogo"><img alt="Logo" src="hsm-statechart.png"/></td>
   <td style="padding-left: 0.5em;">
    <div id="projectname">hsm-statechart
    &#160;<span id="projectnumber">0.01</span>
@@ -89,7 +90,7 @@ $(document).ready(function(){initNavTree('hsm__machine_8h.html','');});
      onmouseover="return searchBox.OnSearchSelectShow()"
      onmouseout="return searchBox.OnSearchSelectHide()"
      onkeydown="return searchBox.OnSearchSelectKey(event)">
-<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Data Structures</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Macros</a></div>
+<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Data Structures</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&#160;</span>Macros</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(8)"><span class="SelectionMark">&#160;</span>Pages</a></div>
 
 <!-- iframe showing the search results (closed by default) -->
 <div id="MSearchResultsWindow">
@@ -104,50 +105,68 @@ $(document).ready(function(){initNavTree('hsm__machine_8h.html','');});
 </div><!--header-->
 <div class="contents">
 <a href="hsm__machine_8h.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;</div>
-<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="preprocessor">#pragma once</span></div>
-<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#ifndef __HSM_MACHINE_H__</span></div>
-<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define __HSM_MACHINE_H__</span></div>
-<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="preprocessor"></span></div>
-<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="hsm__forwards_8h.html">hsm_forwards.h</a>&quot;</span></div>
-<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;</div>
-<div class="line"><a name="l00020"></a><span class="lineno"><a class="code" href="structhsm__machine.html">   20</a></span>&#160;<span class="keyword">struct </span><a class="code" href="structhsm__machine.html">hsm_machine</a></div>
-<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;{</div>
-<div class="line"><a name="l00027"></a><span class="lineno"><a class="code" href="structhsm__machine.html#a043934f01bf682050e4bf098f42a8d66">   27</a></span>&#160;    <a class="code" href="structhsm__state__rec.html">hsm_state</a> <a class="code" href="structhsm__machine.html#a043934f01bf682050e4bf098f42a8d66">current</a>;</div>
-<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;</div>
-<div class="line"><a name="l00033"></a><span class="lineno"><a class="code" href="structhsm__machine.html#a4d1968fae5219c433ee4b5a00d1f755d">   33</a></span>&#160;    <a class="code" href="structhsm__context__stack.html">hsm_context_stack_t</a>* <a class="code" href="structhsm__machine.html#a4d1968fae5219c433ee4b5a00d1f755d">stack</a>;</div>
-<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;</div>
-<div class="line"><a name="l00039"></a><span class="lineno"><a class="code" href="structhsm__machine.html#a56fdc749c2115917e29d901e0a2847cd">   39</a></span>&#160;    hsm_callback_unhandled_event <a class="code" href="structhsm__machine.html#a56fdc749c2115917e29d901e0a2847cd">on_unhandled_event</a>;</div>
-<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;};</div>
-<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;</div>
-<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;<a class="code" href="structhsm__machine.html">hsm_machine_t</a>* <a class="code" href="hsm__machine_8c.html#a4c80274ec127bd85447ae22d8d3d39c3">HsmMachine</a>( <a class="code" href="structhsm__machine.html">hsm_machine_t</a> * hsm, <span class="keyword">struct</span> <a class="code" href="structhsm__context__stack.html">hsm_context_stack</a>* stack, hsm_callback_context_popped  popped_callback );</div>
+<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;<span class="preprocessor">#pragma once</span></div>
+<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#ifndef __HSM_MACHINE_H__</span></div>
+<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define __HSM_MACHINE_H__</span></div>
+<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;<span class="preprocessor"></span></div>
+<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="hsm__info_8h.html" title="Callbacks for listening to internal statemachine processing.">hsm_info.h</a>&quot;</span></div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="hsm__stack_8h.html" title="Internal stack manipulation routines used by hsm_machine.">hsm_stack.h</a>&quot;</span></div>
+<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="hsm__state_8h.html" title="Macros and typedefs used for declaring states.">hsm_state.h</a>&quot;</span></div>
+<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;</div>
+<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;<span class="keyword">typedef</span> <span class="keyword">struct </span><a class="code" href="hsm__machine_8h.html#structhsm__machine__rec" title="The statemachine object.">hsm_machine_rec</a> <a class="code" href="hsm__machine_8h.html#structhsm__machine__rec" title="The statemachine object.">hsm_machine_t</a>;</div>
+<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;<span class="keyword">typedef</span> <span class="keyword">struct </span><a class="code" href="hsm__machine_8h.html#structhsm__context__machine__rec" title="Extends hsm_machine_rec with a context stack.">hsm_context_machine_rec</a> <a class="code" href="hsm__machine_8h.html#structhsm__context__machine__rec" title="Extends hsm_machine_rec with a context stack.">hsm_context_machine_t</a>;</div>
+<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;</div>
+<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;<span class="comment">// give the lower 16 to user flags</span></div>
+<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;<span class="preprocessor">#define HSM_FLAGS_CTX      (1&lt;&lt;16)</span></div>
+<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;<span class="preprocessor"></span><span class="comment">//#define HSM_FLAGS_INFO   (1&lt;&lt;17)   // flags per thing to log?</span></div>
+<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;<span class="comment">//#define HSM_FLAGS_REGION (1&lt;&lt;18)</span></div>
 <div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;</div>
-<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;hsm_bool <a class="code" href="hsm__machine_8c.html#a44ff1ce2fd182dc518404da5f04a78ef">HsmStart</a>( <a class="code" href="structhsm__machine.html">hsm_machine_t</a>* hsm, <span class="keyword">struct</span> <a class="code" href="structhsm__context.html">hsm_context</a>* context, <a class="code" href="structhsm__state__rec.html">hsm_state</a> staet );</div>
-<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;</div>
-<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;hsm_bool <a class="code" href="hsm__machine_8c.html#ace2ab8e07c21e06d057628f36eb7e66b">HsmProcessEvent</a>( <a class="code" href="structhsm__machine.html">hsm_machine_t</a>* hsm, <span class="keyword">struct</span> hsm_event* event );</div>
-<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;</div>
-<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;hsm_bool <a class="code" href="hsm__machine_8c.html#ae8ac3aec6500cec0b5bb156c2fe0042d">HsmIsRunning</a>( <a class="code" href="structhsm__machine.html">hsm_machine_t</a>* hsm );</div>
-<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;</div>
-<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;hsm_bool <a class="code" href="hsm__machine_8c.html#a80dbefc8fc61614434d5f73525f12263">HsmIsInState</a>( <a class="code" href="structhsm__machine.html">hsm_machine_t</a>* hsm, <a class="code" href="structhsm__state__rec.html">hsm_state</a> state );</div>
-<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;</div>
-<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;<a class="code" href="structhsm__state__rec.html">hsm_state</a> <a class="code" href="hsm__machine_8h.html#ab69ffd312882f9d46a7cec6d20bfe0c8">HsmStateTerminated</a>();</div>
-<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;</div>
-<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;<a class="code" href="structhsm__state__rec.html">hsm_state</a> <a class="code" href="hsm__machine_8h.html#a5574ce97f59edf4b77fafabc6ea36e54">HsmStateError</a>();</div>
+<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;<span class="comment">//---------------------------------------------------------------------------</span></div>
+<div class="line"><a name="l00061"></a><span class="lineno"><a class="code" href="hsm__machine_8h.html">   61</a></span>&#160;<span class="comment"></span><span class="keyword">struct </span><a class="code" href="hsm__machine_8h.html#structhsm__machine__rec" title="The statemachine object.">hsm_machine_rec</a></div>
+<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;{</div>
+<div class="line"><a name="l00066"></a><span class="lineno"><a class="code" href="hsm__machine_8h.html#ae2338fb3d7fccbba312f3151d75cef88">   66</a></span>&#160;    <a class="code" href="hsm__types_8h.html#a5041728bd5890050e49ba4506a83f86f" title="32 bit unsigned integer">hsm_uint32</a> <a class="code" href="hsm__machine_8h.html#ae2338fb3d7fccbba312f3151d75cef88" title="Per state machine flags.">flags</a>;</div>
+<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;    </div>
+<div class="line"><a name="l00072"></a><span class="lineno"><a class="code" href="hsm__machine_8h.html#a043934f01bf682050e4bf098f42a8d66">   72</a></span>&#160;    <a class="code" href="hsm__state_8h.html#structhsm__state__rec" title="a state descriptor http://dev.ionous.net/2012/06/state-descriptors.html">hsm_state</a> <a class="code" href="hsm__machine_8h.html#a043934f01bf682050e4bf098f42a8d66" title="Inner-most state currently active.">current</a>;</div>
+<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;};</div>
+<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;</div>
+<div class="line"><a name="l00078"></a><span class="lineno"><a class="code" href="hsm__machine_8h.html">   78</a></span>&#160;<span class="keyword">struct </span><a class="code" href="hsm__machine_8h.html#structhsm__context__machine__rec" title="Extends hsm_machine_rec with a context stack.">hsm_context_machine_rec</a></div>
+<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;{</div>
+<div class="line"><a name="l00083"></a><span class="lineno"><a class="code" href="hsm__machine_8h.html#a18c2fea85572ea48b12e33a8dcf51c9a">   83</a></span>&#160;    <a class="code" href="hsm__machine_8h.html#structhsm__machine__rec" title="The statemachine object.">hsm_machine_t</a> <a class="code" href="hsm__machine_8h.html#a18c2fea85572ea48b12e33a8dcf51c9a" title="Core machine data.">core</a>;</div>
+<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;</div>
+<div class="line"><a name="l00088"></a><span class="lineno"><a class="code" href="hsm__machine_8h.html#a241819e3262662e82a7d96795cbb44f2">   88</a></span>&#160;    <a class="code" href="hsm__context_8h.html#structhsm__context__stack__rec" title="Per state machine instance manager of context data.">hsm_context_stack_t</a> <a class="code" href="hsm__machine_8h.html#a241819e3262662e82a7d96795cbb44f2" title="Context stack for tracking optional per-state instance data.">stack</a>;</div>
+<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;};</div>
+<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;</div>
+<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;</div>
+<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;<span class="comment">//---------------------------------------------------------------------------</span></div>
+<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;<span class="comment"></span><a class="code" href="hsm__machine_8h.html#structhsm__machine__rec" title="The statemachine object.">hsm_machine</a> <a class="code" href="hsm__machine_8c.html#a620a775df3ad215e489a9b487245749f" title="Initialize a statemachine to its default values.">HsmMachine</a>( <span class="keyword">struct</span> <a class="code" href="hsm__machine_8h.html#structhsm__machine__rec" title="The statemachine object.">hsm_machine_rec</a>* machine );</div>
 <div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;</div>
-<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;<a class="code" href="structhsm__state__rec.html">hsm_state</a> <a class="code" href="hsm__machine_8h.html#a3a16509f8bea2bca3f7b3f36525cc243">HsmStateHandled</a>();</div>
-<div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;</div>
-<div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160;<a class="code" href="structhsm__state__rec.html">hsm_state</a> <a class="code" href="hsm__machine_8c.html#a1ba67e8e0edddad002d4f4c44d0e73db">HsmTopState</a>();</div>
-<div class="line"><a name="l00115"></a><span class="lineno">  115</span>&#160;</div>
-<div class="line"><a name="l00120"></a><span class="lineno">  120</span>&#160;<a class="code" href="structhsm__state__rec.html">hsm_state</a> <a class="code" href="hsm__machine_8h.html#a1360d2a95d6c0d5421a9870753a54efc">HsmNull</a>();</div>
-<div class="line"><a name="l00121"></a><span class="lineno">  121</span>&#160;</div>
-<div class="line"><a name="l00122"></a><span class="lineno">  122</span>&#160;</div>
-<div class="line"><a name="l00123"></a><span class="lineno">  123</span>&#160;<span class="preprocessor">#endif // #ifndef __HSM_MACHINE_H__</span></div>
+<div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;<a class="code" href="hsm__machine_8h.html#structhsm__machine__rec" title="The statemachine object.">hsm_machine</a> <a class="code" href="hsm__machine_8c.html#ac3c05a1d7215bdf5f9e4132a26dafca2" title="Initialize a statemachine with a context stack to its default values.">HsmMachineWithContext</a>( <span class="keyword">struct</span> <a class="code" href="hsm__machine_8h.html#structhsm__context__machine__rec" title="Extends hsm_machine_rec with a context stack.">hsm_context_machine_rec</a>* machine, <a class="code" href="hsm__context_8h.html#structhsm__context__rec" title="A per state instance context object.">hsm_context</a> ctx );</div>
+<div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160;</div>
+<div class="line"><a name="l00119"></a><span class="lineno">  119</span>&#160;hsm_bool <a class="code" href="hsm__machine_8c.html#a7117ece3956d53414f80e1a340161f8a" title="Start a machine.">HsmStart</a>( <a class="code" href="hsm__machine_8h.html#structhsm__machine__rec" title="The statemachine object.">hsm_machine</a> hsm, <a class="code" href="hsm__state_8h.html#structhsm__state__rec" title="a state descriptor http://dev.ionous.net/2012/06/state-descriptors.html">hsm_state</a> state );</div>
+<div class="line"><a name="l00120"></a><span class="lineno">  120</span>&#160;</div>
+<div class="line"><a name="l00130"></a><span class="lineno">  130</span>&#160;hsm_bool <a class="code" href="hsm__machine_8c.html#a3f02ed86bdd1d778e3ccc0c38cebebb6" title="Send the passed event to the machine.">HsmProcessEvent</a>( <a class="code" href="hsm__machine_8h.html#structhsm__machine__rec" title="The statemachine object.">hsm_machine</a> hsm, <a class="code" href="hsm__forwards_8h.html#ab8e8ab8d2eb97eb5cc6331d85262fb76" title="Pointer to an hsm_event_rec.">hsm_event</a> evt );</div>
+<div class="line"><a name="l00131"></a><span class="lineno">  131</span>&#160;</div>
+<div class="line"><a name="l00138"></a><span class="lineno">  138</span>&#160;hsm_bool <a class="code" href="hsm__machine_8c.html#a893207a7a8345aad604bd01a84ee9eb4" title="Determine if a machine has been started, and has not reached a terminal, nor an error state...">HsmIsRunning</a>( <span class="keyword">const</span> <a class="code" href="hsm__machine_8h.html#structhsm__machine__rec" title="The statemachine object.">hsm_machine</a> hsm );</div>
+<div class="line"><a name="l00139"></a><span class="lineno">  139</span>&#160;</div>
+<div class="line"><a name="l00146"></a><span class="lineno">  146</span>&#160;hsm_bool <a class="code" href="hsm__machine_8c.html#a3463ad5a97144c3c652b4f677644bcba" title="Traverses the active state hierarchy to determine if hsm is possibly in the passed state...">HsmIsInState</a>( <span class="keyword">const</span> <a class="code" href="hsm__machine_8h.html#structhsm__machine__rec" title="The statemachine object.">hsm_machine</a> hsm, <a class="code" href="hsm__state_8h.html#structhsm__state__rec" title="a state descriptor http://dev.ionous.net/2012/06/state-descriptors.html">hsm_state</a> state );</div>
+<div class="line"><a name="l00147"></a><span class="lineno">  147</span>&#160;</div>
+<div class="line"><a name="l00154"></a><span class="lineno">  154</span>&#160;<a class="code" href="hsm__state_8h.html#structhsm__state__rec" title="a state descriptor http://dev.ionous.net/2012/06/state-descriptors.html">hsm_state</a> <a class="code" href="hsm__machine_8h.html#a385e51689fbbf6376b00a27029b7f79a" title="A machine in a final state has deliberately killed itself.">HsmStateFinal</a>();</div>
+<div class="line"><a name="l00155"></a><span class="lineno">  155</span>&#160;</div>
+<div class="line"><a name="l00162"></a><span class="lineno">  162</span>&#160;<a class="code" href="hsm__state_8h.html#structhsm__state__rec" title="a state descriptor http://dev.ionous.net/2012/06/state-descriptors.html">hsm_state</a> <a class="code" href="hsm__machine_8h.html#a5574ce97f59edf4b77fafabc6ea36e54" title="Token state for when a machine has inadvertently killed itself.">HsmStateError</a>();</div>
+<div class="line"><a name="l00163"></a><span class="lineno">  163</span>&#160;</div>
+<div class="line"><a name="l00170"></a><span class="lineno">  170</span>&#160;<a class="code" href="hsm__state_8h.html#structhsm__state__rec" title="a state descriptor http://dev.ionous.net/2012/06/state-descriptors.html">hsm_state</a> <a class="code" href="hsm__machine_8h.html#a3a16509f8bea2bca3f7b3f36525cc243" title="Token state that can be used by event handler functions to indicate the event was handled and no furt...">HsmStateHandled</a>();</div>
+<div class="line"><a name="l00171"></a><span class="lineno">  171</span>&#160;</div>
+<div class="line"><a name="l00176"></a><span class="lineno">  176</span>&#160;<a class="code" href="hsm__state_8h.html#structhsm__state__rec" title="a state descriptor http://dev.ionous.net/2012/06/state-descriptors.html">hsm_state</a> <a class="code" href="hsm__machine_8c.html#a1ba67e8e0edddad002d4f4c44d0e73db" title="Token state for use with the HSM_STATE macros to represent the outer most state.">HsmTopState</a>();</div>
+<div class="line"><a name="l00177"></a><span class="lineno">  177</span>&#160;</div>
+<div class="line"><a name="l00178"></a><span class="lineno">  178</span>&#160;</div>
+<div class="line"><a name="l00179"></a><span class="lineno">  179</span>&#160;<span class="preprocessor">#endif // #ifndef __HSM_MACHINE_H__</span></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="dir_6c36b64852547327283732128225c9d7.html">hsm</a></li><li class="navelem"><a class="el" href="hsm__machine_8h.html">hsm_machine.h</a></li>
-    <li class="footer">Generated on Thu Jun 14 2012 18:18:51 for hsm-statechart by
+    <li class="footer">Generated on Thu Jun 21 2012 12:22:55 for hsm-statechart by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.1.1 </li>
   </ul>
