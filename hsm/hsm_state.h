@@ -43,6 +43,8 @@ typedef void(*hsm_callback_exit)( hsm_machine, hsm_context , hsm_event );
  */
 typedef hsm_state(*hsm_state_fn)();
 
+typedef struct hsm_state_rec hsm_state_t;
+
 //---------------------------------------------------------------------------
 /**
  * a state descriptor

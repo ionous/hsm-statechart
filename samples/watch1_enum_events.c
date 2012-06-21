@@ -7,11 +7,9 @@
  * All code licensed under the "New BSD" (BSD 3-Clause) License
  * See License.txt for complete information.
  */
-#include "hsm_machine.h"    // for the state machine
-#include "hsm_context.h"    // sample uses context data
-#include "hsm_state.h"       // for state declarations
-#include "watch.h"
-#include "platform.h"
+#include "hsm_machine.h"    // the state machine
+#include "watch.h"          // watch object
+#include "platform.h"       // console input/output
 
 #include <stdlib.h>
 #include <stdio.h>
