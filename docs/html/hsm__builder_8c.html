@@ -125,12 +125,24 @@ Enumerations</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2><a name="func-members"></a>
 Functions</h2></td></tr>
+<tr class="memitem:aee3d85677083c4f813f66848a9f97150"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="hsm__builder_8c.html#aee3d85677083c4f813f66848a9f97150">hsmStartup</a> ()</td></tr>
+<tr class="memdesc:aee3d85677083c4f813f66848a9f97150"><td class="mdescLeft">&#160;</td><td class="mdescRight">Builder initialization.  <a href="#aee3d85677083c4f813f66848a9f97150"></a><br/></td></tr>
+<tr class="memitem:ab43dd9e98a8465869b8686c966dbc121"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="hsm__builder_8c.html#ab43dd9e98a8465869b8686c966dbc121">hsmShutdown</a> ()</td></tr>
+<tr class="memdesc:ab43dd9e98a8465869b8686c966dbc121"><td class="mdescLeft">&#160;</td><td class="mdescRight">Builder shutdown.  <a href="#ab43dd9e98a8465869b8686c966dbc121"></a><br/></td></tr>
 <tr class="memitem:a5779f163e882967ac81477d847f2733b"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="hsm__builder_8c.html#a5779f163e882967ac81477d847f2733b">hsmState</a> (const char *name)</td></tr>
 <tr class="memdesc:a5779f163e882967ac81477d847f2733b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Declare a new state.  <a href="#a5779f163e882967ac81477d847f2733b"></a><br/></td></tr>
+<tr class="memitem:a9a490bd3527dbe8eeb590b9dfb1030b3"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="hsm__builder_8c.html#a9a490bd3527dbe8eeb590b9dfb1030b3">hsmOni</a> (int i)</td></tr>
+<tr class="memdesc:a9a490bd3527dbe8eeb590b9dfb1030b3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Event handler initialization.  <a href="#a9a490bd3527dbe8eeb590b9dfb1030b3"></a><br/></td></tr>
 <tr class="memitem:a262206023f77d196c64fddc0388f8033"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="hsm__builder_8c.html#a262206023f77d196c64fddc0388f8033">hsmGoto</a> (int id)</td></tr>
-<tr class="memdesc:a262206023f77d196c64fddc0388f8033"><td class="mdescLeft">&#160;</td><td class="mdescRight">Indicate a transition to another state.  <a href="#a262206023f77d196c64fddc0388f8033"></a><br/></td></tr>
+<tr class="memdesc:a262206023f77d196c64fddc0388f8033"><td class="mdescLeft">&#160;</td><td class="mdescRight">The event handler being declared should transition to another state.  <a href="#a262206023f77d196c64fddc0388f8033"></a><br/></td></tr>
+<tr class="memitem:ad1f8279ecbbdae9541fb88ec1d889c79"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="hsm__builder_8c.html#ad1f8279ecbbdae9541fb88ec1d889c79">hsmRun</a> (<a class="el" href="hsm__builder_8h.html#a3be4666e7ca8ccefe48afc782c370e27">hsm_callback_action</a> cb)</td></tr>
+<tr class="memdesc:ad1f8279ecbbdae9541fb88ec1d889c79"><td class="mdescLeft">&#160;</td><td class="mdescRight">The event handler being declared should run the passed action.  <a href="#ad1f8279ecbbdae9541fb88ec1d889c79"></a><br/></td></tr>
+<tr class="memitem:a437a5846751d5b2610993e96b75e026d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="hsm__builder_8c.html#a437a5846751d5b2610993e96b75e026d">hsmOnEnter</a> (<a class="el" href="hsm__state_8h.html#a7a1b7d6e09cadb4fc2359c224016c4ab">hsm_callback_enter</a> fn)</td></tr>
+<tr class="memdesc:a437a5846751d5b2610993e96b75e026d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Specify a callback for state entry.  <a href="#a437a5846751d5b2610993e96b75e026d"></a><br/></td></tr>
 <tr class="memitem:aff5e38807ea709e03e1800388e56d0f6"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="hsm__builder_8c.html#aff5e38807ea709e03e1800388e56d0f6">hsmBegin</a> (int id)</td></tr>
-<tr class="memdesc:aff5e38807ea709e03e1800388e56d0f6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Declare a new state.  <a href="#aff5e38807ea709e03e1800388e56d0f6"></a><br/></td></tr>
+<tr class="memdesc:aff5e38807ea709e03e1800388e56d0f6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Define an already declared (or referenced) state.  <a href="#aff5e38807ea709e03e1800388e56d0f6"></a><br/></td></tr>
+<tr class="memitem:a1b3b9447cfcb13c231a4814341987e0c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="hsm__builder_8c.html#a1b3b9447cfcb13c231a4814341987e0c">hsmEnd</a> ()</td></tr>
+<tr class="memdesc:a1b3b9447cfcb13c231a4814341987e0c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pairs with.  <a href="#a1b3b9447cfcb13c231a4814341987e0c"></a><br/></td></tr>
 </table>
 <hr/><a name="details" id="details"></a><h2>Detailed Description</h2>
 <div class="textblock">
@@ -152,7 +164,7 @@ Functions</h2></td></tr>
 
 <p>builder_rec helper macro to return the state that's currently getting built </p>
 
-<p>Definition at line <a class="el" href="hsm__builder_8c_source.html#l00231">231</a> of file <a class="el" href="hsm__builder_8c_source.html">hsm_builder.c</a>.</p>
+<p>Definition at line <a class="el" href="hsm__builder_8c_source.html#l00230">230</a> of file <a class="el" href="hsm__builder_8c_source.html">hsm_builder.c</a>.</p>
 
 </div>
 </div>
@@ -182,7 +194,7 @@ Functions</h2></td></tr>
 
 <p>builder_rec helper macro to record an error string </p>
 
-<p>Definition at line <a class="el" href="hsm__builder_8c_source.html#l00236">236</a> of file <a class="el" href="hsm__builder_8c_source.html">hsm_builder.c</a>.</p>
+<p>Definition at line <a class="el" href="hsm__builder_8c_source.html#l00235">235</a> of file <a class="el" href="hsm__builder_8c_source.html">hsm_builder.c</a>.</p>
 
 </div>
 </div>
@@ -200,11 +212,51 @@ Functions</h2></td></tr>
 <p>the events that the builder interface uses to build hsms. </p>
 <p>~= one per interface function. why <em>shouldn't</em> a statemachine build a statemachine after all? </p>
 
-<p>Definition at line <a class="el" href="hsm__builder_8c_source.html#l00204">204</a> of file <a class="el" href="hsm__builder_8c_source.html">hsm_builder.c</a>.</p>
+<p>Definition at line <a class="el" href="hsm__builder_8c_source.html#l00203">203</a> of file <a class="el" href="hsm__builder_8c_source.html">hsm_builder.c</a>.</p>
 
 </div>
 </div>
 <hr/><h2>Function Documentation</h2>
+<a class="anchor" id="aee3d85677083c4f813f66848a9f97150"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void hsmStartup </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Builder initialization. </p>
+<p><b>Must</b> be called before the very first </p>
+
+<p>Definition at line <a class="el" href="hsm__builder_8c_source.html#l00459">459</a> of file <a class="el" href="hsm__builder_8c_source.html">hsm_builder.c</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="ab43dd9e98a8465869b8686c966dbc121"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void hsmShutdown </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Builder shutdown. </p>
+<p>Free all internally allocated memory. All states are freed. </p>
+
+<p>Definition at line <a class="el" href="hsm__builder_8c_source.html#l00466">466</a> of file <a class="el" href="hsm__builder_8c_source.html">hsm_builder.c</a>.</p>
+
+</div>
+</div>
 <a class="anchor" id="a5779f163e882967ac81477d847f2733b"></a>
 <div class="memitem">
 <div class="memproto">
@@ -232,7 +284,34 @@ Functions</h2></td></tr>
 <p>Names are combined using "::" as per the statechart spec. ex.: Parent::Child::Leaf</p>
 <p>What this all means is you cannot have two top level states both called "Foo" in your application. You can however reuse states by within a statemachine provided they have different parents: ( ie. { Outer: { InnerA: Foo } { InnerB: Foo } } is okay ) </p>
 
-<p>Definition at line <a class="el" href="hsm__builder_8c_source.html#l00485">485</a> of file <a class="el" href="hsm__builder_8c_source.html">hsm_builder.c</a>.</p>
+<p>Definition at line <a class="el" href="hsm__builder_8c_source.html#l00482">482</a> of file <a class="el" href="hsm__builder_8c_source.html">hsm_builder.c</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a9a490bd3527dbe8eeb590b9dfb1030b3"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void hsmOni </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>eventInt</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Event handler initialization. </p>
+<p>Assuming that the first member of event structure is an int ( ex. a function, a string pool pointer, an enum ) trigger the state's event handler when that event structure member equals the passed value.</p>
+<dl class="params"><dt>Parameters:</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">eventInt</td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p>Definition at line <a class="el" href="hsm__builder_8c_source.html#l00581">581</a> of file <a class="el" href="hsm__builder_8c_source.html">hsm_builder.c</a>.</p>
 
 </div>
 </div>
@@ -250,15 +329,68 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Indicate a transition to another state. </p>
+<p>The event handler being declared should transition to another state. </p>
 <dl class="params"><dt>Parameters:</dt><dd>
   <table class="params">
-    <tr><td class="paramname">state</td><td>A state id returned by hsmState or hsmRef. </td></tr>
+    <tr><td class="paramname">state</td><td>The id of a state returned by <a class="el" href="hsm__builder_8c.html#a5779f163e882967ac81477d847f2733b" title="Declare a new state.">hsmState()</a> or hsmRef() to transition to.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section see"><dt>See also:</dt><dd><a class="el" href="hsm__builder_8h.html#a5779f163e882967ac81477d847f2733b" title="Declare a new state.">hsmState</a>, <a class="el" href="hsm__builder_8h.html#a1b3b9447cfcb13c231a4814341987e0c" title="Pairs with.">hsmEnd</a> </dd></dl>
+
+<p>Definition at line <a class="el" href="hsm__builder_8c_source.html#l00588">588</a> of file <a class="el" href="hsm__builder_8c_source.html">hsm_builder.c</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="ad1f8279ecbbdae9541fb88ec1d889c79"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void hsmRun </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="hsm__builder_8h.html#a3be4666e7ca8ccefe48afc782c370e27">hsm_callback_action</a>&#160;</td>
+          <td class="paramname"><em>action</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>The event handler being declared should run the passed action. </p>
+<dl class="params"><dt>Parameters:</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">action</td><td>The action to run. </td></tr>
   </table>
   </dd>
 </dl>
 
-<p>Definition at line <a class="el" href="hsm__builder_8c_source.html#l00564">564</a> of file <a class="el" href="hsm__builder_8c_source.html">hsm_builder.c</a>.</p>
+<p>Definition at line <a class="el" href="hsm__builder_8c_source.html#l00597">597</a> of file <a class="el" href="hsm__builder_8c_source.html">hsm_builder.c</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a437a5846751d5b2610993e96b75e026d"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void hsmOnEnter </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="hsm__state_8h.html#a7a1b7d6e09cadb4fc2359c224016c4ab">hsm_callback_enter</a>&#160;</td>
+          <td class="paramname"><em>entry</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Specify a callback for state entry. </p>
+<dl class="params"><dt>Parameters:</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">entry</td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p>Definition at line <a class="el" href="hsm__builder_8c_source.html#l00605">605</a> of file <a class="el" href="hsm__builder_8c_source.html">hsm_builder.c</a>.</p>
 
 </div>
 </div>
@@ -276,25 +408,38 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Declare a new state. </p>
+<p>Define an already declared (or referenced) state. </p>
+<p>Every <a class="el" href="hsm__builder_8c.html#aff5e38807ea709e03e1800388e56d0f6" title="Define an already declared (or referenced) state.">hsmBegin()</a> must, eventually, be paired with a matching <a class="el" href="hsm__builder_8c.html#a1b3b9447cfcb13c231a4814341987e0c" title="Pairs with.">hsmEnd()</a>, Until then, all operations, including calls including <a class="el" href="hsm__builder_8c.html#a5779f163e882967ac81477d847f2733b" title="Declare a new state.">hsmState()</a> are considered owned by this state.</p>
 <dl class="params"><dt>Parameters:</dt><dd>
   <table class="params">
-    <tr><td class="paramname">scope</td><td>Scope of the passed name. </td></tr>
-    <tr><td class="paramname">name</td><td>Name relative to the scope</td></tr>
+    <tr><td class="paramname">state</td><td>A state id returned by hsmState or hsmRef. </td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns:</dt><dd>int opaque handle to an internal name reference</dd></dl>
-<p>The name underlying the returned value is idempotent, but the returned value only does the best it can. The value returned may not be the same as hsmState, even when they refer to the same state. The variability of the returned value occurs because the scope may not even exist when the ref is declared. Define an already declared (or referenced) state. </p>
-<dl class="params"><dt>Parameters:</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">state</td><td>A state id returned by hsmState or hsmRef.</td></tr>
-  </table>
-  </dd>
-</dl>
-<p>Every <a class="el" href="hsm__builder_8c.html#aff5e38807ea709e03e1800388e56d0f6" title="Declare a new state.">hsmBegin()</a> must, eventually, be paired with a matching hsmEnd(), Until then, all operations, including calls including <a class="el" href="hsm__builder_8c.html#a5779f163e882967ac81477d847f2733b" title="Declare a new state.">hsmState()</a> are considered owned by this state. </p>
+<dl class="section return"><dt>Returns:</dt><dd>The same state id that was passed in.</dd></dl>
+<dl class="section see"><dt>See also:</dt><dd><a class="el" href="hsm__builder_8h.html#a5779f163e882967ac81477d847f2733b" title="Declare a new state.">hsmState</a>, <a class="el" href="hsm__builder_8h.html#a1b3b9447cfcb13c231a4814341987e0c" title="Pairs with.">hsmEnd</a> </dd></dl>
 
-<p>Definition at line <a class="el" href="hsm__builder_8c_source.html#l00589">589</a> of file <a class="el" href="hsm__builder_8c_source.html">hsm_builder.c</a>.</p>
+<p>Definition at line <a class="el" href="hsm__builder_8c_source.html#l00613">613</a> of file <a class="el" href="hsm__builder_8c_source.html">hsm_builder.c</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a1b3b9447cfcb13c231a4814341987e0c"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void hsmEnd </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Pairs with. </p>
+<dl class="section see"><dt>See also:</dt><dd><a class="el" href="hsm__builder_8c.html#aff5e38807ea709e03e1800388e56d0f6" title="Define an already declared (or referenced) state.">hsmBegin()</a> </dd></dl>
+
+<p>Definition at line <a class="el" href="hsm__builder_8c_source.html#l00623">623</a> of file <a class="el" href="hsm__builder_8c_source.html">hsm_builder.c</a>.</p>
 
 </div>
 </div>
@@ -304,7 +449,7 @@ Functions</h2></td></tr>
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="dir_98210ece4f8a652fe0a2321bd18e8fca.html">builder</a></li><li class="navelem"><a class="el" href="hsm__builder_8c.html">hsm_builder.c</a></li>
-    <li class="footer">Generated on Thu Jun 21 2012 12:22:55 for hsm-statechart by
+    <li class="footer">Generated on Thu Jun 21 2012 12:51:56 for hsm-statechart by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.1.1 </li>
   </ul>

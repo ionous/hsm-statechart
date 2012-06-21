@@ -1,10 +1,13 @@
 /**
  * @file hsm_context.h
  *
+ * Support for optional per-state instance data.
+ *
+ * \internal
  * Copyright (c) 2012, everMany, LLC.
  * All rights reserved.
  * 
- * All code licensed under the "New BSD" (BSD 3-Clause) License
+ * Code licensed under the "New BSD" (BSD 3-Clause) License
  * See License.txt for complete information.
  */
 #pragma once
@@ -22,7 +25,7 @@ typedef struct hsm_context_stack_rec *hsm_context_stack;
  * A per state instance context object.
  * You can "derive" from this structure by making the first member of your own structure
  *
- * @note: lifetime must be >= duration of its associated state(s).
+ * @note lifetime must be >= duration of its associated state(s).
  */
 struct hsm_context_rec
 {

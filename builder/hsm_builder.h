@@ -1,4 +1,19 @@
 /**
+ * @file hsm_builder.h
+ *
+ * Alternate method for declaring and defining states.
+ *
+ * The builder is a layer on top of the core hsm statemachine code.
+ * It is not necessary to use, or even include, the builder to use hsm-statechart.
+ *
+ * \internal
+ * Copyright (c) 2012, everMany, LLC.
+ * All rights reserved.
+ * 
+ * Code licensed under the "New BSD" (BSD 3-Clause) License
+ * See License.txt for complete information.
+ */
+/*
  * proper reuse of builder is to rebuild not share states
  * ie. function() { hsmState(...): }
  * call it twice to embed the state machine twice, 
@@ -9,21 +24,35 @@
 #define __HSM_BUILDER_H__
 
 
-// requires hsm_state
-
-/*
-enum hsmHints
-{
-    HSM_SIBLING,
-    HSM_CHILD,
-    HSM_SELF
-};
-*/
+/**
+ * Action callback.
+ *
+ * @param hsm The #hsm_machine processing the event that trigged the action.
+ * @param ctx Context object returned by the state enter callback.
+ * @param evt Event which triggered the action.
+ */
+typedef void(*hsm_callback_action)( hsm_machine hsm, hsm_context ctx, hsm_event evt );
 
 /**
- * 
+ * Guard callback.
+ *
+ * @param hsm The #hsm_machine processing the event that trigged the guard.
+ * @param ctx Context object returned by the state enter callback.
+ * @param evt Event which triggered the action.
+ */
+typedef hsm_bool(*hsm_callback_guard)( hsm_machine hsm, hsm_context ctx, hsm_event evt );
+
+/**
+ * Builder initialization.
+ * <b>Must</b> be called before the very first 
  */
 void hsmStartup();
+
+/**
+ * Builder shutdown.
+ * Free all internally allocated memory.
+ * All states are freed.
+ */
 void hsmShutdown();
 
 /**
@@ -46,69 +75,56 @@ void hsmShutdown();
  */
 int hsmState( const char * name );
 
-/**
- * Declare a new state.
- *
- * @param scope Scope of the passed name.
- * @param name Name relative to the scope
- *
- * @return int opaque handle to an internal name reference
- *
- * The name underlying the returned value is idempotent, but the returned value only does the best it can.
- * The value returned may not be the same as hsmState, even when they refer to the same state.
- * The variability of the returned value occurs because the scope may not even exist when the ref is declared.
- */
-// int hsmRef( enum hsmHints scope, const char * name );
 
 /**
  * Define an already declared (or referenced) state.
- * @param state A state id returned by hsmState or hsmRef.
- *
+
  * Every hsmBegin() must, eventually, be paired with a matching hsmEnd(),
  * Until then, all operations, including calls including hsmState() are considered owned by this state.
+ *
+ * @param state A state id returned by hsmState or hsmRef.
+ * @return The same state id that was passed in.
+ *
+ * @see hsmState, hsmEnd
  */
 int hsmBegin( int state );
 
-void hsmOnEnter( hsm_callback_enter );
-void hsmOni( int );            
+/**
+ * Specify a callback for state entry
+ *
+ * @param entry
+ */
+void hsmOnEnter( hsm_callback_enter entry );
 
 /**
- * Indicate a transition to another state.
- * @param state A state id returned by hsmState or hsmRef.
+ * Event handler initialization.
+ * Assuming that the first member of event structure is an int ( ex. a function, a string pool pointer, an enum )
+ * trigger the state's event handler when that event structure member equals the passed value.
+ *
+ * @param eventInt
+ */
+void hsmOni( int eventInt );
+
+/**
+ * The event handler being declared should transition to another state.
+ * 
+ * @param state The id of a state returned by hsmState() or hsmRef() to transition to. 
+ *
+ * @see hsmState, hsmEnd
  */
 void hsmGoto( int state );        
-void hsmRun( hsm_callback_action );
-void hsmEnd();
 
 /**
- * operates on the *last* state closed with hsmEnd()
- * finialize interal references, results in an error if a transition or event references an undefined value
+ * The event handler being declared should run the passed action.
+ * @param action The action to run.
  */
-//int hsmComplete(int);
+void hsmRun( hsm_callback_action action );
 
-
-//---------------------------------------------------------------------------
-// function handling:
-// enter, exit, etc.: how do we adapt these functions for typesafety?
-
-//---------------------------------------------------------------------------
-// events: 
-// enums, strings, ???? what are they?
-// perhaps the only way to make this generic is through a function match callback
-// or through a "program" interface: tell the machine how to get at the event match
-// there's simple: its just an object with a offset and a type (int,string...?), 
-// medium: a function that returns that object
-// complex: a function that does that matching.
-
-//---------------------------------------------------------------------------
-// naming:
-// ways of handling goto, init, etc. for states that may or may not be created
-// with class nesting, scope just works. more difficult here
-// thinking strings and a crc table with names.building.like.this.
-// perhaps some regex/glob like syntax if you dont care: *.substate
-//
-// string/crc tables, predeclared handles ( via hsmState ), offsets ( HSM_SELF, HSM_SIBLING )
-// some sort of late binding interface: user defines a slot, later fixes it up
+/**
+ * Pairs with 
+ * @see hsmBegin()
+ */
+void hsmEnd();
 
 
 #endif // #ifndef __HSM_BUILDER_H__

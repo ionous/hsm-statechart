@@ -1,8 +1,19 @@
+/**
+ * @file hsm_builder.c
+ *
+ * \internal
+ * Copyright (c) 2012, everMany, LLC.
+ * All rights reserved.
+ * 
+ * Code licensed under the "New BSD" (BSD 3-Clause) License
+ * See License.txt for complete information.
+ */
 #include <hsm/hsm_machine.h>
 #include "hash.h"
 #include "hsm_builder.h"
 #include <assert.h>
 #include <stdlib.h>
+#include <stddef.h>
 
 extern const hsm_uint32 HsmLowerTable[];
 
@@ -30,7 +41,6 @@ typedef struct build_state_rec  build_state_t;
 typedef struct build_event_rec  build_event_t;
 typedef struct build_action_rec build_action_t;
 typedef hsm_bool (*hsm_match_event)( hsm_machine hsm, hsm_context ctx, hsm_event evt, void * user_data );
-
 
 //---------------------------------------------------------------------------
 /**
@@ -73,7 +83,7 @@ struct build_event_rec
 
     //
     build_action_t *actions;      // if we do match: we may have things to do
-    hsm_state        target;      //             not to mention, places to go.
+    hsm_state       target;       //             not to mention, places to go.
     build_event_t  *next;         // if not us, who? if not now, next?
 };
 
@@ -103,22 +113,33 @@ static hsm_bool HsbMatchGuard( hsm_machine hsm, hsm_context ctx, hsm_event evt, 
  */
 static hsm_state HsbProcessEvent( hsm_machine hsm, hsm_context ctx, hsm_event evt )
 {
-    // TODO:
-    // extract the builder for the state
-    // most likely though very evil pointer math
-
-    // then match its list of events
-    // run its actions
-    // etc.
-    
-    return NULL;
+    // ways of getting the build_state_rec
+    // 1. override enter and use context [ would limit the depth of context stack; would limit mixing of user code ]
+    // 2. override enter and use a separate linked list [ would limit mixing ]
+    // 3. pointer math on current state.
+    hsm_state ret=NULL;
+    build_state_t* state= (build_state_t*) ( ((size_t)hsm->current) -  offsetof( build_state_t, desc ) );
+    build_event_t* et;
+    // look through the built events
+    for (et= state->events; et; et=et->next) { 
+        // determine if one matches
+        if (et->match && et->match( hsm, ctx, evt, et->user_data )) {
+            // run action(s)
+            build_action_t* at;
+            for (at= et->actions; at; at=at->next) {
+                at->run( hsm, ctx, evt );
+            }
+            // transition to target, or flag as handled.
+            ret= et->target ? et->target : HsmStateHandled();
+            break;
+        }
+    }
+    return ret;
 }
-
-
 
 //---------------------------------------------------------------------------
 /**
- * internal: construct a new state object
+ * @internal construct a new state object
  */
 static build_state_t* BuildState( hsm_state parent, const char * name, hsm_uint32 id )
 {   
@@ -135,7 +156,7 @@ static build_state_t* BuildState( hsm_state parent, const char * name, hsm_uint3
 
 //---------------------------------------------------------------------------
 /**
- * internal: construct a new action object
+ * @internal construct a new action object
  */
 static build_action_t* BuildAction( build_event_t* event, hsm_callback_action run )
 {
@@ -152,7 +173,7 @@ static build_action_t* BuildAction( build_event_t* event, hsm_callback_action ru
 
 //---------------------------------------------------------------------------
 /**
- * internal: construct a new event object
+ * @internal construct a new event object
  */
 static build_event_t* BuildEvent( build_state_t* state, hsm_match_event match, void * user_data )
 {   
@@ -300,13 +321,11 @@ static hsm_context BuildingStateEnter( hsm_machine hsm, hsm_context ctx, hsm_eve
     build_state_t*state= evt->data.state;
     assert( evt->type == _hsm_begin );
 
-    // default initializer:
+    // default initializer is the first child specified
     if (state->desc.parent && !state->desc.parent->initial) {
-        //
-        // TODO: FIX: TROUBLE initial is a parameterless function, desc is an object.
-        // most likely: you'll have to do switch the fn to an object if you can.
-
-        // state->desc.parent->initial= &(state->desc);
+        // what const cast are you speaking of?
+        hsm_state_t* parent= (hsm_state_t*) state->desc.parent;
+        parent->initial= &(state->desc);
     }
     
     HsmContextPush( &(builder->stack), &(state->ctx) );
@@ -496,6 +515,33 @@ int hsmState( const char * name )
 // doubtless, will have to copy off string, a pointer or offset to the memory that we have to fixup
 // TODO: refs aren't completely necessary, though they are sometimes helpful. revisit?
 #if 0
+#if 0
+
+// requires hsm_state
+
+/*
+enum hsmHints
+{
+    HSM_SIBLING,
+    HSM_CHILD,
+    HSM_SELF
+};
+*/
+/**
+ * Declare a new state.
+ *
+ * @param scope Scope of the passed name.
+ * @param name Name relative to the scope
+ *
+ * @return int opaque handle to an internal name reference
+ *
+ * The name underlying the returned value is idempotent, but the returned value only does the best it can.
+ * The value returned may not be the same as hsmState, even when they refer to the same state.
+ * The variability of the returned value occurs because the scope may not even exist when the ref is declared.
+ */
+// int hsmRef( enum hsmHints scope, const char * name );
+#endif
+
 int hsmRef( enum hsmHints scope, const char * name )
 {
     int ret=0;

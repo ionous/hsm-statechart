@@ -1,10 +1,13 @@
 /**
  * @file hsm_info.h
  *
+ * Callbacks for listening to internal statemachine processing.
+ *
+ * \internal
  * Copyright (c) 2012, everMany, LLC.
  * All rights reserved.
  * 
- * All code licensed under the "New BSD" (BSD 3-Clause) License
+ * Code licensed under the "New BSD" (BSD 3-Clause) License
  * See License.txt for complete information.
  */
 
@@ -18,91 +21,105 @@
 typedef struct hsm_info_rec hsm_info_t;
 
 /**
- * hear about init states just after entering current but before entering dest
- * even though no 'init' pseudostate exists in hsm-statechart, 
- * the sequence in UML is enter first, take the init transition second.
+ * Hear about states just before entering next state.
+ * hsm-statechart supports initial states via the #HSM_STATE macros.
  *
- * hsm->current has the new state
- * hsm->stack.context has most recently pushed context
+ * @param hsm The #hsm_machine. note: hsm->current has the new state, and hsm->stack.context has most recently pushed context.
+ * @param next The #hsm_state that's about to be entered.
+ * @param user_data The #hsm_info_rec.user_data.
+ * 
+ * @note The sequence in UML is enter first, take the init transition second.
+ *
  */
-typedef void (*hsm_callback_initing)( const hsm_machine hsm, const hsm_state dest, void * user_data );
+typedef void (*hsm_callback_initing)( const hsm_machine hsm, const hsm_state next, void * user_data );
 
 /**
- * hear about new states after they have just been entered
+ * Hear about new states <i>just</i> after they have been entered.
  *
- * hsm->current has the new state
- * hsm->stack.context has most recently pushed context
+ * @param hsm The #hsm_machine. note: hsm->current has the new state, and hsm->stack.context has most recently pushed context.
+ * @param evt The #hsm_event which triggered the exit.
+ * @param user_data The #hsm_info_rec.user_data.
  */
 typedef void (*hsm_callback_entered)( const hsm_machine hsm, const hsm_event evt, void * user_data );
 
 /**
- * hear about states that are about to exit
+ * Hear about states that are about to exit
  *
- * hsm->current has the exiting state
- * hsm->stack.context has the context (that may or may not be about to be popped )
+ * @param hsm The #hsm_machine. note: hsm->current has the exiting state, and hsm->stack.context has the context (that may or may not be about to be popped ).
+ * @param evt The #hsm_event which triggered the exit.
+ * @param user_data The #hsm_info_rec.user_data.
  */
 typedef void(*hsm_callback_exiting)( const hsm_machine hsm, const hsm_event evt, void * user_data );
 
 /**
- * hear about unhandled events
+ * Hear about unhandled events.
+ * @param hsm The #hsm_machine processing. 
+ * @param evt The #hsm_event which no state has handled.
+ * @param user_data The #hsm_info_rec.user_data.
  */
 typedef void (*hsm_callback_unhandled_event)( const hsm_machine hsm, const hsm_event evt, void * user_data );
 
 /**
- * hear about context objects that have just been popped
- * can be used to clean up memory allocated in enter
+ * Hear about context objects that have just been popped;
+ * can be used to free memory if user code allocated memory for state instance data during a state's enter callback.
+ *
+ * @param hsm The #hsm_machine processing. 
+ * @param ctx The #hsm_context which has just been removed from the stack.
+ * @param user_data The #hsm_info_rec.user_data.
+ *
+ * @see hsm_callback_enter, HSM_STATE_ENTER
  */
 typedef void (*hsm_callback_context_popped)( const hsm_machine hsm, hsm_context ctx, void * user_data );
 
 
 //---------------------------------------------------------------------------
 /**
- * notification of important... occurances... in the state machine
+ * Notification of important occurances in the state machine.
  *
- * by design, only provides information for things usercode can't sus out
- * for instance, no error callback, since user code can see that returned 
- * from process event and IsRunning
+ * By design hsm_info only provides information for situtations user code can't sus out via the hsm_machine.h interface.
+ * For instance, there isn't a callback on a transition to #HsmStateError, since user code can already detect errors via
+ * the return codes of HsmProcessEvent() and HsmIsRunning()
  */
 struct hsm_info_rec
 {
     /**
-     * custom user data.
+     * Custom user data.
      */
     void * user_data;
 
     /**
-     * called after just before a state enter occurs as a result of an initial state designation
+     * Called after just before a state enter occurs as a result of an initial state designation.
      */
     hsm_callback_initing on_init;
     
     /**
-     * called after every state's entry
+     * Called after every state's entry
      */
     hsm_callback_entered on_entered;
 
     /**
-     * called just before every state's exit
+     * Called just before every state's exit
      */
     hsm_callback_exiting on_exiting;
     
     /**
-     * called whenever the machine doesnt handle an event
+     * Called whenever the machine doesnt handle an event
      */
     hsm_callback_unhandled_event on_unhandled_event;
 
     /**
-     * called just after the context stack pops its data.
+     * Called just after the context stack pops its data.
      */
     hsm_callback_context_popped on_context_popped;
 };
 
 //---------------------------------------------------------------------------
 /**
- * install a new set of callbacks
- * currently there's just one set of callbacks for all threads; this is not locked or synchronized in anyway.
+ * Install a new set of callbacks for spying on internal statemachine processing.
+ * Currently there's just one set of callbacks for all threads; this is not locked or synchronized in anyway.
  * 
  * @param callbacks  The set of callbacks; individual callbacks can be NULL, as can the callbacks pointer itself.
- * @param old_callback The old set of callbacks. recommended you should record, and later restore the old callbacks.
+ * @param old_callbacks The last set of callbacks passed to HsmSetInfoCallbacks. Its recommended that you should record, and later restore the old callbacks.
  */
 void HsmSetInfoCallbacks( hsm_info_t* callbacks, hsm_info_t* old_callbacks );
 

@@ -127,6 +127,8 @@ Macros</h2></td></tr>
 <tr class="memdesc:a0cb7e4f750bdd83a03d75df4714f2efa"><td class="mdescLeft">&#160;</td><td class="mdescRight">Macro for declaring a state + enter callback.  <a href="#a0cb7e4f750bdd83a03d75df4714f2efa"></a><br/></td></tr>
 <tr class="memitem:a3263608681f4ec0b1075cb3c9c0a9280"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="hsm__state_8h.html#a3263608681f4ec0b1075cb3c9c0a9280">HSM_STATE_ENTERX</a>(state, parent, initial)</td></tr>
 <tr class="memdesc:a3263608681f4ec0b1075cb3c9c0a9280"><td class="mdescLeft">&#160;</td><td class="mdescRight">Macro for declaring a state + enter and exit callbacks.  <a href="#a3263608681f4ec0b1075cb3c9c0a9280"></a><br/></td></tr>
+<tr class="memitem:af67fed27704933cb81dffe693588cb14"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="hsm__state_8h.html#af67fed27704933cb81dffe693588cb14">_HSM_STATE</a>(State, Parent, Process, Enter, Exit, Initial)</td></tr>
+<tr class="memdesc:af67fed27704933cb81dffe693588cb14"><td class="mdescLeft">&#160;</td><td class="mdescRight">Verbose macro for declaring a state.  <a href="#af67fed27704933cb81dffe693588cb14"></a><br/></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2><a name="typedef-members"></a>
 Typedefs</h2></td></tr>
@@ -153,7 +155,7 @@ Typedefs</h2></td></tr>
 </div><div class="memdoc">
 <div class="textblock"><p>a state descriptor <a href="http://dev.ionous.net/2012/06/state-descriptors.html">http://dev.ionous.net/2012/06/state-descriptors.html</a> </p>
 
-<p>Definition at line <a class="el" href="hsm__state_8h_source.html#l00071">71</a> of file <a class="el" href="hsm__state_8h_source.html">hsm_state.h</a>.</p>
+<p>Definition at line <a class="el" href="hsm__state_8h_source.html#l00066">66</a> of file <a class="el" href="hsm__state_8h_source.html">hsm_state.h</a>.</p>
 </div><table class="fieldtable">
 <tr><th colspan="3">Data Fields</th></tr>
 <tr><td class="fieldtype">
@@ -181,7 +183,7 @@ exit</td>
 <td class="fielddoc">
 exit action handler </td></tr>
 <tr><td class="fieldtype">
-<a class="anchor" id="a10929a7991ad674eff573c17e9e85181"></a>hsm_state_fn</td>
+<a class="anchor" id="a74ac4b1f244bc97ba0c1daab6f76979b"></a><a class="el" href="hsm__forwards_8h.html#aaf8612f2e29f91153ebf2c076aa68030">hsm_state</a></td>
 <td class="fieldname">
 initial</td>
 <td class="fielddoc">
@@ -267,7 +269,7 @@ distance to the root state this-&gt;depth = this-&gt;parent-&gt;depth+1; root mo
 </dl>
 <dl class="section see"><dt>See also:</dt><dd><a class="el" href="hsm__state_8h.html#a2a67c1d1f88bad7e5448ab4f667e224c" title="A state&#39;s event handler callback.">hsm_callback_process_event</a> </dd></dl>
 
-<p>Definition at line <a class="el" href="hsm__state_8h_source.html#l00156">156</a> of file <a class="el" href="hsm__state_8h_source.html">hsm_state.h</a>.</p>
+<p>Definition at line <a class="el" href="hsm__state_8h_source.html#l00120">120</a> of file <a class="el" href="hsm__state_8h_source.html">hsm_state.h</a>.</p>
 
 </div>
 </div>
@@ -317,7 +319,7 @@ distance to the root state this-&gt;depth = this-&gt;parent-&gt;depth+1; root mo
 </dl>
 <dl class="section see"><dt>See also:</dt><dd><a class="el" href="hsm__state_8h.html#a7a1b7d6e09cadb4fc2359c224016c4ab" title="A state&#39;s enter callback.">hsm_callback_enter</a>, <a class="el" href="hsm__state_8h.html#a2a67c1d1f88bad7e5448ab4f667e224c" title="A state&#39;s event handler callback.">hsm_callback_process_event</a> </dd></dl>
 
-<p>Definition at line <a class="el" href="hsm__state_8h_source.html#l00174">174</a> of file <a class="el" href="hsm__state_8h_source.html">hsm_state.h</a>.</p>
+<p>Definition at line <a class="el" href="hsm__state_8h_source.html#l00138">138</a> of file <a class="el" href="hsm__state_8h_source.html">hsm_state.h</a>.</p>
 
 </div>
 </div>
@@ -368,7 +370,73 @@ distance to the root state this-&gt;depth = this-&gt;parent-&gt;depth+1; root mo
 </dl>
 <dl class="section see"><dt>See also:</dt><dd><a class="el" href="hsm__state_8h.html#afc32688666d94c3a7a6d1d45d9a83807" title="A state&#39;s exit callback.">hsm_callback_exit</a>, <a class="el" href="hsm__state_8h.html#a7a1b7d6e09cadb4fc2359c224016c4ab" title="A state&#39;s enter callback.">hsm_callback_enter</a>, <a class="el" href="hsm__state_8h.html#a2a67c1d1f88bad7e5448ab4f667e224c" title="A state&#39;s event handler callback.">hsm_callback_process_event</a> </dd></dl>
 
-<p>Definition at line <a class="el" href="hsm__state_8h_source.html#l00193">193</a> of file <a class="el" href="hsm__state_8h_source.html">hsm_state.h</a>.</p>
+<p>Definition at line <a class="el" href="hsm__state_8h_source.html#l00157">157</a> of file <a class="el" href="hsm__state_8h_source.html">hsm_state.h</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="af67fed27704933cb81dffe693588cb14"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define _HSM_STATE</td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname">State, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname">Parent, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname">Process, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname">Enter, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname">Exit, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname">Initial&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Verbose macro for declaring a state. </p>
+<p>This macro is used by <a class="el" href="hsm__state_8h.html#a13ea60f370fd7663153ad6d7fb7c73e1" title="Macro for declaring a state.">HSM_STATE</a>, <a class="el" href="hsm__state_8h.html#a0cb7e4f750bdd83a03d75df4714f2efa" title="Macro for declaring a state + enter callback.">HSM_STATE_ENTER</a>, <a class="el" href="hsm__state_8h.html#a3263608681f4ec0b1075cb3c9c0a9280" title="Macro for declaring a state + enter and exit callbacks.">HSM_STATE_ENTERX</a>. </p>
+<div class="fragment"></div><!-- fragment --><dl class="params"><dt>Parameters:</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">State</td><td>User defined name for the state. </td></tr>
+    <tr><td class="paramname">Parent</td><td>A user defined state name, or HsmTopState. </td></tr>
+    <tr><td class="paramname">Process</td><td>Event handler function. </td></tr>
+    <tr><td class="paramname">Enter</td><td>Function to call on state enter. </td></tr>
+    <tr><td class="paramname">Exit</td><td>Function to call on state exit. </td></tr>
+    <tr><td class="paramname">Initial</td><td>Initial state for this state to enter, or 0. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p>Definition at line <a class="el" href="hsm__state_8h_source.html#l00175">175</a> of file <a class="el" href="hsm__state_8h_source.html">hsm_state.h</a>.</p>
 
 </div>
 </div>
@@ -457,7 +525,7 @@ distance to the root state this-&gt;depth = this-&gt;parent-&gt;depth+1; root mo
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="dir_6c36b64852547327283732128225c9d7.html">hsm</a></li><li class="navelem"><a class="el" href="hsm__state_8h.html">hsm_state.h</a></li>
-    <li class="footer">Generated on Thu Jun 21 2012 12:22:55 for hsm-statechart by
+    <li class="footer">Generated on Thu Jun 21 2012 12:51:57 for hsm-statechart by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.1.1 </li>
   </ul>

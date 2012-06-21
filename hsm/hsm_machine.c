@@ -1,10 +1,11 @@
 /**
  * @file hsm_machine.c
  *
+ * \internal
  * Copyright (c) 2012, everMany, LLC.
  * All rights reserved.
  * 
- * All code licensed under the "New BSD" (BSD 3-Clause) License
+ * Code licensed under the "New BSD" (BSD 3-Clause) License
  * See License.txt for complete information.
  */
 #include "hsm_machine.h"
@@ -54,51 +55,51 @@ hsm_state HsmTopState() {
 #define HSM_STACK( hsm ) ((((hsm)->flags & HSM_FLAGS_CTX)==HSM_FLAGS_CTX) ? &((hsm_context_machine_t*)(hsm))->stack : 0)
 
 /**
- * internal function:
- * @param hsm Machine transitioning
+ * @internal
+ * @param hsm The #hsm_machine processing the event.
  * @param source State causing the transition
  * @param target State the machine is moving into
  * @param evt Event which caused the transition
  * @warning This modifies the stack and the machine as it processes
  */
-static hsm_bool HsmTransition( hsm_machine , hsm_state, hsm_state, hsm_event  );
+static hsm_bool HsmTransition( hsm_machine hsm, hsm_state source, hsm_state target, hsm_event evt );
 
 /**
- * internal function:
+ * @internal
  * Used to start the statemachine going
  * walks up the tree to the top, then 'enter's from top down-to (and including) 'state'
  
- * @param machine Machine that is transitioning
+ * @param hsm The #hsm_machine processing the event.
  * @param state Desired first state of the state chart
  */
-static void HsmRecursiveEnter( hsm_machine , hsm_state, hsm_event  );
+static void HsmRecursiveEnter( hsm_machine hsm, hsm_state state, hsm_event evt );
 
 /**
- * internal function: 
+ * @internal
  * Enter the passed state 
- * @param machine Machine that is transitioning
+ * @param hsm The #hsm_machine processing the event.
  * @param state State transitioing to
  * @param evt Event which caused the transition
  */
-static void HsmEnter( hsm_machine , hsm_state, hsm_event  );
+static void HsmEnter( hsm_machine hsm, hsm_state state, hsm_event evt );
 
 /* 
- * internal function:
+ * @internal
  * Transitions to the current states tree of initial states
  * @return HSM_FALSE on error.
  * @note in statecharts, init happens after enter, and it can move ( often does move ) the current state to a new state
  */
-static void HsmInit( hsm_machine , hsm_event );
+static void HsmInit( hsm_machine hsm, hsm_event evt );
 
 /**
- * internal function:
+ * @internal
  * Exit the current state
- * @param machine Machine that is transitioning
- * @param evt Event which caused the transition
+ *
+ * @param hsm The #hsm_machine processing the event.
+ * @param evt Event which caused the transition.
  */
 //static  <- disabled for regions test. TODO: renable here and below.
-void HsmExit( hsm_machine, hsm_event  );
-
+void HsmExit( hsm_machine hsm, hsm_event evt );
 
 //---------------------------------------------------------------------------
 static hsm_info_t hsm_global_callbacks= {0};
@@ -236,10 +237,9 @@ hsm_bool HsmProcessEvent( hsm_machine hsm, hsm_event  evt )
 // warning: this indirectly alters the current state and context stack ( via HsmEnter )
 static void HsmInit( hsm_machine hsm, hsm_event cause )
 {
-    hsm_state_fn want_state;
-    while ( want_state= hsm->current->initial ) 
+    hsm_state initial_state;
+    while ( initial_state= hsm->current->initial ) 
     {
-        const hsm_state initial_state= hsm->current->initial();
         hsm_bool init_moves_to_child;
 
         if (hsm_global_callbacks.on_init) {
@@ -256,7 +256,6 @@ static void HsmInit( hsm_machine hsm, hsm_event cause )
             // continue the enter=>init pattern 
             // ( the spec says enter runs before init. it sounds insane, but works out well. )
             HsmEnter( hsm, initial_state, cause );
-
         }
     }
 }
@@ -342,8 +341,8 @@ static void HsmRecursiveEnter( hsm_machine hsm, hsm_state state, hsm_event cause
     Then the state machine enters the target state(s), plus any states that are between it and the LCCA, 
     starting with the outermost one (i.e., the immediate descendant of the LCCA) and working down to the target state(s). 
      
-    As states are exited, their <onexit> handlers are executed. Then the executable content in the transition is executed, 
-    followed by the <onentry> handlers of the states that are entered. If the target state(s) of the transition is not atomic, 
+    As states are exited, their onexit handlers are executed. Then the executable content in the transition is executed, 
+    followed by the onentry handlers of the states that are entered. If the target state(s) of the transition is not atomic, 
     the state machine will enter their default initial states recursively until it reaches an atomic state(s).
 
     Note that the LCCA is neither entered nor exited."""
@@ -351,8 +350,8 @@ static void HsmRecursiveEnter( hsm_machine hsm, hsm_state state, hsm_event cause
  II. When target is a descendant of source....
      "an internal transition will not exit and re-enter its source state, while an external one will."
 
- III. """ [For] a <transition> whose target is its source state.... the state is exited and reentered, 
-     triggering execution of its <onentry> and <onexit> executable content."""
+ III. """ [For] a transition whose target is its source state.... the state is exited and reentered, 
+     triggering execution of its onentry and onexit executable content."""
  */
 #define ERROR_IF_NULL( x, msg ) while(!x) { assert(msg); return HSM_FALSE; }
 

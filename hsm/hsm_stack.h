@@ -1,12 +1,13 @@
 /**
  * @file hsm_stack.h
  *
- * Internal stack manipulation routines used by hsm_machine
+ * Internal stack manipulation routines used by hsm_machine.
  *
+ * \internal
  * Copyright (c) 2012, everMany, LLC.
  * All rights reserved.
  * 
- * All code licensed under the "New BSD" (BSD 3-Clause) License
+ * Code licensed under the "New BSD" (BSD 3-Clause) License
  * See License.txt for complete information.
  */
 #pragma once

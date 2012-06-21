@@ -4,7 +4,7 @@
  * Copyright (c) 2012, everMany, LLC.
  * All rights reserved.
  * 
- * All code licensed under the "New BSD" (BSD 3-Clause) License
+ * Code licensed under the "New BSD" (BSD 3-Clause) License
  * See License.txt for complete information.
  */
 #include "hsm_machine.h"    // for the state machine
@@ -106,8 +106,8 @@ void HsmExit( hsm_machine hsm, hsm_event cause );
 // we could have user code pass around raw fnc ptrs instead of the state descriptors
 // going to wait till builder interface, and see how that works out there
 #define HSM_REGION( State, Parent, Initial ) \
-        hsm_state_fn State##Lookup##Initial(); \
-        hsm_state_fn State##Lookup##0() { return 0; } \
+        hsm_state State##Lookup##Initial(); \
+        hsm_state State##Lookup##0() { return 0; } \
         hsm_state State() { \
             static struct hsm_region_rec myinfo= { 0 }; \
             if (!myinfo.state.name) { \
@@ -124,7 +124,6 @@ void HsmExit( hsm_machine hsm, hsm_event cause );
             } \
             return &(myinfo.state); \
         }
-
 
 //---------------------------------------------------------------------------
 // declare the states just like watch1_enum_events.
@@ -150,7 +149,7 @@ hsm_context HsmParallelEnter( hsm_parallel_t* parallel, hsm_machine hsm, hsm_con
     hsm_region_t *it;
     for (it= parallel->first; it; it=it->next) {
         HsmMachineWithContext( &(it->active.hsm), ctx );
-        HsmStart( &(it->active.hsm.core), it->state.initial() );
+        HsmStart( &(it->active.hsm.core), it->state.initial );
     }
 
     // finally: return our allocated regions data as context

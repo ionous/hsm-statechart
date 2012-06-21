@@ -1,10 +1,13 @@
 /**
  * @file hsm_state.h
+ * 
+ * Macros and typedefs used for declaring states.
  *
+ * \internal
  * Copyright (c) 2012, everMany, LLC.
  * All rights reserved.
  * 
- * All code licensed under the "New BSD" (BSD 3-Clause) License
+ * Code licensed under the "New BSD" (BSD 3-Clause) License
  * See License.txt for complete information.
  */
 #pragma once
@@ -14,34 +17,44 @@
 #include "hsm_forwards.h"
 
 /**
- * a state's incoming event handler signature
+ * A state's event handler callback.
+ * A function of this signature is required for every state declared via #HSM_STATE.
+ *
+ * @param hsm The #hsm_machine processing the event.
+ * @param ctx The #hsm_context object returned by the state enter callback.
+ * @param evt The #hsm_event that needs handling.
+ * 
+ * @return NULL, a state to transition to, or a predefined state token.
+ *
+ * @note You should return NULL from an event handler by default to indicate the event was not handled.
+ * To transition to a new state, return the name of the new state as previously declared via a #HSM_STATE macro.
+ * To indicate an event has been handled, but no transition is required: you should return HsmStateHandled().
+ * Returning HsmStateError() indicates a critical error has occured and the statemachine can no longer function.
+ * Returning HsmStateFinal() indicates the statemachine has terminated and event callbacks are no longer desired.
  */
-typedef hsm_state(*hsm_callback_process_event)( hsm_machine, hsm_context , hsm_event );
+typedef hsm_state(*hsm_callback_process_event)( hsm_machine hsm, hsm_context ctx, hsm_event evt );
 
 /**
- * a state's action signature
+ * A state's enter callback.
+ * A function of this signature is required for every state declared via #HSM_STATE_ENTER.
+ *
+ * @param hsm The #hsm_machine processing the event.
+ * @param ctx The #hsm_context return the parent state's #hsm_callback_enter, or if no parent state: the context passed to HsmMachineWithContext().
+ * @param evt The #hsm_event that needs handling.
+ * 
+ * @return Optionally: a new #hsm_context. The context will be passed to all sequequent calls to the state's #hsm_callback_process_event and the state's #hsm_callback_exit.
  */
-typedef void(*hsm_callback_action)( hsm_machine, hsm_context , hsm_event );
+typedef hsm_context (*hsm_callback_enter)( hsm_machine hsm, hsm_context ctx, hsm_event evt );
 
 /**
- * a state's guard signature
+ * A state's exit callback.
+ * A function of this signature is required for every state declared via #HSM_STATE_ENTERX.
+ *
+ * @param hsm The #hsm_machine processing the event.
+ * @param ctx The #hsm_context object returned by the state enter callback.
+ * @param evt The #hsm_event that needs handling.
  */
-typedef hsm_bool(*hsm_callback_guard)( hsm_machine, hsm_context , hsm_event );
-
-/**
- * a state's entry callback signature
- */
-typedef hsm_context (*hsm_callback_enter)( hsm_machine, hsm_context , hsm_event );
-
-/**
- * a state's exit callback signature
- */
-typedef void(*hsm_callback_exit)( hsm_machine, hsm_context , hsm_event );
-
-/**
- * a state's info descriptor function signature
- */
-typedef hsm_state(*hsm_state_fn)();
+typedef void(*hsm_callback_exit)( hsm_machine, hsm_context, hsm_event );
 
 typedef struct hsm_state_rec hsm_state_t;
 
@@ -75,7 +88,7 @@ struct hsm_state_rec
     /**
      * default sub-state (if any) for this state
      */
-    hsm_state_fn initial;
+    hsm_state initial;
 
     /**
      * parent of this state
@@ -90,56 +103,37 @@ struct hsm_state_rec
     int depth;
 };
 
-//---------------------------------------------------------------------------
 /**
- * macro for defining a state info
- * see additional @verbinclude hsm_state.txt.
+ * Macro for declaring a state.
  *
- * @param state      User defined name for the state.
- * @param parent     a user defined state name, or HsmTopState.
- * @param process    Event handler function.
- * @param enter      Function to call on state enter.
- * @param exit       Function to call on state exit.
- */
-#define _HSM_STATE( State, Parent, Process, Enter, Exit, Initial ) \
-        hsm_state Parent(); \
-        hsm_state_fn State##Lookup##Initial(); \
-        hsm_state_fn State##Lookup##0() { return 0; } \
-        hsm_state State() { \
-            static struct hsm_state_rec myinfo= { 0 }; \
-            if (!myinfo.name) { \
-                myinfo.name= #State; \
-                myinfo.process= Process; \
-                myinfo.enter= Enter; \
-                myinfo.exit= Exit; \
-                myinfo.initial= State##Lookup##Initial(); \
-                myinfo.parent= Parent(); \
-                myinfo.depth= myinfo.parent ? myinfo.parent->depth+1 : 0; \
-            } \
-            return &myinfo; \
-        } \
-        hsm_state_fn Parent##Lookup##State() { return State; }
- 
-/**
- * helper macro for defining an hsm_state ( aka a state ).
- * requires an event handler function: <state>Event
+ * Requires:
+ * @li A event handler function: MyStateEvent
+ * 
+ * @include hsm_state.c
  *
  * @param state      User defined name for the state.
  * @param parent     HsmTopState or a previously declared user defined state name.
  * @param initial    First state this state should enter. can be NULL.
+ * 
+ * @see #hsm_callback_process_event
  */
 #define HSM_STATE( state, parent, initial ) \
         hsm_state state##Event( hsm_machine, hsm_context , hsm_event ); \
         _HSM_STATE( state, parent, state##Event, 0, 0, initial )
 
+
 /**
- * helper macro for defining an hsm_state ( aka a state ).
- * requires an event handler function: <state>Event
- * requires an entry function        : <state>Enter
+ * Macro for declaring a state + enter callback.
+ *
+ * Requires:
+ * @li An event handler function: MyStateEvent
+ * @li An entry function        : MyStateEnter
  *
  * @param state      User defined name for the state.
  * @param parent     a user defined state name, or HsmTopState.
  * @param initial    First state this state should enter. can be NULL.
+ *
+ * @see #hsm_callback_enter, #hsm_callback_process_event
  */
 #define HSM_STATE_ENTER( state, parent, initial ) \
         hsm_state state##Event( hsm_machine, hsm_context , hsm_event ); \
@@ -147,14 +141,18 @@ struct hsm_state_rec
         _HSM_STATE( state, parent, state##Event, state##Enter, 0, initial );
 
 /**
- * helper macro for defining an hsm_state ( aka a state ).
- * requires an event handler function: <state>Event
- * requires an entry function        : <state>Enter
- * requires an exit function         : <state>Exit
+ * Macro for declaring a state + enter and exit callbacks
+ *
+ * Requires:
+ * @li An event handler function: MyStateEvent
+ * @li An entry function        : MyStateEnter
+ * @li An exit function         : MyStateExit
  *
  * @param state      User defined name for the state.
  * @param parent     HsmTopState or a previously declared user defined state name.
  * @param initial    First state this state should enter. can be NULL.
+ *
+ * @see #hsm_callback_exit, #hsm_callback_enter, #hsm_callback_process_event
  */
 #define HSM_STATE_ENTERX( state, parent, initial ) \
         hsm_state state##Event( hsm_machine, hsm_context , hsm_event ); \
@@ -162,6 +160,37 @@ struct hsm_state_rec
         void state##Exit ( hsm_machine, hsm_context , hsm_event ); \
         _HSM_STATE( state, parent, state##Event, state##Enter, state##Exit, initial );
 
+/**
+ * Verbose macro for declaring a state.
+ * This macro is used by #HSM_STATE, #HSM_STATE_ENTER, #HSM_STATE_ENTERX.
+ * @include .\hsm_state.txt
+ *
+ * @param State      User defined name for the state.
+ * @param Parent     A user defined state name, or HsmTopState.
+ * @param Process    Event handler function.
+ * @param Enter      Function to call on state enter.
+ * @param Exit       Function to call on state exit.
+ * @param Initial    Initial state for this state to enter, or 0.
+ */
+#define _HSM_STATE( State, Parent, Process, Enter, Exit, Initial ) \
+        hsm_state Parent(); \
+        hsm_state State##Lookup##Initial(); \
+        hsm_state State##Lookup##0() { return 0; } \
+        hsm_state State() { \
+            static struct hsm_state_rec myinfo= { 0 }; \
+            if (!myinfo.name) { \
+                myinfo.name= #State; \
+                myinfo.process= Process; \
+                myinfo.enter= Enter; \
+                myinfo.exit= Exit; \
+                myinfo.parent= Parent(); \
+                myinfo.depth= myinfo.parent ? myinfo.parent->depth+1 : 0; \
+                myinfo.initial= State##Lookup##Initial(); \
+            } \
+            return &myinfo; \
+        } \
+        hsm_state Parent##Lookup##State() { return State(); }
+ 
 
 #endif // #ifndef __HSM_STATE_H__
 
