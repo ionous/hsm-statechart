@@ -94,16 +94,12 @@ int
 Hash_InitTable( hash_table_t *table )                 
 {
     int buckets=16;
-    hash_entry_t **hp= (hash_entry_t **)malloc(sizeof(hash_entry_t*) * buckets); 
+    hash_entry_t **hp= (hash_entry_t **)calloc(buckets, sizeof(hash_entry_t*)); 
     if (hp) {
         table->numEntries = 0;
         table->size = buckets;
         table->mask = buckets - 1;
         table->bucketPtr = hp;
-        // empty 
-        while (--buckets >= 0) {
-            *hp++ = NULL;
-        }                
     }        
     return hp!=0;
 }    
@@ -171,16 +167,18 @@ Hash_DeleteTable(hash_table_t *table, int freeClientData)
  *---------------------------------------------------------
  */
 
-hash_entry_t *
-Hash_FindEntry(hash_table_t *table, unsigned int hash)
+void*
+Hash_FindData(hash_table_t *table, unsigned int hash)
 {
+    void * clientData= NULL;
     hash_entry_t *e;
     for (e = table->bucketPtr[hash & table->mask]; e != NULL; e = e->next) {
         if (e->namehash == hash) {
+            clientData= e->clientData;
             break;
         }
     }        
-    return e;
+    return clientData;
 }
 
 /*
@@ -210,7 +208,6 @@ Hash_CreateEntry(hash_table_t *table, /* Hash table to search. */
                 )                             
 {
     hash_entry_t *e;
-    hash_entry_t **hp;
     for (e = table->bucketPtr[hash & table->mask]; e != NULL; e = e->next) {
         if (e->namehash == hash) {
             if (newPtr != NULL) {
@@ -225,17 +222,17 @@ Hash_CreateEntry(hash_table_t *table, /* Hash table to search. */
          * expand the table if necessary (and this changes the resulting
          * bucket chain).
          */
-        if ((table->numEntries >= rebuildLimit * table->size) && RebuildTable(table)) 
+        if ((table->numEntries < (rebuildLimit * table->size)) || RebuildTable(table)) 
         { 
             e = (hash_entry_t *) malloc(sizeof(hash_entry_t));/*emalloc(sizeof(*e) + keylen);*/
             if (e) {
-                hp = &table->bucketPtr[hash & table->mask];
-                e->next = *hp;
-                *hp = e;
+                hash_entry_t **hp= &table->bucketPtr[hash & table->mask];
+                e->next = *hp;              // point at whatever was in the bucket
+                *hp = e;                    // put us in the bucket
                 e->clientData = NULL;
                 e->clientFlags= 0;
                 e->namehash = hash;
-                table->numEntries++;
+                ++table->numEntries;
                 if (newPtr != NULL) {
                     *newPtr = TRUE;
                 }                

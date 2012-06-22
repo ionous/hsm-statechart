@@ -31,7 +31,7 @@
  * @param ctx Context object returned by the state enter callback.
  * @param evt Event which triggered the action.
  */
-typedef void(*hsm_callback_action)( hsm_machine hsm, hsm_context ctx, hsm_event evt );
+typedef void(*hsm_callback_action)( hsm_machine hsm, hsm_context ctx, hsm_event evt, int action_data );
 
 /**
  * Guard callback.
@@ -40,11 +40,12 @@ typedef void(*hsm_callback_action)( hsm_machine hsm, hsm_context ctx, hsm_event 
  * @param ctx Context object returned by the state enter callback.
  * @param evt Event which triggered the action.
  */
-typedef hsm_bool(*hsm_callback_guard)( hsm_machine hsm, hsm_context ctx, hsm_event evt );
+typedef hsm_bool(*hsm_callback_guard)( hsm_machine hsm, hsm_context ctx, hsm_event evt, int guard_data );
 
 /**
  * Builder initialization.
- * <b>Must</b> be called before the very first 
+ * <b>Must</b> be called before the very first.
+ * You can call hsmStartup() multiple times, but every new call requires a corresponding hsmShutdown()
  */
 void hsmStartup();
 
@@ -54,6 +55,17 @@ void hsmStartup();
  * All states are freed.
  */
 void hsmShutdown();
+
+/**
+ * 
+ */
+void hsmStart( hsm_machine, const char * name );
+
+/**
+ * 
+ */
+void hsmStartId( hsm_machine, int );
+
 
 /**
  * Declare a new state.
@@ -75,6 +87,21 @@ void hsmShutdown();
  */
 int hsmState( const char * name );
 
+/**
+ * return a core hsm_state from a name
+ */
+hsm_state hsmResolve( const char * name );
+
+/**
+ * return a core hsm_state from an id
+ */
+hsm_state hsmResolveId( int id );
+
+/**
+ * Define an already declared state.
+ * Same as hsmBeginId(), just using a string name instead.
+ */
+int hsmBegin( const char * name );
 
 /**
  * Define an already declared (or referenced) state.
@@ -87,7 +114,7 @@ int hsmState( const char * name );
  *
  * @see hsmState, hsmEnd
  */
-int hsmBegin( int state );
+int hsmBeginId( int state );
 
 /**
  * Specify a callback for state entry
@@ -98,12 +125,37 @@ void hsmOnEnter( hsm_callback_enter entry );
 
 /**
  * Event handler initialization.
- * Assuming that the first member of event structure is an int ( ex. a function, a string pool pointer, an enum )
- * trigger the state's event handler when that event structure member equals the passed value.
- *
- * @param eventInt
+ * Call the passed guard function, 
+ * only if the guard returns true #HSM_TRUE will the rest of the event trigger
+ * 
+ * @param guard
+ * @param user_data
  */
-void hsmOni( int eventInt );
+void hsmOn( hsm_callback_guard guard, int guard_data );
+
+/**
+ * Event handler initialization.
+ * Works the same as hsmOn except it doesn't create a new handler, only adds a new guard on to the existing one(s)
+ * 
+ * @param guard
+ * @param user_data
+ *
+ * @see hsmOn.
+ */
+void hsmIf( hsm_callback_guard guard, int guard_data );
+
+
+/**
+ * The event handler being declared should transition to another state.
+ * same as hsmGotoId().
+ */
+void hsmGoto( const char * name );
+
+/**
+ * The event handler being declared should transition to another state.
+ * same as hsmGotoId().
+ */
+void hsmGotoState( hsm_state );
 
 /**
  * The event handler being declared should transition to another state.
@@ -112,13 +164,14 @@ void hsmOni( int eventInt );
  *
  * @see hsmState, hsmEnd
  */
-void hsmGoto( int state );        
+void hsmGotoId( int state );
+
 
 /**
  * The event handler being declared should run the passed action.
  * @param action The action to run.
  */
-void hsmRun( hsm_callback_action action );
+void hsmRun( hsm_callback_action action, int action_data );
 
 /**
  * Pairs with 

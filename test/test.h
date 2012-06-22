@@ -31,25 +31,6 @@ struct hsm_event_rec {
  */
 hsm_bool TestEventSequence( hsm_machine hsm, hsm_state first, const char ** seq );
 
-/**
- * MAKE_TEST( name, want, fn, (parms) )
- *
- * @param name Name of function, used a string for console output.
- * @param want Boolean value desired.
- * @param fn   Test function to call.
- * @param params Parameters for the passed fn.
- *
- * @return a function which takes an hsm_machine, and which will return a 0 on success, -1 on error
- */
-#define MAKE_TEST( name, want, fn, parms ) \
-    int name(hsm_machine hsm) {            \
-        hsm_bool res;                      \
-        printf( #name "\n" );              \
-        res= fn parms == want;                    \
-        printf( #name " %s\n", res ? "passes." : "FAILS." ); \
-        return res ? 0 : -1; \
-    }
-
 // a state with nothing to do
 #define EMPTY_STATE( s,p,i ) \
     HSM_STATE( s, p, i ); \

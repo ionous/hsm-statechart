@@ -5,6 +5,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "hsm", "hsm.vcxproj", "{DD7D
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "test", "test\test.vcxproj", "{C114CFB8-8C70-420E-B2A9-6BB1544633D4}"
 	ProjectSection(ProjectDependencies) = postProject
+		{5F06A275-1E2A-ECD4-F823-A4A2FCE0228C} = {5F06A275-1E2A-ECD4-F823-A4A2FCE0228C}
 		{DD7DAEC9-C314-434B-8CD1-5AA80A99B9C0} = {DD7DAEC9-C314-434B-8CD1-5AA80A99B9C0}
 	EndProjectSection
 EndProject
@@ -15,6 +16,9 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "samples", "samples\samples.
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "builder", "builder\builder.vcxproj", "{5F06A275-1E2A-ECD4-F823-A4A2FCE0228C}"
+	ProjectSection(ProjectDependencies) = postProject
+		{DD7DAEC9-C314-434B-8CD1-5AA80A99B9C0} = {DD7DAEC9-C314-434B-8CD1-5AA80A99B9C0}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

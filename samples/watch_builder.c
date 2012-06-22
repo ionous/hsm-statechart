@@ -74,6 +74,8 @@ static void RunTickTime( hsm_machine hsm, hsm_context ctx, const WatchEvent* evt
 }
 
 //---------------------------------------------------------------------------
+#if 0
+
 int buildWatchMachine(int parent) 
 {
     const int active= hsmState( "Active" );
@@ -84,7 +86,6 @@ int buildWatchMachine(int parent)
 
         hsmOnEnter( 
             ActiveStateEnter );
-
         hsmOni( WATCH_RESET_PRESSED );
         hsmGoto( running );
 
@@ -108,3 +109,5 @@ int buildWatchMachine(int parent)
     hsmEnd();
     return active;
 }
+#endif
+

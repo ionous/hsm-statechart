@@ -92,7 +92,7 @@ struct Hash_Table
 int Hash_InitTable(hash_table_t*);
 void Hash_DeleteTable(hash_table_t*, int);
 
-hash_entry_t *Hash_FindEntry(hash_table_t*, unsigned int);
+void*Hash_FindData(hash_table_t*, unsigned int);
 hash_entry_t *Hash_CreateEntry(hash_table_t*, unsigned int, int *);
 
 
