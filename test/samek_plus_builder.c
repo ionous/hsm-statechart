@@ -72,15 +72,10 @@ hsm_state buildMachine()
             hsmEnd();
         }
         hsmEnd();
-    
         hsmBegin( "s2" );
         {
             hsmOn( MatchChar, 'c' ); hsmGoto( "s1" );
             hsmOn( MatchChar, 'f' ); hsmGoto( "s11" );
-//FIXME-stravis
-//FIXME-stravis
-            // its parent seems to be s0 not s2... why?
-            // seems alright when i build... 
             hsmBegin( "s21" );
             {
                 hsmOn( MatchChar, 'b' ); 
