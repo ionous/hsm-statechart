@@ -1,7 +1,7 @@
 /**
  * @file hsm_builder.h
  *
- * Alternate method for declaring and defining states.
+ * Declarative interface for defining states.
  *
  * The builder is a layer on top of the core hsm statemachine code.
  * It is not necessary to use, or even include, the builder to use hsm-statechart.
@@ -86,28 +86,18 @@ void hsmStartId( hsm_machine, int );
 int hsmState( const char * name );
 
 /**
- * return a core hsm_state from a name
- */
-hsm_state hsmResolve( const char * name );
-
-/**
- * return a core hsm_state from an id
- */
-hsm_state hsmResolveId( int id );
-
-/**
- * Define an already declared state.
+ * Define a named state.
  * Same as hsmBeginId(), just using a string name instead.
  */
 int hsmBegin( const char * name );
 
 /**
- * Define an already declared (or referenced) state.
+ * Define an already declared state.
 
  * Every hsmBegin() must, eventually, be paired with a matching hsmEnd(),
  * Until then, all operations, including calls including hsmState() are considered owned by this state.
  *
- * @param state A state id returned by hsmState or hsmRef.
+ * @param state A state id returned by hsmState() or hsmRef().
  * @return The same state id that was passed in.
  *
  * @see hsmState, hsmEnd
@@ -117,7 +107,7 @@ int hsmBeginId( int state );
 /**
  * Specify a callback for state entry
  *
- * @param entry
+ * @param entry Callback triggered on state enter
  */
 void hsmOnEnter( hsm_callback_enter entry );
 
@@ -126,17 +116,17 @@ void hsmOnEnter( hsm_callback_enter entry );
  * Call the passed guard function, 
  * only if the guard returns true #HSM_TRUE will the rest of the event trigger
  * 
- * @param guard
- * @param user_data
+ * @param guard Boolean function to call.
+ * @param guard_data Data passed to callback.
  */
 void hsmOn( hsm_callback_guard guard, int guard_data );
 
 /**
- * Event handler initialization.
+ * Add a guard to the current event handler.
  * Works the same as hsmOn except it doesn't create a new handler, only adds a new guard on to the existing one(s)
  * 
- * @param guard
- * @param user_data
+ * @param guard Boolean function to call.
+ * @param guard_data Data passed to callback.
  *
  * @see hsmOn.
  */
@@ -168,14 +158,31 @@ void hsmGotoId( int state );
 /**
  * The event handler being declared should run the passed action.
  * @param action The action to run.
+ * @param action_data Userdata to pass to action function.
  */
 void hsmRun( hsm_callback_action action, int action_data );
 
 /**
- * Pairs with 
+ * Pairs with hsmBegin()
  * @see hsmBegin()
  */
 void hsmEnd();
+
+/**
+ * Return an hsm_state from a builder state.
+ * @param name String name of state
+ * @return The #hsm_state; NULL if the named state hasn't been built.
+ * @note Requires that hsmEnd() has been called for the state in question.
+ */
+hsm_state hsmResolve( const char * name );
+
+/**
+ * Return a core hsm_state from an id.
+ * @param id A state id returned by hsmState() or hsmRef().
+ * @return The #hsm_state; NULL if the named state hasn't been built.
+ * @note Requires that hsmEnd() has been called for the state in question.
+ */
+hsm_state hsmResolveId( int id );
 
 
 #endif // #ifndef __HSM_BUILDER_H__

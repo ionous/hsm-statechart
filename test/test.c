@@ -91,7 +91,7 @@ int RunTest( const char * name, testfn_t test, hsm_bool want )
 int main(int argc, char* argv[])
 {  
     int tests=0;
-#if 0
+#if 1
     tests+= RUN_FALSE_TEST( FailSequence  );
     tests+= RUN_TEST( EmptySequence );
     tests+= RUN_TEST( InitSequence );

@@ -121,16 +121,16 @@ Data Structures</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2><a name="typedef-members"></a>
 Typedefs</h2></td></tr>
-<tr class="memitem:a6ea3639ac8c00ff4699d2a769cb5fd18"><td class="memItemLeft" align="right" valign="top">typedef void(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="hsm__info_8h.html#a6ea3639ac8c00ff4699d2a769cb5fd18">hsm_callback_initing</a> )(const <a class="el" href="hsm__forwards_8h.html#a9d4b46508b6a2ff6aa734d3b6a3c24fc">hsm_machine</a> hsm, const <a class="el" href="hsm__forwards_8h.html#aaf8612f2e29f91153ebf2c076aa68030">hsm_state</a> next, void *user_data)</td></tr>
-<tr class="memdesc:a6ea3639ac8c00ff4699d2a769cb5fd18"><td class="mdescLeft">&#160;</td><td class="mdescRight">Hear about states just before entering next state.  <a href="#a6ea3639ac8c00ff4699d2a769cb5fd18"></a><br/></td></tr>
-<tr class="memitem:a1f7c1ad13194cd13cf4a3897fffd0ffb"><td class="memItemLeft" align="right" valign="top">typedef void(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="hsm__info_8h.html#a1f7c1ad13194cd13cf4a3897fffd0ffb">hsm_callback_entered</a> )(const <a class="el" href="hsm__forwards_8h.html#a9d4b46508b6a2ff6aa734d3b6a3c24fc">hsm_machine</a> hsm, const <a class="el" href="hsm__forwards_8h.html#ab8e8ab8d2eb97eb5cc6331d85262fb76">hsm_event</a> evt, void *user_data)</td></tr>
-<tr class="memdesc:a1f7c1ad13194cd13cf4a3897fffd0ffb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Hear about new states <em>just</em> after they have been entered.  <a href="#a1f7c1ad13194cd13cf4a3897fffd0ffb"></a><br/></td></tr>
-<tr class="memitem:a4e22a88507e4e2441303dedf308e06ab"><td class="memItemLeft" align="right" valign="top">typedef void(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="hsm__info_8h.html#a4e22a88507e4e2441303dedf308e06ab">hsm_callback_exiting</a> )(const <a class="el" href="hsm__forwards_8h.html#a9d4b46508b6a2ff6aa734d3b6a3c24fc">hsm_machine</a> hsm, const <a class="el" href="hsm__forwards_8h.html#ab8e8ab8d2eb97eb5cc6331d85262fb76">hsm_event</a> evt, void *user_data)</td></tr>
-<tr class="memdesc:a4e22a88507e4e2441303dedf308e06ab"><td class="mdescLeft">&#160;</td><td class="mdescRight">Hear about states that are about to exit.  <a href="#a4e22a88507e4e2441303dedf308e06ab"></a><br/></td></tr>
-<tr class="memitem:aa74be5e9bbe02d332ce0cce61f07841d"><td class="memItemLeft" align="right" valign="top">typedef void(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="hsm__info_8h.html#aa74be5e9bbe02d332ce0cce61f07841d">hsm_callback_unhandled_event</a> )(const <a class="el" href="hsm__forwards_8h.html#a9d4b46508b6a2ff6aa734d3b6a3c24fc">hsm_machine</a> hsm, const <a class="el" href="hsm__forwards_8h.html#ab8e8ab8d2eb97eb5cc6331d85262fb76">hsm_event</a> evt, void *user_data)</td></tr>
-<tr class="memdesc:aa74be5e9bbe02d332ce0cce61f07841d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Hear about unhandled events.  <a href="#aa74be5e9bbe02d332ce0cce61f07841d"></a><br/></td></tr>
-<tr class="memitem:a08cdcda2fe48cc8c1514c902d69f5465"><td class="memItemLeft" align="right" valign="top">typedef void(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="hsm__info_8h.html#a08cdcda2fe48cc8c1514c902d69f5465">hsm_callback_context_popped</a> )(const <a class="el" href="hsm__forwards_8h.html#a9d4b46508b6a2ff6aa734d3b6a3c24fc">hsm_machine</a> hsm, <a class="el" href="hsm__forwards_8h.html#aa0e37ff043d2dd5216cc762ca03046cb">hsm_context</a> ctx, void *user_data)</td></tr>
-<tr class="memdesc:a08cdcda2fe48cc8c1514c902d69f5465"><td class="mdescLeft">&#160;</td><td class="mdescRight">Hear about context objects that have just been popped; can be used to free memory if user code allocated memory for state instance data during a state's enter callback.  <a href="#a08cdcda2fe48cc8c1514c902d69f5465"></a><br/></td></tr>
+<tr class="memitem:a7d25ffca35a54c3118126159a0cccf9b"><td class="memItemLeft" align="right" valign="top">typedef void(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="hsm__info_8h.html#a7d25ffca35a54c3118126159a0cccf9b">hsm_callback_initing</a> )(<a class="el" href="hsm__forwards_8h.html#aaed055d181b35182dc8c2830721dbdc9">hsm_status</a> status, void *user_data)</td></tr>
+<tr class="memdesc:a7d25ffca35a54c3118126159a0cccf9b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Hear about states just before entering next state.  <a href="#a7d25ffca35a54c3118126159a0cccf9b"></a><br/></td></tr>
+<tr class="memitem:ab8f6ed847bdcbcab4b19d12fefa8dddc"><td class="memItemLeft" align="right" valign="top">typedef void(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="hsm__info_8h.html#ab8f6ed847bdcbcab4b19d12fefa8dddc">hsm_callback_entered</a> )(<a class="el" href="hsm__forwards_8h.html#aaed055d181b35182dc8c2830721dbdc9">hsm_status</a> status, void *user_data)</td></tr>
+<tr class="memdesc:ab8f6ed847bdcbcab4b19d12fefa8dddc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Hear about new states <em>just</em> after they have been entered.  <a href="#ab8f6ed847bdcbcab4b19d12fefa8dddc"></a><br/></td></tr>
+<tr class="memitem:adb8d7e5297671ad30aceb19bc8673238"><td class="memItemLeft" align="right" valign="top">typedef void(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="hsm__info_8h.html#adb8d7e5297671ad30aceb19bc8673238">hsm_callback_exiting</a> )(<a class="el" href="hsm__forwards_8h.html#aaed055d181b35182dc8c2830721dbdc9">hsm_status</a> status, void *user_data)</td></tr>
+<tr class="memdesc:adb8d7e5297671ad30aceb19bc8673238"><td class="mdescLeft">&#160;</td><td class="mdescRight">Hear about states just before they exit.  <a href="#adb8d7e5297671ad30aceb19bc8673238"></a><br/></td></tr>
+<tr class="memitem:aa8d960a144fdc1a2327002b0cbb34001"><td class="memItemLeft" align="right" valign="top">typedef void(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="hsm__info_8h.html#aa8d960a144fdc1a2327002b0cbb34001">hsm_callback_unhandled_event</a> )(<a class="el" href="hsm__forwards_8h.html#aaed055d181b35182dc8c2830721dbdc9">hsm_status</a> status, void *user_data)</td></tr>
+<tr class="memdesc:aa8d960a144fdc1a2327002b0cbb34001"><td class="mdescLeft">&#160;</td><td class="mdescRight">Hear about unhandled events.  <a href="#aa8d960a144fdc1a2327002b0cbb34001"></a><br/></td></tr>
+<tr class="memitem:ab90fd5e1bffe6ca6ef305b43c839b117"><td class="memItemLeft" align="right" valign="top">typedef void(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="hsm__info_8h.html#ab90fd5e1bffe6ca6ef305b43c839b117">hsm_callback_context_popped</a> )(<a class="el" href="hsm__forwards_8h.html#aaed055d181b35182dc8c2830721dbdc9">hsm_status</a> status, void *user_data)</td></tr>
+<tr class="memdesc:ab90fd5e1bffe6ca6ef305b43c839b117"><td class="mdescLeft">&#160;</td><td class="mdescRight">Hear about context objects that have just been popped; can be used to free memory if user code allocated memory for state instance data during a state's enter callback.  <a href="#ab90fd5e1bffe6ca6ef305b43c839b117"></a><br/></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2><a name="func-members"></a>
 Functions</h2></td></tr>
@@ -154,7 +154,7 @@ Functions</h2></td></tr>
 <div class="textblock"><p>Notification of important occurances in the state machine. </p>
 <p>By design hsm_info only provides information for situtations user code can't sus out via the <a class="el" href="hsm__machine_8h.html" title="Statemachine structures and functions.">hsm_machine.h</a> interface. For instance, there isn't a callback on a transition to <a class="el" href="hsm__machine_8h.html#a5574ce97f59edf4b77fafabc6ea36e54" title="Token state for when a machine has inadvertently killed itself.">HsmStateError</a>, since user code can already detect errors via the return codes of <a class="el" href="hsm__machine_8c.html#a3f02ed86bdd1d778e3ccc0c38cebebb6" title="Send the passed event to the machine.">HsmProcessEvent()</a> and <a class="el" href="hsm__machine_8c.html#a893207a7a8345aad604bd01a84ee9eb4" title="Determine if a machine has been started, and has not reached a terminal, nor an error state...">HsmIsRunning()</a> </p>
 
-<p>Definition at line <a class="el" href="hsm__info_8h_source.html#l00083">83</a> of file <a class="el" href="hsm__info_8h_source.html">hsm_info.h</a>.</p>
+<p>Definition at line <a class="el" href="hsm__info_8h_source.html#l00078">78</a> of file <a class="el" href="hsm__info_8h_source.html">hsm_info.h</a>.</p>
 </div><table class="fieldtable">
 <tr><th colspan="3">Data Fields</th></tr>
 <tr><td class="fieldtype">
@@ -164,31 +164,31 @@ user_data</td>
 <td class="fielddoc">
 Custom user data. </td></tr>
 <tr><td class="fieldtype">
-<a class="anchor" id="ab5271d6cac67a06921a905953f2a47f6"></a><a class="el" href="hsm__info_8h.html#a6ea3639ac8c00ff4699d2a769cb5fd18">hsm_callback_initing</a></td>
+<a class="anchor" id="ab5271d6cac67a06921a905953f2a47f6"></a><a class="el" href="hsm__info_8h.html#a7d25ffca35a54c3118126159a0cccf9b">hsm_callback_initing</a></td>
 <td class="fieldname">
 on_init</td>
 <td class="fielddoc">
 Called after just before a state enter occurs as a result of an initial state designation. </td></tr>
 <tr><td class="fieldtype">
-<a class="anchor" id="aa8b78c9f358bbea30bf816b6484edf2b"></a><a class="el" href="hsm__info_8h.html#a1f7c1ad13194cd13cf4a3897fffd0ffb">hsm_callback_entered</a></td>
+<a class="anchor" id="aa8b78c9f358bbea30bf816b6484edf2b"></a><a class="el" href="hsm__info_8h.html#ab8f6ed847bdcbcab4b19d12fefa8dddc">hsm_callback_entered</a></td>
 <td class="fieldname">
 on_entered</td>
 <td class="fielddoc">
 Called after every state's entry. </td></tr>
 <tr><td class="fieldtype">
-<a class="anchor" id="ab40a00247a41083dd95d6205dbefe92b"></a><a class="el" href="hsm__info_8h.html#a4e22a88507e4e2441303dedf308e06ab">hsm_callback_exiting</a></td>
+<a class="anchor" id="ab40a00247a41083dd95d6205dbefe92b"></a><a class="el" href="hsm__info_8h.html#adb8d7e5297671ad30aceb19bc8673238">hsm_callback_exiting</a></td>
 <td class="fieldname">
 on_exiting</td>
 <td class="fielddoc">
 Called just before every state's exit. </td></tr>
 <tr><td class="fieldtype">
-<a class="anchor" id="a56fdc749c2115917e29d901e0a2847cd"></a><a class="el" href="hsm__info_8h.html#aa74be5e9bbe02d332ce0cce61f07841d">hsm_callback_unhandled_event</a></td>
+<a class="anchor" id="a56fdc749c2115917e29d901e0a2847cd"></a><a class="el" href="hsm__info_8h.html#aa8d960a144fdc1a2327002b0cbb34001">hsm_callback_unhandled_event</a></td>
 <td class="fieldname">
 on_unhandled_event</td>
 <td class="fielddoc">
 Called whenever the machine doesnt handle an event. </td></tr>
 <tr><td class="fieldtype">
-<a class="anchor" id="a065a693f2bc16e603c5c1c91092476c0"></a><a class="el" href="hsm__info_8h.html#a08cdcda2fe48cc8c1514c902d69f5465">hsm_callback_context_popped</a></td>
+<a class="anchor" id="a065a693f2bc16e603c5c1c91092476c0"></a><a class="el" href="hsm__info_8h.html#ab90fd5e1bffe6ca6ef305b43c839b117">hsm_callback_context_popped</a></td>
 <td class="fieldname">
 on_context_popped</td>
 <td class="fielddoc">
@@ -198,12 +198,12 @@ Called just after the context stack pops its data. </td></tr>
 </div>
 </div>
 <hr/><h2>Typedef Documentation</h2>
-<a class="anchor" id="a6ea3639ac8c00ff4699d2a769cb5fd18"></a>
+<a class="anchor" id="a7d25ffca35a54c3118126159a0cccf9b"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">typedef void(* hsm_callback_initing)(const <a class="el" href="hsm__forwards_8h.html#a9d4b46508b6a2ff6aa734d3b6a3c24fc">hsm_machine</a> hsm, const <a class="el" href="hsm__forwards_8h.html#aaf8612f2e29f91153ebf2c076aa68030">hsm_state</a> next, void *user_data)</td>
+          <td class="memname">typedef void(* hsm_callback_initing)(<a class="el" href="hsm__forwards_8h.html#aaed055d181b35182dc8c2830721dbdc9">hsm_status</a> status, void *user_data)</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -212,24 +212,23 @@ Called just after the context stack pops its data. </td></tr>
 <p>hsm-statechart supports initial states via the <a class="el" href="hsm__state_8h.html#a13ea60f370fd7663153ad6d7fb7c73e1" title="Macro for declaring a state.">HSM_STATE</a> macros.</p>
 <dl class="params"><dt>Parameters:</dt><dd>
   <table class="params">
-    <tr><td class="paramname">hsm</td><td>The <a class="el" href="hsm__forwards_8h.html#a9d4b46508b6a2ff6aa734d3b6a3c24fc" title="Pointer to an hsm_machine_rec.">hsm_machine</a>. note: hsm-&gt;current has the new state, and hsm-&gt;stack.context has most recently pushed context. </td></tr>
-    <tr><td class="paramname">next</td><td>The <a class="el" href="hsm__forwards_8h.html#aaf8612f2e29f91153ebf2c076aa68030" title="Pointer to an hsm_state_rec.">hsm_state</a> that's about to be entered. </td></tr>
+    <tr><td class="paramname">status</td><td>The current state of the machine. hsm_status_rec::state holds the state just entered, hsm_status_rec::ctx has most recently pushed context. </td></tr>
     <tr><td class="paramname">user_data</td><td>The <a class="el" href="hsm__info_8h.html#a0f53d287ac7c064d1a49d4bd93ca1cb9" title="Custom user data.">hsm_info_rec.user_data</a>.</td></tr>
   </table>
   </dd>
 </dl>
 <dl class="section note"><dt>Note:</dt><dd>The sequence in UML is enter first, take the init transition second. </dd></dl>
 
-<p>Definition at line <a class="el" href="hsm__info_8h_source.html#l00034">34</a> of file <a class="el" href="hsm__info_8h_source.html">hsm_info.h</a>.</p>
+<p>Definition at line <a class="el" href="hsm__info_8h_source.html#l00032">32</a> of file <a class="el" href="hsm__info_8h_source.html">hsm_info.h</a>.</p>
 
 </div>
 </div>
-<a class="anchor" id="a1f7c1ad13194cd13cf4a3897fffd0ffb"></a>
+<a class="anchor" id="ab8f6ed847bdcbcab4b19d12fefa8dddc"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">typedef void(* hsm_callback_entered)(const <a class="el" href="hsm__forwards_8h.html#a9d4b46508b6a2ff6aa734d3b6a3c24fc">hsm_machine</a> hsm, const <a class="el" href="hsm__forwards_8h.html#ab8e8ab8d2eb97eb5cc6331d85262fb76">hsm_event</a> evt, void *user_data)</td>
+          <td class="memname">typedef void(* hsm_callback_entered)(<a class="el" href="hsm__forwards_8h.html#aaed055d181b35182dc8c2830721dbdc9">hsm_status</a> status, void *user_data)</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -237,47 +236,46 @@ Called just after the context stack pops its data. </td></tr>
 <p>Hear about new states <em>just</em> after they have been entered. </p>
 <dl class="params"><dt>Parameters:</dt><dd>
   <table class="params">
-    <tr><td class="paramname">hsm</td><td>The <a class="el" href="hsm__forwards_8h.html#a9d4b46508b6a2ff6aa734d3b6a3c24fc" title="Pointer to an hsm_machine_rec.">hsm_machine</a>. note: hsm-&gt;current has the new state, and hsm-&gt;stack.context has most recently pushed context. </td></tr>
+    <tr><td class="paramname">status</td><td>The current state of the machine. hsm_status_rec::state holds the state being entered, hsm_status_rec::ctx has most recently pushed context. </td></tr>
     <tr><td class="paramname">evt</td><td>The <a class="el" href="hsm__forwards_8h.html#ab8e8ab8d2eb97eb5cc6331d85262fb76" title="Pointer to an hsm_event_rec.">hsm_event</a> which triggered the exit. </td></tr>
     <tr><td class="paramname">user_data</td><td>The <a class="el" href="hsm__info_8h.html#a0f53d287ac7c064d1a49d4bd93ca1cb9" title="Custom user data.">hsm_info_rec.user_data</a>. </td></tr>
   </table>
   </dd>
 </dl>
 
-<p>Definition at line <a class="el" href="hsm__info_8h_source.html#l00043">43</a> of file <a class="el" href="hsm__info_8h_source.html">hsm_info.h</a>.</p>
+<p>Definition at line <a class="el" href="hsm__info_8h_source.html#l00041">41</a> of file <a class="el" href="hsm__info_8h_source.html">hsm_info.h</a>.</p>
 
 </div>
 </div>
-<a class="anchor" id="a4e22a88507e4e2441303dedf308e06ab"></a>
+<a class="anchor" id="adb8d7e5297671ad30aceb19bc8673238"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">typedef void(* hsm_callback_exiting)(const <a class="el" href="hsm__forwards_8h.html#a9d4b46508b6a2ff6aa734d3b6a3c24fc">hsm_machine</a> hsm, const <a class="el" href="hsm__forwards_8h.html#ab8e8ab8d2eb97eb5cc6331d85262fb76">hsm_event</a> evt, void *user_data)</td>
+          <td class="memname">typedef void(* hsm_callback_exiting)(<a class="el" href="hsm__forwards_8h.html#aaed055d181b35182dc8c2830721dbdc9">hsm_status</a> status, void *user_data)</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p>Hear about states that are about to exit. </p>
+<p>Hear about states just before they exit. </p>
 <dl class="params"><dt>Parameters:</dt><dd>
   <table class="params">
-    <tr><td class="paramname">hsm</td><td>The <a class="el" href="hsm__forwards_8h.html#a9d4b46508b6a2ff6aa734d3b6a3c24fc" title="Pointer to an hsm_machine_rec.">hsm_machine</a>. note: hsm-&gt;current has the exiting state, and hsm-&gt;stack.context has the context (that may or may not be about to be popped ). </td></tr>
-    <tr><td class="paramname">evt</td><td>The <a class="el" href="hsm__forwards_8h.html#ab8e8ab8d2eb97eb5cc6331d85262fb76" title="Pointer to an hsm_event_rec.">hsm_event</a> which triggered the exit. </td></tr>
+    <tr><td class="paramname">status</td><td>The current state of the machine. hsm_status_rec::state has the exiting state, hsm_status_rec::ctx has the context (which may or may not be about to be popped. ) </td></tr>
     <tr><td class="paramname">user_data</td><td>The <a class="el" href="hsm__info_8h.html#a0f53d287ac7c064d1a49d4bd93ca1cb9" title="Custom user data.">hsm_info_rec.user_data</a>. </td></tr>
   </table>
   </dd>
 </dl>
 
-<p>Definition at line <a class="el" href="hsm__info_8h_source.html#l00052">52</a> of file <a class="el" href="hsm__info_8h_source.html">hsm_info.h</a>.</p>
+<p>Definition at line <a class="el" href="hsm__info_8h_source.html#l00049">49</a> of file <a class="el" href="hsm__info_8h_source.html">hsm_info.h</a>.</p>
 
 </div>
 </div>
-<a class="anchor" id="aa74be5e9bbe02d332ce0cce61f07841d"></a>
+<a class="anchor" id="aa8d960a144fdc1a2327002b0cbb34001"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">typedef void(* hsm_callback_unhandled_event)(const <a class="el" href="hsm__forwards_8h.html#a9d4b46508b6a2ff6aa734d3b6a3c24fc">hsm_machine</a> hsm, const <a class="el" href="hsm__forwards_8h.html#ab8e8ab8d2eb97eb5cc6331d85262fb76">hsm_event</a> evt, void *user_data)</td>
+          <td class="memname">typedef void(* hsm_callback_unhandled_event)(<a class="el" href="hsm__forwards_8h.html#aaed055d181b35182dc8c2830721dbdc9">hsm_status</a> status, void *user_data)</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -285,23 +283,22 @@ Called just after the context stack pops its data. </td></tr>
 <p>Hear about unhandled events. </p>
 <dl class="params"><dt>Parameters:</dt><dd>
   <table class="params">
-    <tr><td class="paramname">hsm</td><td>The <a class="el" href="hsm__forwards_8h.html#a9d4b46508b6a2ff6aa734d3b6a3c24fc" title="Pointer to an hsm_machine_rec.">hsm_machine</a> processing. </td></tr>
-    <tr><td class="paramname">evt</td><td>The <a class="el" href="hsm__forwards_8h.html#ab8e8ab8d2eb97eb5cc6331d85262fb76" title="Pointer to an hsm_event_rec.">hsm_event</a> which no state has handled. </td></tr>
+    <tr><td class="paramname">status</td><td>The current state of the machine. </td></tr>
     <tr><td class="paramname">user_data</td><td>The <a class="el" href="hsm__info_8h.html#a0f53d287ac7c064d1a49d4bd93ca1cb9" title="Custom user data.">hsm_info_rec.user_data</a>. </td></tr>
   </table>
   </dd>
 </dl>
 
-<p>Definition at line <a class="el" href="hsm__info_8h_source.html#l00060">60</a> of file <a class="el" href="hsm__info_8h_source.html">hsm_info.h</a>.</p>
+<p>Definition at line <a class="el" href="hsm__info_8h_source.html#l00056">56</a> of file <a class="el" href="hsm__info_8h_source.html">hsm_info.h</a>.</p>
 
 </div>
 </div>
-<a class="anchor" id="a08cdcda2fe48cc8c1514c902d69f5465"></a>
+<a class="anchor" id="ab90fd5e1bffe6ca6ef305b43c839b117"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">typedef void(* hsm_callback_context_popped)(const <a class="el" href="hsm__forwards_8h.html#a9d4b46508b6a2ff6aa734d3b6a3c24fc">hsm_machine</a> hsm, <a class="el" href="hsm__forwards_8h.html#aa0e37ff043d2dd5216cc762ca03046cb">hsm_context</a> ctx, void *user_data)</td>
+          <td class="memname">typedef void(* hsm_callback_context_popped)(<a class="el" href="hsm__forwards_8h.html#aaed055d181b35182dc8c2830721dbdc9">hsm_status</a> status, void *user_data)</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -309,15 +306,14 @@ Called just after the context stack pops its data. </td></tr>
 <p>Hear about context objects that have just been popped; can be used to free memory if user code allocated memory for state instance data during a state's enter callback. </p>
 <dl class="params"><dt>Parameters:</dt><dd>
   <table class="params">
-    <tr><td class="paramname">hsm</td><td>The <a class="el" href="hsm__forwards_8h.html#a9d4b46508b6a2ff6aa734d3b6a3c24fc" title="Pointer to an hsm_machine_rec.">hsm_machine</a> processing. </td></tr>
-    <tr><td class="paramname">ctx</td><td>The <a class="el" href="hsm__forwards_8h.html#aa0e37ff043d2dd5216cc762ca03046cb" title="Pointer to an hsm_context_rec.">hsm_context</a> which has just been removed from the stack. </td></tr>
+    <tr><td class="paramname">status</td><td>The current state of the machine. hsm_status_rec::ctx has the context which has just been removed from the stack. </td></tr>
     <tr><td class="paramname">user_data</td><td>The <a class="el" href="hsm__info_8h.html#a0f53d287ac7c064d1a49d4bd93ca1cb9" title="Custom user data.">hsm_info_rec.user_data</a>.</td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section see"><dt>See also:</dt><dd><a class="el" href="hsm__state_8h.html#a7a1b7d6e09cadb4fc2359c224016c4ab" title="A state&#39;s enter callback.">hsm_callback_enter</a>, <a class="el" href="hsm__state_8h.html#a0cb7e4f750bdd83a03d75df4714f2efa" title="Macro for declaring a state + enter callback.">HSM_STATE_ENTER</a> </dd></dl>
+<dl class="section see"><dt>See also:</dt><dd><a class="el" href="hsm__state_8h.html#af766d6e8715b04f423b490cc5a056bf1" title="A state&#39;s enter callback.">hsm_callback_enter</a>, <a class="el" href="hsm__state_8h.html#a0cb7e4f750bdd83a03d75df4714f2efa" title="Macro for declaring a state + enter callback.">HSM_STATE_ENTER</a> </dd></dl>
 
-<p>Definition at line <a class="el" href="hsm__info_8h_source.html#l00072">72</a> of file <a class="el" href="hsm__info_8h_source.html">hsm_info.h</a>.</p>
+<p>Definition at line <a class="el" href="hsm__info_8h_source.html#l00067">67</a> of file <a class="el" href="hsm__info_8h_source.html">hsm_info.h</a>.</p>
 
 </div>
 </div>
@@ -356,7 +352,7 @@ Called just after the context stack pops its data. </td></tr>
   </dd>
 </dl>
 
-<p>Definition at line <a class="el" href="hsm__machine_8c_source.html#l00107">107</a> of file <a class="el" href="hsm__machine_8c_source.html">hsm_machine.c</a>.</p>
+<p>Definition at line <a class="el" href="hsm__machine_8c_source.html#l00106">106</a> of file <a class="el" href="hsm__machine_8c_source.html">hsm_machine.c</a>.</p>
 
 </div>
 </div>
@@ -366,7 +362,7 @@ Called just after the context stack pops its data. </td></tr>
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="dir_6c36b64852547327283732128225c9d7.html">hsm</a></li><li class="navelem"><a class="el" href="hsm__info_8h.html">hsm_info.h</a></li>
-    <li class="footer">Generated on Thu Jun 21 2012 12:51:57 for hsm-statechart by
+    <li class="footer">Generated on Fri Jun 22 2012 00:43:28 for hsm-statechart by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.1.1 </li>
   </ul>

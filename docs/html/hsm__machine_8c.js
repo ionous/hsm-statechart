@@ -6,7 +6,7 @@ var hsm__machine_8c =
     [ "PSEUDO_STATE", "hsm__machine_8c.html#ac84d92e7be9f5afa4f1863204dafef0b", null ],
     [ "PSEUDO_STATE", "hsm__machine_8c.html#a8aede98737cb5e60f8ed2c50cd000152", null ],
     [ "PSEUDO_STATE", "hsm__machine_8c.html#ae2cacb5221fc4044f168b46b691c29d7", null ],
-    [ "HsmDoNothing", "hsm__machine_8c.html#a82367ac329222daad6d67122a550570a", null ],
+    [ "HsmDoNothing", "hsm__machine_8c.html#a1a2c4a6de04932c194bf4b46b89893e4", null ],
     [ "HsmTopState", "hsm__machine_8c.html#a1ba67e8e0edddad002d4f4c44d0e73db", null ],
     [ "HsmTransition", "hsm__machine_8c.html#ab56d8cd0f696a999291da1c1aa450981", null ],
     [ "HsmRecursiveEnter", "hsm__machine_8c.html#a9fd7459ed0ecd07a3d1892b37197348e", null ],

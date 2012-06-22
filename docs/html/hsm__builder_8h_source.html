@@ -116,38 +116,56 @@ $(document).ready(function(){initNavTree('hsm__builder_8h.html','');});
 <div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define __HSM_BUILDER_H__</span></div>
 <div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;<span class="preprocessor"></span></div>
 <div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;</div>
-<div class="line"><a name="l00034"></a><span class="lineno"><a class="code" href="hsm__builder_8h.html#a3be4666e7ca8ccefe48afc782c370e27">   34</a></span>&#160;<span class="keyword">typedef</span> void(*<a class="code" href="hsm__builder_8h.html#a3be4666e7ca8ccefe48afc782c370e27" title="Action callback.">hsm_callback_action</a>)( <a class="code" href="hsm__machine_8h.html#structhsm__machine__rec" title="The statemachine object.">hsm_machine</a> hsm, <a class="code" href="hsm__context_8h.html#structhsm__context__rec" title="A per state instance context object.">hsm_context</a> ctx, <a class="code" href="hsm__forwards_8h.html#ab8e8ab8d2eb97eb5cc6331d85262fb76" title="Pointer to an hsm_event_rec.">hsm_event</a> evt );</div>
-<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;</div>
-<div class="line"><a name="l00043"></a><span class="lineno"><a class="code" href="hsm__builder_8h.html#aff1f4234c81501b60e243c3f70d277bf">   43</a></span>&#160;<span class="keyword">typedef</span> hsm_bool(*<a class="code" href="hsm__builder_8h.html#aff1f4234c81501b60e243c3f70d277bf" title="Guard callback.">hsm_callback_guard</a>)( <a class="code" href="hsm__machine_8h.html#structhsm__machine__rec" title="The statemachine object.">hsm_machine</a> hsm, <a class="code" href="hsm__context_8h.html#structhsm__context__rec" title="A per state instance context object.">hsm_context</a> ctx, <a class="code" href="hsm__forwards_8h.html#ab8e8ab8d2eb97eb5cc6331d85262fb76" title="Pointer to an hsm_event_rec.">hsm_event</a> evt );</div>
-<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;</div>
-<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;<span class="keywordtype">void</span> <a class="code" href="hsm__builder_8c.html#aee3d85677083c4f813f66848a9f97150" title="Builder initialization.">hsmStartup</a>();</div>
-<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;</div>
-<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;<span class="keywordtype">void</span> <a class="code" href="hsm__builder_8c.html#ab43dd9e98a8465869b8686c966dbc121" title="Builder shutdown.">hsmShutdown</a>();</div>
-<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;</div>
-<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;<span class="keywordtype">int</span> <a class="code" href="hsm__builder_8c.html#a5779f163e882967ac81477d847f2733b" title="Declare a new state.">hsmState</a>( <span class="keyword">const</span> <span class="keywordtype">char</span> * name );</div>
-<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;</div>
-<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;</div>
-<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;<span class="keywordtype">int</span> <a class="code" href="hsm__builder_8c.html#aff5e38807ea709e03e1800388e56d0f6" title="Define an already declared (or referenced) state.">hsmBegin</a>( <span class="keywordtype">int</span> state );</div>
-<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;</div>
-<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;<span class="keywordtype">void</span> <a class="code" href="hsm__builder_8c.html#a437a5846751d5b2610993e96b75e026d" title="Specify a callback for state entry.">hsmOnEnter</a>( <a class="code" href="hsm__state_8h.html#a7a1b7d6e09cadb4fc2359c224016c4ab" title="A state&#39;s enter callback.">hsm_callback_enter</a> entry );</div>
-<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;</div>
-<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;<span class="keywordtype">void</span> <a class="code" href="hsm__builder_8c.html#a9a490bd3527dbe8eeb590b9dfb1030b3" title="Event handler initialization.">hsmOni</a>( <span class="keywordtype">int</span> eventInt );</div>
-<div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;</div>
-<div class="line"><a name="l00115"></a><span class="lineno">  115</span>&#160;<span class="keywordtype">void</span> <a class="code" href="hsm__builder_8c.html#a262206023f77d196c64fddc0388f8033" title="The event handler being declared should transition to another state.">hsmGoto</a>( <span class="keywordtype">int</span> state );        </div>
-<div class="line"><a name="l00116"></a><span class="lineno">  116</span>&#160;</div>
-<div class="line"><a name="l00121"></a><span class="lineno">  121</span>&#160;<span class="keywordtype">void</span> <a class="code" href="hsm__builder_8c.html#ad1f8279ecbbdae9541fb88ec1d889c79" title="The event handler being declared should run the passed action.">hsmRun</a>( <a class="code" href="hsm__builder_8h.html#a3be4666e7ca8ccefe48afc782c370e27" title="Action callback.">hsm_callback_action</a> action );</div>
-<div class="line"><a name="l00122"></a><span class="lineno">  122</span>&#160;</div>
-<div class="line"><a name="l00127"></a><span class="lineno">  127</span>&#160;<span class="keywordtype">void</span> <a class="code" href="hsm__builder_8c.html#a1b3b9447cfcb13c231a4814341987e0c" title="Pairs with.">hsmEnd</a>();</div>
-<div class="line"><a name="l00128"></a><span class="lineno">  128</span>&#160;</div>
-<div class="line"><a name="l00129"></a><span class="lineno">  129</span>&#160;</div>
-<div class="line"><a name="l00130"></a><span class="lineno">  130</span>&#160;<span class="preprocessor">#endif // #ifndef __HSM_BUILDER_H__</span></div>
+<div class="line"><a name="l00032"></a><span class="lineno"><a class="code" href="hsm__builder_8h.html#a969eb07a729c381c70dedc375d3fd2d3">   32</a></span>&#160;<span class="keyword">typedef</span> void(*<a class="code" href="hsm__builder_8h.html#a969eb07a729c381c70dedc375d3fd2d3" title="Action callback.">hsm_callback_action</a>)( <a class="code" href="hsm__status_8h.html#structhsm__status__rec">hsm_status</a> status, <span class="keywordtype">int</span> action_data );</div>
+<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;</div>
+<div class="line"><a name="l00041"></a><span class="lineno"><a class="code" href="hsm__builder_8h.html#ac06fa766d446e94989920fa33d47fcae">   41</a></span>&#160;<span class="keyword">typedef</span> hsm_bool(*<a class="code" href="hsm__builder_8h.html#ac06fa766d446e94989920fa33d47fcae" title="Guard callback.">hsm_callback_guard</a>)( <a class="code" href="hsm__status_8h.html#structhsm__status__rec">hsm_status</a> status, <span class="keywordtype">int</span> guard_data );</div>
+<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;</div>
+<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;<span class="keywordtype">void</span> <a class="code" href="hsm__builder_8c.html#aee3d85677083c4f813f66848a9f97150" title="Builder initialization.">hsmStartup</a>();</div>
+<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;</div>
+<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;<span class="keywordtype">void</span> <a class="code" href="hsm__builder_8c.html#ab43dd9e98a8465869b8686c966dbc121" title="Builder shutdown.">hsmShutdown</a>();</div>
+<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;</div>
+<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;<span class="keywordtype">void</span> hsmStart( <a class="code" href="hsm__machine_8h.html#structhsm__machine__rec" title="The statemachine object.">hsm_machine</a>, <span class="keyword">const</span> <span class="keywordtype">char</span> * name );</div>
+<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;</div>
+<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;<span class="keywordtype">void</span> hsmStartId( <a class="code" href="hsm__machine_8h.html#structhsm__machine__rec" title="The statemachine object.">hsm_machine</a>, <span class="keywordtype">int</span> );</div>
+<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;</div>
+<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;</div>
+<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;<span class="keywordtype">int</span> <a class="code" href="hsm__builder_8c.html#a5779f163e882967ac81477d847f2733b" title="Declare a new state.">hsmState</a>( <span class="keyword">const</span> <span class="keywordtype">char</span> * name );</div>
+<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;</div>
+<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;<span class="keywordtype">int</span> <a class="code" href="hsm__builder_8c.html#ae8c6bb52ea59e76be2b736f5e07c52f3" title="Define a named state.">hsmBegin</a>( <span class="keyword">const</span> <span class="keywordtype">char</span> * name );</div>
+<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;</div>
+<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;<span class="keywordtype">int</span> <a class="code" href="hsm__builder_8c.html#a43af17c11054a643f32d13a9bf0d0bbc" title="Define an already declared state.">hsmBeginId</a>( <span class="keywordtype">int</span> state );</div>
+<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;</div>
+<div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160;<span class="keywordtype">void</span> <a class="code" href="hsm__builder_8c.html#a437a5846751d5b2610993e96b75e026d" title="Specify a callback for state entry.">hsmOnEnter</a>( <a class="code" href="hsm__state_8h.html#af766d6e8715b04f423b490cc5a056bf1" title="A state&#39;s enter callback.">hsm_callback_enter</a> entry );</div>
+<div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160;</div>
+<div class="line"><a name="l00122"></a><span class="lineno">  122</span>&#160;<span class="keywordtype">void</span> <a class="code" href="hsm__builder_8c.html#a362e4c14fcbc4c210a27f555d11344ef" title="Event handler initialization.">hsmOn</a>( <a class="code" href="hsm__builder_8h.html#ac06fa766d446e94989920fa33d47fcae" title="Guard callback.">hsm_callback_guard</a> guard, <span class="keywordtype">int</span> guard_data );</div>
+<div class="line"><a name="l00123"></a><span class="lineno">  123</span>&#160;</div>
+<div class="line"><a name="l00133"></a><span class="lineno">  133</span>&#160;<span class="keywordtype">void</span> <a class="code" href="hsm__builder_8c.html#a77be8a5febc7ee3d04f43bdb9142054e" title="Add a guard to the current event handler.">hsmIf</a>( <a class="code" href="hsm__builder_8h.html#ac06fa766d446e94989920fa33d47fcae" title="Guard callback.">hsm_callback_guard</a> guard, <span class="keywordtype">int</span> guard_data );</div>
+<div class="line"><a name="l00134"></a><span class="lineno">  134</span>&#160;</div>
+<div class="line"><a name="l00135"></a><span class="lineno">  135</span>&#160;</div>
+<div class="line"><a name="l00140"></a><span class="lineno">  140</span>&#160;<span class="keywordtype">void</span> <a class="code" href="hsm__builder_8c.html#a3e2542f58c071b332082c72fd66df8bb" title="The event handler being declared should transition to another state.">hsmGoto</a>( <span class="keyword">const</span> <span class="keywordtype">char</span> * name );</div>
+<div class="line"><a name="l00141"></a><span class="lineno">  141</span>&#160;</div>
+<div class="line"><a name="l00146"></a><span class="lineno">  146</span>&#160;<span class="keywordtype">void</span> <a class="code" href="hsm__builder_8c.html#aa671db4a1508cefbfb89421627446fd8" title="The event handler being declared should transition to another state.">hsmGotoState</a>( <a class="code" href="hsm__state_8h.html#structhsm__state__rec" title="a state descriptor http://dev.ionous.net/2012/06/state-descriptors.html">hsm_state</a> );</div>
+<div class="line"><a name="l00147"></a><span class="lineno">  147</span>&#160;</div>
+<div class="line"><a name="l00155"></a><span class="lineno">  155</span>&#160;<span class="keywordtype">void</span> <a class="code" href="hsm__builder_8c.html#a16d37477917568e944e63eda28c8cc62" title="The event handler being declared should transition to another state.">hsmGotoId</a>( <span class="keywordtype">int</span> state );</div>
+<div class="line"><a name="l00156"></a><span class="lineno">  156</span>&#160;</div>
+<div class="line"><a name="l00157"></a><span class="lineno">  157</span>&#160;</div>
+<div class="line"><a name="l00163"></a><span class="lineno">  163</span>&#160;<span class="keywordtype">void</span> <a class="code" href="hsm__builder_8c.html#a6d35b29634f7d5f29e45e75f6ac27dde" title="The event handler being declared should run the passed action.">hsmRun</a>( <a class="code" href="hsm__builder_8h.html#a969eb07a729c381c70dedc375d3fd2d3" title="Action callback.">hsm_callback_action</a> action, <span class="keywordtype">int</span> action_data );</div>
+<div class="line"><a name="l00164"></a><span class="lineno">  164</span>&#160;</div>
+<div class="line"><a name="l00169"></a><span class="lineno">  169</span>&#160;<span class="keywordtype">void</span> <a class="code" href="hsm__builder_8c.html#a1b3b9447cfcb13c231a4814341987e0c" title="Pairs with hsmBegin()">hsmEnd</a>();</div>
+<div class="line"><a name="l00170"></a><span class="lineno">  170</span>&#160;</div>
+<div class="line"><a name="l00177"></a><span class="lineno">  177</span>&#160;<a class="code" href="hsm__state_8h.html#structhsm__state__rec" title="a state descriptor http://dev.ionous.net/2012/06/state-descriptors.html">hsm_state</a> <a class="code" href="hsm__builder_8c.html#a93916a77098a9337d6ca88fd4b0c45af" title="Return an hsm_state from a builder state.">hsmResolve</a>( <span class="keyword">const</span> <span class="keywordtype">char</span> * name );</div>
+<div class="line"><a name="l00178"></a><span class="lineno">  178</span>&#160;</div>
+<div class="line"><a name="l00185"></a><span class="lineno">  185</span>&#160;<a class="code" href="hsm__state_8h.html#structhsm__state__rec" title="a state descriptor http://dev.ionous.net/2012/06/state-descriptors.html">hsm_state</a> <a class="code" href="hsm__builder_8c.html#aee89776d61b3c812c2e1da067e3124da" title="Return a core hsm_state from an id.">hsmResolveId</a>( <span class="keywordtype">int</span> <span class="keywordtype">id</span> );</div>
+<div class="line"><a name="l00186"></a><span class="lineno">  186</span>&#160;</div>
+<div class="line"><a name="l00187"></a><span class="lineno">  187</span>&#160;</div>
+<div class="line"><a name="l00188"></a><span class="lineno">  188</span>&#160;<span class="preprocessor">#endif // #ifndef __HSM_BUILDER_H__</span></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="dir_98210ece4f8a652fe0a2321bd18e8fca.html">builder</a></li><li class="navelem"><a class="el" href="hsm__builder_8h.html">hsm_builder.h</a></li>
-    <li class="footer">Generated on Thu Jun 21 2012 12:51:56 for hsm-statechart by
+    <li class="footer">Generated on Fri Jun 22 2012 00:43:28 for hsm-statechart by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.1.1 </li>
   </ul>
