@@ -37,4 +37,9 @@ typedef struct hsm_context_rec *hsm_context;
  */
 typedef struct hsm_machine_rec *hsm_machine;
 
+/**
+ * Pointer to callback info.
+ */
+typedef const struct hsm_status_rec *hsm_status;
+
 #endif // #ifndef __HSM_FORWARDS_H__

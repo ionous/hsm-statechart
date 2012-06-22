@@ -27,20 +27,18 @@
 /**
  * Action callback.
  *
- * @param hsm The #hsm_machine processing the event that trigged the action.
- * @param ctx Context object returned by the state enter callback.
- * @param evt Event which triggered the action.
+ * @param status Current state of the machine. 
  */
-typedef void(*hsm_callback_action)( hsm_machine hsm, hsm_context ctx, hsm_event evt, int action_data );
+typedef void(*hsm_callback_action)( hsm_status status, int action_data );
 
 /**
  * Guard callback.
  *
- * @param hsm The #hsm_machine processing the event that trigged the guard.
- * @param ctx Context object returned by the state enter callback.
- * @param evt Event which triggered the action.
+ * @param status Current state of the machine. 
+ * @param guard_data The userdata passed to hsmOn(), hsmIf()
+ * @return Return #HSM_TRUE if the guard passes and the transition,actions should be handled; #HSM_FALSE if the guard filters the transition,actions.
  */
-typedef hsm_bool(*hsm_callback_guard)( hsm_machine hsm, hsm_context ctx, hsm_event evt, int guard_data );
+typedef hsm_bool(*hsm_callback_guard)( hsm_status status, int guard_data );
 
 /**
  * Builder initialization.

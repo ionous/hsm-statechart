@@ -48,27 +48,27 @@ static hsm_bool Verify( test_sequence_t * test, const char * string, ... )
 }
 
 //---------------------------------------------------------------------------
-static void Initing( const hsm_machine hsm, const hsm_state state, void * user_data )
+static void Initing( hsm_status status, void * user_data )
 {
-    Verify( (test_sequence_t*)user_data, "%s-INIT", hsm->current->name );
+    Verify( (test_sequence_t*)user_data, "%s-INIT", status->state->name );
 }
 
 //---------------------------------------------------------------------------
-static void Entered( const hsm_machine hsm, const hsm_event evt, void * user_data )
+static void Entered( hsm_status status, void * user_data )
 {
-    Verify( (test_sequence_t*)user_data, "%s-ENTRY", hsm->current->name );
+    Verify( (test_sequence_t*)user_data, "%s-ENTRY", status->state->name );
 }
 
 //---------------------------------------------------------------------------
-static void Exiting( const hsm_machine hsm, const hsm_event evt, void * user_data )
+static void Exiting( hsm_status status, void * user_data )
 {
-    Verify( (test_sequence_t*)user_data, "%s-EXIT", hsm->current->name );
+    Verify( (test_sequence_t*)user_data, "%s-EXIT", status->state->name );
 }
 
 //---------------------------------------------------------------------------
-static void Unhandled( const hsm_machine hsm, const hsm_event evt, void * user_data )
+static void Unhandled( hsm_status status, void * user_data )
 {
-    Verify( (test_sequence_t*)user_data, "EVT-%c", ((CharEvent*)evt)->ch );
+    Verify( (test_sequence_t*)user_data, "EVT-%c", ((CharEvent*)status->evt)->ch );
 }
 
 //---------------------------------------------------------------------------

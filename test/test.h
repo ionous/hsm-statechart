@@ -34,7 +34,7 @@ hsm_bool TestEventSequence( hsm_machine hsm, hsm_state first, const char ** seq 
 // a state with nothing to do
 #define EMPTY_STATE( s,p,i ) \
     HSM_STATE( s, p, i ); \
-    hsm_state s##Event( hsm_machine hsm, hsm_context ctx, hsm_event evt ) {return NULL; }
+    hsm_state s##Event( hsm_status status ) { return NULL; }
 
 
 #endif // #ifndef __TEST_H__

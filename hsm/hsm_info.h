@@ -24,52 +24,47 @@ typedef struct hsm_info_rec hsm_info_t;
  * Hear about states just before entering next state.
  * hsm-statechart supports initial states via the #HSM_STATE macros.
  *
- * @param hsm The #hsm_machine. note: hsm->current has the new state, and hsm->stack.context has most recently pushed context.
- * @param next The #hsm_state that's about to be entered.
+ * @param status The current state of the machine. hsm_status_rec::state holds the state just entered, hsm_status_rec::ctx has most recently pushed context.
  * @param user_data The #hsm_info_rec.user_data.
  * 
  * @note The sequence in UML is enter first, take the init transition second.
- *
  */
-typedef void (*hsm_callback_initing)( const hsm_machine hsm, const hsm_state next, void * user_data );
+typedef void (*hsm_callback_initing)( hsm_status status, void * user_data );
 
 /**
  * Hear about new states <i>just</i> after they have been entered.
  *
- * @param hsm The #hsm_machine. note: hsm->current has the new state, and hsm->stack.context has most recently pushed context.
+ * @param status The current state of the machine. hsm_status_rec::state holds the state being entered, hsm_status_rec::ctx has most recently pushed context.
  * @param evt The #hsm_event which triggered the exit.
  * @param user_data The #hsm_info_rec.user_data.
  */
-typedef void (*hsm_callback_entered)( const hsm_machine hsm, const hsm_event evt, void * user_data );
+typedef void (*hsm_callback_entered)( hsm_status status, void * user_data );
 
 /**
- * Hear about states that are about to exit
+ * Hear about states just before they exit.
  *
- * @param hsm The #hsm_machine. note: hsm->current has the exiting state, and hsm->stack.context has the context (that may or may not be about to be popped ).
- * @param evt The #hsm_event which triggered the exit.
+ * @param status The current state of the machine. hsm_status_rec::state has the exiting state, hsm_status_rec::ctx has the context (which may or may not be about to be popped. )
  * @param user_data The #hsm_info_rec.user_data.
  */
-typedef void(*hsm_callback_exiting)( const hsm_machine hsm, const hsm_event evt, void * user_data );
+typedef void(*hsm_callback_exiting)( hsm_status status, void * user_data );
 
 /**
  * Hear about unhandled events.
- * @param hsm The #hsm_machine processing. 
- * @param evt The #hsm_event which no state has handled.
+ * @param status The current state of the machine.
  * @param user_data The #hsm_info_rec.user_data.
  */
-typedef void (*hsm_callback_unhandled_event)( const hsm_machine hsm, const hsm_event evt, void * user_data );
+typedef void (*hsm_callback_unhandled_event)( hsm_status status, void * user_data );
 
 /**
  * Hear about context objects that have just been popped;
  * can be used to free memory if user code allocated memory for state instance data during a state's enter callback.
  *
- * @param hsm The #hsm_machine processing. 
- * @param ctx The #hsm_context which has just been removed from the stack.
+ * @param status The current state of the machine. hsm_status_rec::ctx has the context which has just been removed from the stack.
  * @param user_data The #hsm_info_rec.user_data.
  *
  * @see hsm_callback_enter, HSM_STATE_ENTER
  */
-typedef void (*hsm_callback_context_popped)( const hsm_machine hsm, hsm_context ctx, void * user_data );
+typedef void (*hsm_callback_context_popped)( hsm_status status, void * user_data );
 
 
 //---------------------------------------------------------------------------

@@ -33,18 +33,18 @@ HSM_STATE( s0, HsmTopState, s1 );
             HSM_STATE( s211, s21, 0 );
 
 //---------------------------------------------------------------------------
-hsm_state s0Event( hsm_machine hsm, hsm_context ctx, const CharEvent*evt ) 
+hsm_state s0Event( hsm_status status ) 
 {
-    switch (evt->ch) {
+    switch (status->evt->ch) {
         case 'e': return s211();
         case 'i': return s12();
     }
     return 0;
 }
 
-hsm_state s1Event( hsm_machine hsm, hsm_context ctx, const CharEvent*evt ) 
+hsm_state s1Event( hsm_status status ) 
 {
-    switch (evt->ch) {
+    switch (status->evt->ch) {
         case 'a': return s1();
         case 'b': return s11();
         case 'c': return s2();
@@ -54,13 +54,13 @@ hsm_state s1Event( hsm_machine hsm, hsm_context ctx, const CharEvent*evt )
      return 0;
 }
 
-hsm_state s11Event( hsm_machine hsm, hsm_context ctx, const CharEvent*evt ) 
+hsm_state s11Event( hsm_status status ) 
 {
-    switch (evt->ch) {
+    switch (status->evt->ch) {
         case 'g': return s211();
         case 'h': {
-            if ((( sp_context_t*)ctx)->foo) {
-                (( sp_context_t*)ctx)->foo =0;
+            if (((sp_context_t*)status->ctx)->foo) {
+                ((sp_context_t*)status->ctx)->foo =0;
                 return HsmStateHandled();            
             }
             break;
@@ -68,27 +68,27 @@ hsm_state s11Event( hsm_machine hsm, hsm_context ctx, const CharEvent*evt )
     }
     return 0;
 }
-hsm_state s12Event( hsm_machine hsm, hsm_context ctx, const CharEvent*evt ) {
-    switch (evt->ch) {
+hsm_state s12Event( hsm_status status ) {
+    switch (status->evt->ch) {
         case 'e': return s211();
         case 'i': return s12();
     }
     return 0;
 }
 
-hsm_state s2Event( hsm_machine hsm, hsm_context ctx, const CharEvent*evt ) {
-    switch (evt->ch) {
+hsm_state s2Event( hsm_status status ) {
+    switch (status->evt->ch) {
         case 'c': return s1();
         case 'f': return s11();
     }
     return 0;
 }
-hsm_state s21Event( hsm_machine hsm, hsm_context ctx, const CharEvent*evt ) {
-    switch (evt->ch) {
+hsm_state s21Event( hsm_status status ) {
+    switch (status->evt->ch) {
         case 'b': return s211();
         case 'h': {
-            if (!(( sp_context_t*)ctx)->foo) {
-                (( sp_context_t*)ctx)->foo=1;
+            if (!((sp_context_t*)status->ctx)->foo) {
+                ((sp_context_t*)status->ctx)->foo=1;
                 return s21();
             }
             break;
@@ -97,8 +97,8 @@ hsm_state s21Event( hsm_machine hsm, hsm_context ctx, const CharEvent*evt ) {
     return 0;
 }
 
-hsm_state s211Event( hsm_machine hsm, hsm_context ctx, const CharEvent*evt ) {
-    switch (evt->ch) {
+hsm_state s211Event( hsm_status status ) {
+    switch (status->evt->ch) {
         case 'd': { 
             return s21();
         }

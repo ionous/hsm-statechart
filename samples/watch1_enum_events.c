@@ -30,14 +30,14 @@ enum watch_events {
 // you could also wrap the events of another framework if you wanted.
 typedef struct hsm_event_rec WatchEvent;
 struct hsm_event_rec {
-    WatchEvents evt;
+    WatchEvents type;
 };
 
 // the tick event extends the basic watch event to add elapsed time.
 // you can have as many different kinds of event data as you want.
 typedef struct tick_event TickEvent;
 struct tick_event {
-    WatchEvent evt;
+    WatchEvent core;
     int time;
 };
 
@@ -81,11 +81,11 @@ HSM_STATE_ENTER( ActiveState, HsmTopState, StoppedState );
 //
 // the convention <StateName>Enter is used by the HSM_STATE_ENTER macro to designate the entry callback
 //
-hsm_context ActiveStateEnter( hsm_machine hsm, hsm_context ctx, const WatchEvent* evt )
+hsm_context ActiveStateEnter( hsm_status status )
 {
-    Watch* watch=((WatchContext*)ctx)->watch;
+    Watch* watch=((WatchContext*)status->ctx)->watch;
     ResetTime( watch );
-    return ctx;
+    return status->ctx;
 }
 
 //---------------------------------------------------------------------------
@@ -93,11 +93,11 @@ hsm_context ActiveStateEnter( hsm_machine hsm, hsm_context ctx, const WatchEvent
 //
 // the convention <StateName>Event is used by the HSM_STATE macros to indicate the handler function
 //
-hsm_state ActiveStateEvent( hsm_machine hsm, hsm_context ctx, const WatchEvent* evt )
+hsm_state ActiveStateEvent( hsm_status status )
 {
     // by default this function does nothing....
     hsm_state ret=NULL;
-    switch ( evt->evt ) {
+    switch ( status->evt->type ) {
         // but, whenever the reset button is pressed...
         case WATCH_RESET_PRESSED:
             // it transitions to itself.
@@ -114,14 +114,14 @@ hsm_state ActiveStateEvent( hsm_machine hsm, hsm_context ctx, const WatchEvent* 
 //---------------------------------------------------------------------------
 // event handler for the stoppped state
 //
-hsm_state StoppedStateEvent( hsm_machine hsm, hsm_context ctx, const WatchEvent* evt )
+hsm_state StoppedStateEvent( hsm_status status )
 {
     // by default this function does nothing....
     // note: anything that we don't handle goes straight to our parent
     // neither Stopped nor Running handle 'RESET".
     // they both let ActiveStateEvent ( above ) do whatever it wants.
     hsm_state ret=NULL;
-    switch (evt->evt) {
+    switch (status->evt->type) {
         // but, when the 'toggle' button gets pressed....
         case WATCH_TOGGLE_PRESSED:
             // transition over to the running state
@@ -134,11 +134,11 @@ hsm_state StoppedStateEvent( hsm_machine hsm, hsm_context ctx, const WatchEvent*
 //---------------------------------------------------------------------------
 // event handler for the running state
 //
-hsm_state RunningStateEvent( hsm_machine hsm, hsm_context ctx, const WatchEvent* evt )
+hsm_state RunningStateEvent( hsm_status status )
 {
     // by default this function does nothing....
     hsm_state ret=NULL;
-    switch (evt->evt) {
+    switch (status->evt->type) {
         // but, when the 'toggle' button gets pressed....
         case WATCH_TOGGLE_PRESSED:
             // transition back to the stopped state
@@ -148,9 +148,9 @@ hsm_state RunningStateEvent( hsm_machine hsm, hsm_context ctx, const WatchEvent*
         case WATCH_TICK:
         {
             // our context is the watch object
-            Watch* watch=((WatchContext*)ctx)->watch;
+            Watch* watch=((WatchContext*)status->ctx)->watch;
             // our event is the tick event
-            TickEvent* tick= (TickEvent*)evt;
+            TickEvent* tick= (TickEvent*)status->evt;
             // tick by this much time
             TickTime ( watch, tick->time );
             // print the total time
@@ -221,7 +221,7 @@ int watch1_enum_events( int argc, char* argv[] )
         // and sends the event to the appropriate state. noting (in the code above) that only 
         // RunningStateEvent has code does anything when it hears the tick event.
             TickEvent tick= { WATCH_TICK, 1 };
-            HsmProcessEvent( hsm, &tick.evt );
+            HsmProcessEvent( hsm, &tick.core );
             PlatformSleep(500);
         }
     };

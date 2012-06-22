@@ -53,20 +53,20 @@ struct watch_context {
 };
 
 //---------------------------------------------------------------------------
-static hsm_context ActiveStateEnter( hsm_machine hsm, hsm_context ctx, const WatchEvent* evt )
+static hsm_context ActiveStateEnter( hsm_status status )
 {
-    Watch* watch=((WatchContext*)ctx)->watch;
+    Watch* watch=((WatchContext*)status->ctx)->watch;
     ResetTime( watch );
-    return ctx;
+    return status->ctx;
 }
 
 //---------------------------------------------------------------------------
-static void RunTickTime( hsm_machine hsm, hsm_context ctx, const WatchEvent* evt )
+static void RunTickTime( hsm_status status )
 {
     // our context is the watch object
-    Watch* watch= ((WatchContext*)ctx)->watch;
+    Watch* watch= ((WatchContext*)status->ctx)->watch;
     // our event is the tick event
-    TickEvent * tick= ((TickEvent*)evt);
+    TickEvent * tick= ((TickEvent*)status->evt);
     // tick by this much time
     TickTime ( watch, tick->time );
     // print the total time

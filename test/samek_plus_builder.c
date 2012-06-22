@@ -25,21 +25,21 @@ struct sp_context_rec {
 };
 
 //---------------------------------------------------------------------------
-void ToggleFoo( hsm_machine hsm, hsm_context ctx, hsm_event evt, int  user_data )    
+void ToggleFoo( hsm_status status, int  user_data )    
 {
-    sp_context_t*sp= ( sp_context_t*)ctx;
+    sp_context_t*sp= (sp_context_t*)status->ctx;
     sp->foo= !sp->foo;
 }
 
-hsm_bool TestFoo( hsm_machine hsm, hsm_context ctx, hsm_event evt, int user_data )    
+hsm_bool TestFoo( hsm_status status, int user_data )    
 {
-    sp_context_t*sp= ( sp_context_t*)ctx;
+    sp_context_t*sp= (sp_context_t*)status->ctx;
     return sp->foo == user_data;
 }
 
-hsm_bool MatchChar( hsm_machine hsm, hsm_context ctx, hsm_event evt, int user_data )
+hsm_bool MatchChar( hsm_status status, int user_data )
 {
-    return evt->ch == user_data;
+    return status->evt->ch == user_data;
 }
 
 //---------------------------------------------------------------------------
@@ -77,6 +77,10 @@ hsm_state buildMachine()
         {
             hsmOn( MatchChar, 'c' ); hsmGoto( "s1" );
             hsmOn( MatchChar, 'f' ); hsmGoto( "s11" );
+//FIXME-stravis
+//FIXME-stravis
+            // its parent seems to be s0 not s2... why?
+            // seems alright when i build... 
             hsmBegin( "s21" );
             {
                 hsmOn( MatchChar, 'b' ); 

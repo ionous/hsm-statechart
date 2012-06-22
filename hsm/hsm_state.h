@@ -19,11 +19,8 @@
 /**
  * A state's event handler callback.
  * A function of this signature is required for every state declared via #HSM_STATE.
- *
- * @param hsm The #hsm_machine processing the event.
- * @param ctx The #hsm_context object returned by the state enter callback.
- * @param evt The #hsm_event that needs handling.
  * 
+ * @param status Current state of the machine.
  * @return NULL, a state to transition to, or a predefined state token.
  *
  * @note You should return NULL from an event handler by default to indicate the event was not handled.
@@ -32,29 +29,29 @@
  * Returning HsmStateError() indicates a critical error has occured and the statemachine can no longer function.
  * Returning HsmStateFinal() indicates the statemachine has terminated and event callbacks are no longer desired.
  */
-typedef hsm_state(*hsm_callback_process_event)( hsm_machine hsm, hsm_context ctx, hsm_event evt );
+typedef hsm_state(*hsm_callback_process_event)( hsm_status status );
 
 /**
  * A state's enter callback.
  * A function of this signature is required for every state declared via #HSM_STATE_ENTER.
  *
- * @param hsm The #hsm_machine processing the event.
- * @param ctx The #hsm_context return the parent state's #hsm_callback_enter, or if no parent state: the context passed to HsmMachineWithContext().
+ * @param status Current state of the machine. 
+ * The context member of the status is either the parent state's #hsm_callback_enter, 
+ * or if no parent state: the context passed to HsmMachineWithContext().
+ *
  * @param evt The #hsm_event that needs handling.
  * 
  * @return Optionally: a new #hsm_context. The context will be passed to all sequequent calls to the state's #hsm_callback_process_event and the state's #hsm_callback_exit.
  */
-typedef hsm_context (*hsm_callback_enter)( hsm_machine hsm, hsm_context ctx, hsm_event evt );
+typedef hsm_context (*hsm_callback_enter)( hsm_status status );
 
 /**
  * A state's exit callback.
  * A function of this signature is required for every state declared via #HSM_STATE_ENTERX.
  *
- * @param hsm The #hsm_machine processing the event.
- * @param ctx The #hsm_context object returned by the state enter callback.
- * @param evt The #hsm_event that needs handling.
+ * @param status Current state of the machine. 
  */
-typedef void(*hsm_callback_exit)( hsm_machine, hsm_context, hsm_event );
+typedef void(*hsm_callback_exit)( hsm_status status );
 
 typedef struct hsm_state_rec hsm_state_t;
 
@@ -118,9 +115,8 @@ struct hsm_state_rec
  * @see #hsm_callback_process_event
  */
 #define HSM_STATE( state, parent, initial ) \
-        hsm_state state##Event( hsm_machine, hsm_context , hsm_event ); \
+        hsm_state state##Event( hsm_status ); \
         _HSM_STATE( state, parent, state##Event, 0, 0, initial )
-
 
 /**
  * Macro for declaring a state + enter callback.
@@ -136,8 +132,8 @@ struct hsm_state_rec
  * @see #hsm_callback_enter, #hsm_callback_process_event
  */
 #define HSM_STATE_ENTER( state, parent, initial ) \
-        hsm_state state##Event( hsm_machine, hsm_context , hsm_event ); \
-        hsm_context state##Enter( hsm_machine, hsm_context , hsm_event ); \
+        hsm_state state##Event( hsm_status ); \
+        hsm_context state##Enter( hsm_status ); \
         _HSM_STATE( state, parent, state##Event, state##Enter, 0, initial );
 
 /**
@@ -155,9 +151,9 @@ struct hsm_state_rec
  * @see #hsm_callback_exit, #hsm_callback_enter, #hsm_callback_process_event
  */
 #define HSM_STATE_ENTERX( state, parent, initial ) \
-        hsm_state state##Event( hsm_machine, hsm_context , hsm_event ); \
-        hsm_context state##Enter( hsm_machine, hsm_context , hsm_event ); \
-        void state##Exit ( hsm_machine, hsm_context , hsm_event ); \
+        hsm_state state##Event( hsm_status ); \
+        hsm_context state##Enter( hsm_status ); \
+        void state##Exit ( hsm_status ); \
         _HSM_STATE( state, parent, state##Event, state##Enter, state##Exit, initial );
 
 /**

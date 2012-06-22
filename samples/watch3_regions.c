@@ -30,7 +30,7 @@ enum watch_events
 typedef struct hsm_event_rec WatchEvent;
 struct hsm_event_rec 
 {
-    WatchEvents evt;
+    WatchEvents type;
 };
 
 
@@ -38,7 +38,7 @@ struct hsm_event_rec
 typedef struct tick_event TickEvent;
 struct tick_event 
 {
-    WatchEvent evt;
+    WatchEvent core;
     int time;
 };
 
@@ -88,17 +88,17 @@ struct hsm_parallel_rec
 };
 
 
-hsm_state HsmParallelEvent( hsm_machine hsm, hsm_context ctx, hsm_event evt );
-hsm_context HsmParallelEnter( hsm_parallel_t* parallel, hsm_machine hsm, hsm_context ctx, hsm_event evt );
-void HsmParallelExit( hsm_machine hsm, hsm_context ctx, hsm_event evt );
+hsm_state HsmParallelEvent( hsm_status status );
+hsm_context HsmParallelEnter( hsm_parallel_t* parallel, hsm_status status );
+void HsmParallelExit( hsm_status status );
 void HsmExit( hsm_machine hsm, hsm_event cause );
 
 #define HSM_PARALLEL( Parent ) \
-        hsm_context Parent##Parallel##Enter( hsm_machine hsm, hsm_context ctx , hsm_event evt ); \
+        hsm_context Parent##Parallel##Enter( hsm_status status ); \
         _HSM_STATE( Parent##Parallel, Parent, HsmParallelEvent, Parent##Parallel##Enter, HsmParallelExit, 0 ); \
         static hsm_parallel_t Parent##parallel= { 0 }; \
-        hsm_context Parent##Parallel##Enter( hsm_machine hsm, hsm_context ctx , hsm_event evt ) { \
-            return HsmParallelEnter( &(Parent##parallel), hsm, ctx, evt ); \
+        hsm_context Parent##Parallel##Enter( hsm_status status ) { \
+            return HsmParallelEnter( &(Parent##parallel), status ); \
         }
 
 // FIX? if Parent() took at poiner of child, we could ignore it for all but parallels
@@ -141,14 +141,14 @@ HSM_STATE_ENTER( ActiveState3, HsmTopState, ActiveState3Parallel );
         HSM_REGION( AutoDestructRegion3, ActiveState3, TimeBombState3 );
             HSM_STATE( TimeBombState3, AutoDestructRegion3, 0 );
         
-hsm_context HsmParallelEnter( hsm_parallel_t* parallel, hsm_machine hsm, hsm_context ctx, hsm_event evt )
+hsm_context HsmParallelEnter( hsm_parallel_t* parallel, hsm_status status )
 {
     // when we enter->ctx is the context of the previous state
     // in the real version we need to create an 'active' for every parallel
     // walk our list of regions and send them startups
     hsm_region_t *it;
     for (it= parallel->first; it; it=it->next) {
-        HsmMachineWithContext( &(it->active.hsm), ctx );
+        HsmMachineWithContext( &(it->active.hsm), status->ctx );
         HsmStart( &(it->active.hsm.core), it->state.initial );
     }
 
@@ -156,24 +156,24 @@ hsm_context HsmParallelEnter( hsm_parallel_t* parallel, hsm_machine hsm, hsm_con
     return &(parallel->first->active.ctx);
 }
 
-void HsmParallelExit( hsm_machine hsm, hsm_context ctx, hsm_event evt )
+void HsmParallelExit( hsm_status status )
 {
     hsm_active_t* it;
-    for (it= ((hsm_active_t*)ctx); it; it=it->next) {
+    for (it= ((hsm_active_t*)status->ctx); it; it=it->next) {
         // hsm->current is *us*, we exit all of the substates until they're unrolled back to the top
-        while (  it->hsm.core.current != hsm->current ) {
-            HsmExit( &(it->hsm.core), evt );
+        while (  it->hsm.core.current != status->hsm->current ) {
+            HsmExit( &(it->hsm.core), status->evt );
         }
     }
 }
 
-hsm_state HsmParallelEvent( hsm_machine hsm, hsm_context ctx, hsm_event evt )
+hsm_state HsmParallelEvent( hsm_status status )
 {
     hsm_active_t* it;
     hsm_bool any_handled= 0;
     // all the regions get to try the event
-    for (it= ((hsm_active_t*)ctx); it; it=it->next) {
-        hsm_bool handled= HsmProcessEvent( &(it->hsm.core), evt );
+    for (it= ((hsm_active_t*)status->ctx); it; it=it->next) {
+        hsm_bool handled= HsmProcessEvent( &(it->hsm.core), status->evt );
         any_handled|= handled;
     }
     // if anyone handled then say so
@@ -188,11 +188,11 @@ hsm_state HsmParallelEvent( hsm_machine hsm, hsm_context ctx, hsm_event evt )
 //
 // the convention <StateName>Enter is used by the HSM_STATE_ENTER macro to designate the entry callback
 //
-hsm_context ActiveState3Enter( hsm_machine hsm, hsm_context ctx, const WatchEvent* evt )
+hsm_context ActiveState3Enter( hsm_status status )
 {
-    Watch* watch=((WatchContext*)ctx)->watch;
+    Watch* watch=((WatchContext*)status->ctx)->watch;
     ResetTime( watch );
-    return ctx;
+    return status->ctx;
 }
 
 //---------------------------------------------------------------------------
@@ -200,11 +200,11 @@ hsm_context ActiveState3Enter( hsm_machine hsm, hsm_context ctx, const WatchEven
 //
 // the convention <StateName>Event is used by the HSM_STATE macros to indicate the handler function
 //
-hsm_state ActiveState3Event( hsm_machine hsm, hsm_context ctx, const WatchEvent* evt )
+hsm_state ActiveState3Event( hsm_status status )
 {
     // by default this function does nothing....
     hsm_state ret=NULL;
-    switch ( evt->evt ) {
+    switch ( status->evt->type ) {
         // but, whenever the reset button is pressed...
         case WATCH_RESET_PRESSED:
             // it transitions to itself.
@@ -221,14 +221,14 @@ hsm_state ActiveState3Event( hsm_machine hsm, hsm_context ctx, const WatchEvent*
 //---------------------------------------------------------------------------
 // event handler for the stoppped state
 //
-hsm_state StoppedState3Event( hsm_machine hsm, hsm_context ctx, const WatchEvent* evt )
+hsm_state StoppedState3Event( hsm_status status )
 {
     // by default this function does nothing....
     // note: anything that we don't handle goes straight to our parent
     // neither Stopped nor Running handle 'RESET".
     // they both let ActiveStateEvent ( above ) do whatever it wants.
     hsm_state ret=NULL;
-    switch (evt->evt) {
+    switch (status->evt->type) {
         // but, when the 'toggle' button gets pressed....
         case WATCH_TOGGLE_PRESSED:
             // transition over to the running state
@@ -241,11 +241,11 @@ hsm_state StoppedState3Event( hsm_machine hsm, hsm_context ctx, const WatchEvent
 //---------------------------------------------------------------------------
 // event handler for the running state
 //
-hsm_state RunningState3Event( hsm_machine hsm, hsm_context ctx, const WatchEvent* evt )
+hsm_state RunningState3Event( hsm_status status )
 {
     // by default this function does nothing....
     hsm_state ret=NULL;
-    switch (evt->evt) {
+    switch (status->evt->type) {
         // but, when the 'toggle' button gets pressed....
         case WATCH_TOGGLE_PRESSED:
             // transition back to the stopped state
@@ -255,9 +255,9 @@ hsm_state RunningState3Event( hsm_machine hsm, hsm_context ctx, const WatchEvent
         case WATCH_TICK:
         {
             // our context is the watch object
-            Watch* watch=((WatchContext*)ctx)->watch;
+            Watch* watch=((WatchContext*)status->ctx)->watch;
             // our event is the tick event
-            TickEvent* tick= (TickEvent*)evt;
+            TickEvent* tick= (TickEvent*)status->evt;
             // tick by this much time
             TickTime ( watch, tick->time );
             // print the total time
@@ -272,7 +272,7 @@ hsm_state RunningState3Event( hsm_machine hsm, hsm_context ctx, const WatchEvent
 }
 
 //---------------------------------------------------------------------------
-hsm_state TimeBombState3Event( hsm_machine hsm, hsm_context ctx, const WatchEvent* evt )
+hsm_state TimeBombState3Event( hsm_status status )
 {
     hsm_state ret= NULL;
     return ret;
@@ -332,7 +332,7 @@ int watch3region_events( int argc, char* argv[] )
         // and sends the event to the appropriate state. noting (in the code above) that only 
         // RunningStateEvent has code does anything when it hears the tick event.
             TickEvent tick= { WATCH_TICK, 1 };
-            HsmProcessEvent( hsm, &tick.evt );
+            HsmProcessEvent( hsm, &tick.core );
             PlatformSleep(500);
         }
     };

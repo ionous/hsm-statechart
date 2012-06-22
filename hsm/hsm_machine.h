@@ -39,6 +39,7 @@
 #include "hsm_info.h"
 #include "hsm_stack.h"
 #include "hsm_state.h"
+#include "hsm_status.h"
 
 typedef struct hsm_machine_rec hsm_machine_t;
 typedef struct hsm_context_machine_rec hsm_context_machine_t;

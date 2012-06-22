@@ -63,8 +63,7 @@ hsm_bool InitSequence()
     };
     hsm_machine_t hsm;
     return TestEventSequence( HsmMachine(&hsm), I0(),  ISeq1 );
-}    
-
+}
 
 //---------------------------------------------------------------------------
 // Tests from other files
@@ -72,7 +71,6 @@ hsm_bool InitSequence()
 
 hsm_bool SamekPlusTest();
 hsm_bool SamekPlusBuilderTest();
-
 
 //---------------------------------------------------------------------------
 // Test Helper 

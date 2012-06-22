@@ -29,7 +29,7 @@ struct hsm_event_rec {
 
 typedef struct tick_event TickEvent;
 struct tick_event {
-    WatchEvent evt;
+    WatchEvent core;
     int time;
 };
 typedef struct watch_context WatchContext;
@@ -44,45 +44,45 @@ HSM_STATE_ENTER( Active, HsmTopState, Stopped  );
     HSM_STATE( Running, Active, 0 );
     
 //---------------------------------------------------------------------------
-hsm_context ActiveEnter( hsm_machine hsm, hsm_context ctx, const WatchEvent* evt )
+hsm_context ActiveEnter( hsm_status status )
 {
-    Watch* watch=((WatchContext*)ctx)->watch;
+    Watch* watch=((WatchContext*)status->ctx)->watch;
     ResetTime( watch );
-    return ctx;
+    return status->ctx;
 }
 
 //---------------------------------------------------------------------------
-hsm_state ActiveEvent( hsm_machine hsm, hsm_context ctx, const WatchEvent* evt )
+hsm_state ActiveEvent( hsm_status status )
 {
     hsm_state ret=NULL;
     // on reset self-transition
-    if (evt->name == WATCH_RESET_PRESSED) {
+    if (status->evt->name == WATCH_RESET_PRESSED) {
         ret= Active();
     }
     return ret;
 }
 
 //---------------------------------------------------------------------------
-hsm_state StoppedEvent( hsm_machine hsm, hsm_context ctx, const WatchEvent* evt )
+hsm_state StoppedEvent( hsm_status status )
 {
     hsm_state ret=NULL;
-    if (evt->name == WATCH_TOGGLE_PRESSED) {
+    if (status->evt->name == WATCH_TOGGLE_PRESSED) {
         ret= Running();
     }            
     return ret;
 }
 
 //---------------------------------------------------------------------------
-hsm_state RunningEvent( hsm_machine hsm, hsm_context ctx, const WatchEvent* evt )
+hsm_state RunningEvent( hsm_status status )
 {
     hsm_state ret=NULL;
-    if (evt->name == WATCH_TOGGLE_PRESSED) {
+    if (status->evt->name == WATCH_TOGGLE_PRESSED) {
         ret= Stopped();
     }
     else
-    if (evt->name == WATCH_TICK) {
-        Watch* watch=((WatchContext*)ctx)->watch;
-        TickEvent* tick= (TickEvent*)evt;
+    if (status->evt->name == WATCH_TICK) {
+        Watch* watch=((WatchContext*)status->ctx)->watch;
+        TickEvent* tick= (TickEvent*)status->evt;
         TickTime ( watch, tick->time );
         printf("%d,", watch->elapsed_time );
         ret= HsmStateHandled();
@@ -125,7 +125,7 @@ int watch1_named_events( int argc, char* argv[] )
         }
         else {
             TickEvent tick= { WATCH_TICK, 1 };
-            HsmProcessEvent( hsm, &tick.evt );
+            HsmProcessEvent( hsm, &tick.core );
             PlatformSleep(500);
         }
     };
