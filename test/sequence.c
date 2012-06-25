@@ -92,7 +92,7 @@ hsm_bool TestEventSequence( hsm_machine hsm, hsm_state first, const char ** stri
             const char * input= seq.sequence[ seq.index++ ];
             CharEvent evt= { *input };
             printf(" %s->\n", input );
-            HsmProcessEvent( hsm, &evt );
+            HsmSignalEvent( hsm, &evt );
         }
         test_passed= !seq.error  && (hsm->current != HsmStateError());
 

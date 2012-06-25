@@ -11,13 +11,13 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="hash.c" />
-    <ClCompile Include="hsm_builder.c" />
-    <ClCompile Include="lower.c" />
+    <ClCompile Include="hsm\builder\hash.c" />
+    <ClCompile Include="hsm\builder\hsm_builder.c" />
+    <ClCompile Include="hsm\builder\lower.c" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="hash.h" />
-    <ClInclude Include="hsm_builder.h" />
+    <ClInclude Include="hsm\builder\hash.h" />
+    <ClInclude Include="hsm\builder\hsm_builder.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <Keyword>Win32Proj</Keyword>

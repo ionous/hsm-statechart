@@ -15,7 +15,7 @@
 #include <assert.h>
 #include <stdio.h>
 #include "samek_plus.h"
-#include "hsm_builder.h"
+#include <hsm/builder/hsm_builder.h>
 
 //---------------------------------------------------------------------------
 typedef struct sp_context_rec sp_context_t;
@@ -25,7 +25,7 @@ struct sp_context_rec {
 };
 
 //---------------------------------------------------------------------------
-void ToggleFoo( hsm_status status, int  user_data )    
+void ToggleFoo( hsm_status status, void * user_data )    
 {
     sp_context_t*sp= (sp_context_t*)status->ctx;
     sp->foo= !sp->foo;
@@ -42,54 +42,57 @@ hsm_bool MatchChar( hsm_status status, int user_data )
     return status->evt->ch == user_data;
 }
 
+#define hsmOnEvent( fn, val ) hsmOnEventUD( (hsm_callback_guard_ud) fn, (void*) val )
+#define hsmIf( fn, val ) hsmTestUD( (hsm_callback_guard_ud) fn, (void*) val )
+
 //---------------------------------------------------------------------------
 hsm_state buildMachine()
 {
     int state=
-    hsmBegin( "s0" );
+    hsmBegin( "s0", 0 );
     {
-        hsmOn( MatchChar, 'e' ); hsmGoto( "s211" );
-        hsmOn( MatchChar, 'i' ); hsmGoto( "s12" );     
-        hsmBegin( "s1" );
+        hsmOnEvent( MatchChar, 'e' ); hsmGoto( "s211" );
+        hsmOnEvent( MatchChar, 'i' ); hsmGoto( "s12" );     
+        hsmBegin( "s1", 0 );
         {
-            hsmOn( MatchChar, 'a' ); hsmGoto( "s1" );
-            hsmOn( MatchChar, 'b' ); hsmGoto( "s11" );
-            hsmOn( MatchChar, 'c' ); hsmGoto( "s2" );
-            hsmOn( MatchChar, 'd' ); hsmGoto( "s0" );
-            hsmOn( MatchChar, 'f' ); hsmGoto( "s211" );
-            hsmBegin( "s11" );
+            hsmOnEvent( MatchChar, 'a' ); hsmGoto( "s1" );
+            hsmOnEvent( MatchChar, 'b' ); hsmGoto( "s11" );
+            hsmOnEvent( MatchChar, 'c' ); hsmGoto( "s2" );
+            hsmOnEvent( MatchChar, 'd' ); hsmGoto( "s0" );
+            hsmOnEvent( MatchChar, 'f' ); hsmGoto( "s211" );
+            hsmBegin( "s11", 0 );
             {
-                hsmOn( MatchChar, 'g' ); 
+                hsmOnEvent( MatchChar, 'g' ); 
                     hsmGoto( "s211" );
 
-                hsmOn( MatchChar, 'h' ); 
+                hsmOnEvent( MatchChar, 'h' ); 
                     hsmIf( TestFoo, 1 ); 
-                    hsmRun( ToggleFoo, 0 );
+                    hsmRunUD( ToggleFoo, 0 );
             }
             hsmEnd();
 
-            hsmBegin( "s12" );
+            hsmBegin( "s12", 0 );
             hsmEnd();
         }
         hsmEnd();
-        hsmBegin( "s2" );
+        hsmBegin( "s2", 0 );
         {
-            hsmOn( MatchChar, 'c' ); hsmGoto( "s1" );
-            hsmOn( MatchChar, 'f' ); hsmGoto( "s11" );
-            hsmBegin( "s21" );
+            hsmOnEvent( MatchChar, 'c' ); hsmGoto( "s1" );
+            hsmOnEvent( MatchChar, 'f' ); hsmGoto( "s11" );
+            hsmBegin( "s21", 0 );
             {
-                hsmOn( MatchChar, 'b' ); 
+                hsmOnEvent( MatchChar, 'b' ); 
                     hsmGoto( "s211" );
 
-                hsmOn( MatchChar, 'h' ); 
+                hsmOnEvent( MatchChar, 'h' ); 
                     hsmIf(  TestFoo, 0 );
-                    hsmRun( ToggleFoo, 0 );
+                    hsmRunUD( ToggleFoo, 0 );
                     hsmGoto( "s21" );
 
-                hsmBegin( "s211" );
+                hsmBegin( "s211", 0 );
                 {
-                    hsmOn( MatchChar, 'd' ); hsmGoto( "s21" );
-                    hsmOn( MatchChar, 'g' ); hsmGoto( "s0" );
+                    hsmOnEvent( MatchChar, 'd' ); hsmGoto( "s21" );
+                    hsmOnEvent( MatchChar, 'g' ); hsmGoto( "s0" );
                 }
                 hsmEnd();
             }

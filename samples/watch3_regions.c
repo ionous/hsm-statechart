@@ -7,9 +7,7 @@
  * Code licensed under the "New BSD" (BSD 3-Clause) License
  * See License.txt for complete information.
  */
-#include "hsm_machine.h"    // for the state machine
-#include "hsm_context.h"    // sample uses context data
-#include "hsm_state.h"       // for state declarations
+#include <hsm/hsm_machine.h>    // the state machine
 #include "watch.h"
 #include "platform.h"
 
@@ -173,7 +171,7 @@ hsm_state HsmParallelEvent( hsm_status status )
     hsm_bool any_handled= 0;
     // all the regions get to try the event
     for (it= ((hsm_active_t*)status->ctx); it; it=it->next) {
-        hsm_bool handled= HsmProcessEvent( &(it->hsm.core), status->evt );
+        hsm_bool handled= HsmSignalEvent( &(it->hsm.core), status->evt );
         any_handled|= handled;
     }
     // if anyone handled then say so
@@ -322,7 +320,7 @@ int watch3region_events( int argc, char* argv[] )
             // one of the handler functions will get called as a result
             // ( for example: StoppedStateEvent. ) 
             WatchEvent evt= { events[index] };
-            HsmProcessEvent( hsm, &evt );
+            HsmSignalEvent( hsm, &evt );
             printf(".");
         }
         else {
@@ -332,7 +330,7 @@ int watch3region_events( int argc, char* argv[] )
         // and sends the event to the appropriate state. noting (in the code above) that only 
         // RunningStateEvent has code does anything when it hears the tick event.
             TickEvent tick= { WATCH_TICK, 1 };
-            HsmProcessEvent( hsm, &tick.core );
+            HsmSignalEvent( hsm, &tick.core );
             PlatformSleep(500);
         }
     };

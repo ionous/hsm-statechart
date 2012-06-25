@@ -46,12 +46,27 @@ typedef hsm_state(*hsm_callback_process_event)( hsm_status status );
 typedef hsm_context (*hsm_callback_enter)( hsm_status status );
 
 /**
- * A state's exit callback.
- * A function of this signature is required for every state declared via #HSM_STATE_ENTERX.
+ * A state's action callback.
  *
  * @param status Current state of the machine. 
  */
-typedef void(*hsm_callback_exit)( hsm_status status );
+typedef void(*hsm_callback_action)( hsm_status status );
+
+/**
+ * Guard callback.
+ *
+ * @param status Current state of the machine. 
+ * @return Return #HSM_TRUE if the guard passes and the transition,actions should be handled; #HSM_FALSE if the guard filters the transition,actions.
+ */
+typedef hsm_bool(*hsm_callback_guard)( hsm_status status);
+
+/**
+ * A state's exit callback.
+ *
+ * @param status Current state of the machine. 
+ */
+typedef hsm_callback_action hsm_callback_exit;
+
 
 typedef struct hsm_state_rec hsm_state_t;
 

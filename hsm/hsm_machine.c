@@ -181,7 +181,7 @@ hsm_bool HsmStart( hsm_machine hsm, hsm_state first_state )
 }
 
 //---------------------------------------------------------------------------
-hsm_bool HsmProcessEvent( hsm_machine hsm, hsm_event evt )
+hsm_bool HsmSignalEvent( hsm_machine hsm, hsm_event evt )
 {
     hsm_bool okay= HSM_FALSE;
     if (hsm && hsm->current) 

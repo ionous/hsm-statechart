@@ -167,18 +167,16 @@ Hash_DeleteTable(hash_table_t *table, int freeClientData)
  *---------------------------------------------------------
  */
 
-void*
-Hash_FindData(hash_table_t *table, unsigned int hash)
+hash_entry_t*
+Hash_FindEntry(hash_table_t *table, unsigned int hash)
 {
-    void * clientData= NULL;
     hash_entry_t *e;
     for (e = table->bucketPtr[hash & table->mask]; e != NULL; e = e->next) {
         if (e->namehash == hash) {
-            clientData= e->clientData;
             break;
         }
     }        
-    return clientData;
+    return e;
 }
 
 /*
@@ -270,15 +268,11 @@ RebuildTable(hash_table_t *table)
     oldhp = table->bucketPtr;
     oldsize = i = table->size;
     i <<= 1;
-    hp = (hash_entry_t **) malloc(sizeof(*hp) * i); /*emalloc(sizeof(*hp) * i)*/
+    hp = (hash_entry_t **) calloc(i, sizeof(hash_entry_t*)); /*emalloc(sizeof(*hp) * i)*/
     if (hp) {
         table->size = i;
         table->mask = mask = i - 1;
-        table->bucketPtr = hp; 
-        while (--i >= 0) 
-        {
-            *hp++ = NULL;
-        }            
+        table->bucketPtr = hp;             
         for (hp = oldhp, i = oldsize; --i >= 0;) 
         {
             for (e = *hp++; e != NULL; e = next) 

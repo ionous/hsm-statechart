@@ -11,19 +11,18 @@
 #include <hsm/hsm_machine.h>
 #include "hash.h"
 #include "hsm_builder.h"
+
 #include <assert.h>
 #include <stdlib.h>
 #include <stddef.h>
+#include <string.h>
 
 extern const hsm_uint32 HsmLowerTable[];
 
 //---------------------------------------------------------------------------
 // FNVa is in the public domain, http://isthe.com/chongo/tech/comp/fnv/
 // http://dev.ionous.net/2007/03/string-hashes.html for more about string hashing
-#define CRC32(x) ComputeFNVa32( x, 0x811c9dc5 )
-#define CRC32_CAT(x,v) ComputeFNVa32( x, v )
-
-hsm_uint32 ComputeFNVa32(const char *string, hsm_uint32 hval) 
+hsm_uint32 hsmStringHash(const char *string, hsm_uint32 hval) 
 {
     const hsm_uint32 prime32= ((hsm_uint32)0x01000193);
     const char *p=string;
@@ -50,20 +49,22 @@ typedef struct handler_rec  handler_t;
  */
 struct state_rec
 {
-    hsm_context_t ctx;          // we push them on hsmBegin, pop them on hsmEnd
-                                // it's reused to indicate build completion status
-                                // null => hasnt been the subject of an hsmBegin
-                                // self => finished hsmEnd
-                                // anything else => in progress
-    hsm_state_t desc;           // the common statedescriptor
-    hsm_uint32  id;             // unique id for searching for this state
+    hsm_state_t desc;       // the common statedescriptor
+
+    hsm_callback_enter_ud enter;
+    void * enter_ud;
+
+    hsm_callback_action_ud exit;
+    void * exit_ud;
+
     handler_t * handlers;   // list of events to handle
 };
 
 // querries for build status
-#define State_ReadyToBuild( state )     ((state) && !(state)->ctx.parent)
-#define State_FinishedBuilding( state ) ((state) && ((state)->ctx.parent == &((state)->ctx)))
-#define State_BuildInProgress( state )  ((state) &&  (state)->ctx.parent && ((state)->ctx.parent != &((state)->ctx)))
+#define Entry_ReadyToBuild( e )     ((e) && !(e)->clientData)
+#define Entry_FinishedBuilding( e ) ((e) &&  (e)->clientData && (((hsm_state)(e)->clientData)->process== RunGenericEvent))
+#define Entry_BuildInProgress( e )  ((e) &&  (e)->clientData && (((hsm_state)(e)->clientData)->process!= RunGenericEvent))
+
 
 //---------------------------------------------------------------------------
 /**
@@ -71,8 +72,9 @@ struct state_rec
  */
 struct action_rec
 {
-    hsm_callback_action run; // the action is the same as 'handler', the caller can translate from there.
-    int action_data;         // passed to run
+    int flags;               // tbd, might control how run is called
+    hsm_callback_action_ud run; // the action is the same as 'handler', the caller can translate from there.
+    void *action_data;         // passed to run
     action_t* next;           // we are a linked list, b/c there can be more than one action.
 };
 
@@ -84,38 +86,68 @@ struct action_rec
  */
 struct guard_rec
 {
-    hsm_callback_guard match;    // function to determine if this rec handles some any particular event
-    int guard_data;           // passed to match    
+    int flags;
+    hsm_callback_guard_ud match;    // function to determine if this rec handles some any particular event
+    void * guard_data;           // passed to match    
     guard_t * next;
 };
 
 //---------------------------------------------------------------------------
 /**
- * event handleror data.
+ * event handler data.
  * one each event defined via the hsmBuilder interface.
  * may well be used for guards and events.
+ *
+ * re: target.
+ *
+ * when a user calls hsmGoto/Id the state in question might not yet exist:
+ * so we can't store hsm_state directly; so instead we store the hash entry
+ * ( could also store the id, but entry is safe, and fast, so why not. )
+ *
+ * now, its desired that hsmBuilder and core states interoperate
+ * that's where hsmRegisterState comes from
  */
 struct handler_rec
 {
     guard_t guard;
     action_t *actions;      // if we do match: we may have things to do
-    hsm_state target;       //             not to mention, places to go.
-    handler_t  *next;         // if not us, who? if not now, next?
+    hash_entry_t* target;   //             not to mention, places to '.
+    handler_t  *next;       // if not us, who? if not now, next?
 };
 
+/**
+ * state_t extends hsm_status directly
+ */
+#define StateFromStatus( status ) ((state_t*) status->state)
 
 //---------------------------------------------------------------------------
 /**
- * run time helper used via state_t
+ * run time helper to reflect singal event calls to the right guards and actions
  */
-static hsm_state GenericEvent( hsm_status status )
+static hsm_context RunGenericEnter( hsm_status status )
 {
-    // ways of getting the state_rec
-    // 1. override enter and use context [ would limit the depth of context stack; would limit mixing of user code ]
-    // 2. override enter and use a separate linked list [ would limit mixing ]
-    // 3. pointer math on current state.
+    state_t* state= StateFromStatus( status );
+    return state->enter( status, state->enter_ud );
+}
+
+//---------------------------------------------------------------------------
+/**
+ * run time helper to reflect singal event calls to the right guards and actions
+ */
+static void RunGenericExit( hsm_status status )
+{   
+    state_t* state= StateFromStatus( status );
+    state->exit( status, state->exit_ud );
+}
+
+//---------------------------------------------------------------------------
+/**
+ * run time helper to reflect singal event calls to the right guards and actions
+ */
+static hsm_state RunGenericEvent( hsm_status status )
+{
     hsm_state ret=NULL;
-    state_t* state= (state_t*) ( ((size_t)status->state) -  offsetof( state_t, desc ) );
+    state_t* state= StateFromStatus( status );
     handler_t* et;
     // look through the built event handlers
     for (et= state->handlers; et; et=et->next) { 
@@ -135,7 +167,7 @@ static hsm_state GenericEvent( hsm_status status )
             }
             // transition to target, or flag as handled.
             if (et->target) {
-                ret=et->target;
+                ret= (hsm_state) et->target->clientData;
             }
             else {
                 ret= HsmStateHandled();
@@ -145,17 +177,40 @@ static hsm_state GenericEvent( hsm_status status )
     }
     return ret;
 }
-
 //---------------------------------------------------------------------------
 /**
  * @internal construct a new state object
+ * @param name State's name
+ * @param namelen if non-zero, that number of name chars gets copied.
  */
-static state_t* NewState( const char * name, hsm_uint32 id )
+static state_t* NewState( state_t* parent, const char * name, int namelen )
 {   
-    state_t* state=(state_t*) calloc( 1, sizeof( state_t ) );
+    // note: calloc is keeping strncpy null terminated
+    state_t* state=(state_t*) calloc( 1, sizeof( state_t ) + namelen );
     if (state) {
-        state->id= id;
-        state->desc.name= name;
+        if (!namelen) {
+            state->desc.name= name;
+        }
+        else {
+            // point the name to just have the block of size memory
+            char* dest= (char*) ((size_t)state) + sizeof( state_t );
+            assert( name && "namelen needs name" );
+            if (name) {
+                strncpy( dest, name, namelen-1 );
+                state->desc.name= dest;
+            }                
+        }
+
+        // setup the parent info of new state
+        if (parent) {
+            state->desc.parent= &(parent->desc);
+            state->desc.depth = parent->desc.depth+1;
+
+            // default init state for 'parent' is the first child specified
+            if (!parent->desc.initial) {
+                parent->desc.initial= &(state->desc);
+            }
+        }
     }
     return state;
 }
@@ -164,7 +219,7 @@ static state_t* NewState( const char * name, hsm_uint32 id )
 /**
  * @internal construct a new event object
  */
-static handler_t* NewHandler( state_t* state, hsm_callback_guard match, int guard_data )
+static handler_t* NewHandler( state_t* state, hsm_callback_guard_ud match, void * guard_data )
 {   
     handler_t* handler= NULL;
     if (state && match) {
@@ -185,7 +240,7 @@ static handler_t* NewHandler( state_t* state, hsm_callback_guard match, int guar
 /**
  * @internal construct a new action object
  */
-static action_t* NewAction( handler_t* handler, hsm_callback_action run, int action_data )
+static action_t* NewAction( handler_t* handler, hsm_callback_action_ud run, void * action_data )
 {
     action_t* action= NULL;
     if (handler && run) {
@@ -206,7 +261,7 @@ static action_t* NewAction( handler_t* handler, hsm_callback_action run, int act
 /**
  * @internal construct a new guard
  */
-static guard_t* NewGuard( handler_t* handler, hsm_callback_guard match, int guard_data )
+static guard_t* NewGuard( handler_t* handler, hsm_callback_guard_ud match, void * guard_data )
 {   
     guard_t* guard= NULL;
     if (handler && match) {
@@ -223,27 +278,38 @@ static guard_t* NewGuard( handler_t* handler, hsm_callback_guard match, int guar
     return guard;
 }
 
+
 //---------------------------------------------------------------------------
 // Builder Machine
 //---------------------------------------------------------------------------
 
 typedef struct builder_rec builder_t;
 typedef enum builder_events builder_events_t;
-typedef struct hsm_event_rec BuilderEvent;
 
 /**
  * the handlers that the builder interface uses to build hsms.
  * ~= one per interface function.
  * why *shouldn't* a statemachine build a statemachine after all?
  */
-enum builder_events {
+enum builder_events 
+{
     _hsm_begin,
     _hsm_end,
-    _hsm_guard,
-    _hsm_enter,
+
+    _hsm_guard_ud,
+    //_hsm_guard_raw,
+
+    _hsm_enter_ud, 
+    //_hsm_enter_raw,
+
+    _hsm_exit_ud,
+    //_hsm_exit_raw,
+
+    _hsm_action_ud,
+    //_hsm_action_raw,
+    
     _hsm_goto,
-    _hsm_action,
-    // _hsm_exit,
+    
 };
 
 /**
@@ -251,18 +317,17 @@ enum builder_events {
  */
 struct builder_rec
 {
-    hsm_context_t ctx;
+    hsm_context_t ctx;          // we are used as context in the builder machine
     const char *error;
-    hsm_context_stack_t stack;  // a stack of handlering states.
+    state_t * current;          // inner most state that's b/t begin,end.
+    int count;                  // nested count of states
     hash_table_t hash;          // a hash of states
 };
-
 
 /**
  * builder_rec helper macro to return the state that's currently getting built
  */
-#define Builder_CurrentState( b ) (state_t*)((b)->stack.context)
-#define Builder_FindState( b, id ) (state_t*)Hash_FindData( &((b)->hash), id ) 
+#define Builder_CurrentState( b ) (state_t*)((b)->current)
 
 /**
  * builder_rec helper macro to record an error string
@@ -274,34 +339,53 @@ struct builder_rec
  * data associated with the builder_events_t
  * essentially: the interface functions repacked a function object.
  */
+typedef struct hsm_event_rec BuildEvent; 
 struct hsm_event_rec
 {
     builder_events_t type;
     union _data {
-        state_t * state;
-        hsm_callback_enter enter;
-        //hsm_callback_exit exit;
-        hsm_callback_action run;
-        hsm_callback_guard guard;
-        hsm_state go;
+        int id;
+        void * data;
+        hsm_callback_enter  raw_enter;
+        hsm_callback_action raw_action;
+        hsm_callback_guard  raw_guard;
+
     }
     data;
 };
 
-typedef struct hsm_guard_rec GuardEvent;
-struct hsm_guard_rec
+typedef struct begin_event_rec BeginEvent;
+struct begin_event_rec
 {
-    BuilderEvent core;
-    int guard_data;   
+    BuildEvent core;
+    const char * name;
+    int namelen;
+};
+
+typedef struct enter_event_rec EnterEvent;
+struct enter_event_rec
+{
+    BuildEvent core;
+    hsm_callback_enter_ud enter;
+    void * enter_data;   
+};
+
+typedef struct guard_event_rec GuardEvent;
+struct guard_event_rec
+{
+    BuildEvent core;
+    hsm_callback_guard_ud  guard;
+    void * guard_data;   
     hsm_bool append;
 };
 
 
-typedef struct hsm_action_rec ActionEvent;
-struct hsm_action_rec
+typedef struct action_event_rec ActionEvent;
+struct action_event_rec
 {
-    BuilderEvent core;
-    int action_data;
+    BuildEvent core;
+    hsm_callback_action_ud  action;
+    void * action_data;
 };
 
 
@@ -320,17 +404,18 @@ static hsm_state BuildingEvent( hsm_status status )
     hsm_state ret= HsmStateError(); // at the top level, by default, everythings an error.
     builder_t * builder= ((builder_t*)status->ctx);
     switch (status->evt->type) {
-        case _hsm_begin: {
-            state_t * state= status->evt->data.state;
-            if (State_ReadyToBuild( state )) {
+        case _hsm_begin: 
+        {
+            hash_entry_t* entry= Hash_FindEntry( &builder->hash, status->evt->data.id );
+            if (Entry_ReadyToBuild( entry )) {
                 ret= BuildingState();
             }
             else {
-                if (!state) {
+                if (!entry) {
                     Builder_Error( builder, "hsmBegin for unknown state." );
                 }
                 else 
-                if (State_FinishedBuilding( state )) {
+                if (Entry_FinishedBuilding( entry )) {
                     Builder_Error( builder, "state already finished building via hsmEnd.");    
                 }
                 else {
@@ -366,37 +451,32 @@ static hsm_state BuildingBodyEvent(hsm_status status )
 static hsm_context BuildingStateEnter( hsm_status status )
 {
     builder_t * builder= ((builder_t*)status->ctx);
-    state_t* current= Builder_CurrentState( builder );
-    state_t* new_state= status->evt->data.state;
-    assert( status->evt->type == _hsm_begin );
-    assert( !new_state->desc.process );
+    BeginEvent * evt= (BeginEvent*)(status->evt);
+    state_t* parent= Builder_CurrentState( builder );     // parent of the new state is the current state
 
-    // this is pretty poor verification, b/c we cant use non-builder states
-    // and because we dont know if building has started ( no good way for top states )
-    // could change depth of top state to 1 then 0 would mean unitialized
-    assert( !State_FinishedBuilding( current ) );
+    hash_entry_t* entry= Hash_CreateEntry( &(builder->hash), evt->core.data.id, 0 );
+    state_t* new_state= NewState( parent, evt->name, evt->namelen );
 
-    // setup the parent info of new state
-    if (current) {
-        // what const cast are you speaking of?
-        hsm_state_t* parent= (hsm_state_t*) &(current->desc);
-            
-        new_state->desc.parent= parent;
-        new_state->desc.depth = parent->depth+1;
-
-        // default init state for 'current' is the first child specified
-        if (!parent->initial) {
-            parent->initial= &(new_state->desc);
+    assert( new_state && entry->clientData == 0);
+    if (new_state && entry->clientData == 0) 
+    {
+        entry->clientData= new_state;
+        builder->current= new_state;      // later, we'll use the parent state to unwind
+        ++builder->count;                 // 
+    }        
+    else {
+        if (!new_state) {
+            Builder_Error( builder, "couldn't allocate new state");
+        }
+        if (!entry->clientData) {
+            Builder_Error( builder, "state data already exists");
+        }
+        else {
+            Builder_Error( builder, "unknown error");
         }
     }
 
-    // make new_state the new current by pushing onto builder stack
-    // ( doesnt use machine's stack
-    //   b/c we can have multiple nested hsmBegins()
-    //   but we only have one "BuildingState" to exist in. )
-    HsmContextPush( &(builder->stack), &(new_state->ctx) );
-
-    // keep the builder context
+    // keep the builder as context
     return status->ctx;
 }
 
@@ -408,43 +488,50 @@ static hsm_state BuildingStateEvent( hsm_status status )
     state_t* current= Builder_CurrentState( builder );
     switch (status->evt->type) 
     {
-        case _hsm_enter: 
-        {
-            if (!current->desc.enter && status->evt->data.enter) {
-                current->desc.enter= status->evt->data.enter;
+        case _hsm_enter_ud: {
+            const EnterEvent* event= (const EnterEvent*)status->evt;
+            if (!current->desc.enter && event->enter) {
+                current->desc.enter= RunGenericEnter;
+                current->enter= event->enter;
+                current->enter_ud= event->enter_data;
                 ret= HsmStateHandled();
             }
             else {
-                if (current->desc.enter)  {
-                    Builder_Error( builder, "enter already specified." );
-                }
-                else 
-                if (!status->evt->data.enter) {
-                    Builder_Error( builder, "enter is null." );
-                }
+                Builder_Error( builder, current->desc.enter ? "enter already specified." : "enter is null." );
+                ret= HsmStateError();
+            }
+        }
+        case _hsm_exit_ud: {
+            const ActionEvent* event= (const ActionEvent*)status->evt;
+            if (!current->desc.exit && event->action) {
+                current->desc.exit= RunGenericExit;
+                current->exit= event->action;
+                current->exit_ud= event->action_data;
+                ret= HsmStateHandled();
+            }
+            else {
+                Builder_Error( builder, current->desc.exit ? "exit already specified." : "exit is null." );
                 ret= HsmStateError();
             }
         }
         break; // a new event handler
-        case _hsm_guard: 
-        {
+        case _hsm_guard_ud: {
             ret= BuildingGuard();
         }
         break;
         case _hsm_end: {
-            // an explict end finishes building the current state
-            hsm_context ctx= HsmContextPop( &(builder->stack) );
-            assert( ctx == &current->ctx && "we should have just popped current" );
-            // pointing to 'self' is used as a key to indicate end has been called
-            current->ctx.parent= &(current->ctx);
-            // setup the event handler, this is another key that the state is good to go.
-             current->desc.process= GenericEvent;
+            // setup the event handler, this also a key that the state is good to go.
+            current->desc.process= RunGenericEvent;
+
             // if this was the last matching begin/end pair, we're done
-            if (builder->stack.count) {
-                ret= HsmStateHandled();
+            // ( we dont use !current, b/c of potential containment in external states )
+            if (--builder->count==0) {
+                builder->current= 0;
+                ret= Building();
             }
             else {
-                ret= Building();
+                builder->current= (state_t*) current->desc.parent;                    
+                ret= HsmStateHandled();
             }
         }            
         break;
@@ -455,18 +542,14 @@ static hsm_state BuildingStateEvent( hsm_status status )
 //---------------------------------------------------------------------------
 // On: 
 //---------------------------------------------------------------------------
-// TODO: a very big deal for context is: what happens if you fail to allocate memory?
-// how do you let the system know? if you wanted to be evil you lua-ize it; 
-// and long jump right back to HsmProcessEvent. could also make it illegal to have a null context
-// so returning null would signal an error.
 static hsm_context BuildingGuardEnter( hsm_status status )
 {
     builder_t * builder= ((builder_t*)status->ctx);
     GuardEvent * guard= (GuardEvent*)status->evt;
     state_t* state= Builder_CurrentState( builder );
     assert( state );
-    assert( status->evt->type == _hsm_guard );
-    NewHandler( state, status->evt->data.guard, guard->guard_data );
+    assert( status->evt->type == _hsm_guard_ud );
+    NewHandler( state, guard->guard, guard->guard_data );
     // keep the original context
     return status->ctx;
 }
@@ -483,54 +566,40 @@ static hsm_state BuildingGuardEvent( hsm_status status )
 
         switch (status->evt->type) {
             case _hsm_goto: {
-                if (!handler->target && status->evt->data.go) {
-                    handler->target= status->evt->data.go;
+                const int go= status->evt->data.id;
+                hash_entry_t* target= Hash_FindEntry( &(builder->hash), go );
+                if (!handler->target && target) {
+                    handler->target= target;
                     ret= HsmStateHandled();
                 }
                 else {
-                    if (handler->target) {
-                        Builder_Error( builder,"goto already specified for this event");
-                    }
-                    else 
-                    if (!status->evt->data.go) {
-                        Builder_Error( builder,"unknown target specified for goto");
-                    }
+                    Builder_Error( builder, handler->target ? "goto already specified" : "unknown goto target" );
                     ret= HsmStateError();
                 }                
             }
             break;
-            case _hsm_guard: {
+            case _hsm_guard_ud: {
                 const GuardEvent* guard_event= (const GuardEvent*)status->evt;
                 // on append, we want to add this guard to us
                 // otherwise we want to start a new event handler
                 if (guard_event->append) {
-                    if (NewGuard( handler, guard_event->core.data.guard, guard_event->guard_data )) {
+                    if (NewGuard( handler, guard_event->guard, guard_event->guard_data )) {
                         ret= HsmStateHandled();
                     }
                     else {
-                        if (!guard_event->core.data.guard) {
-                            Builder_Error( builder,"no guard specified");
-                        }
-                        else {
-                            Builder_Error( builder,"couldnt allocate guard");
-                        }
+                        Builder_Error( builder, !guard_event->guard ? "no guard specified" : "couldnt allocate guard");
                         ret= HsmStateError();
                     }                    
                 }
             }
             break;
-            case _hsm_action: {
+            case _hsm_action_ud: {
                 const ActionEvent* action_event= (const ActionEvent*)status->evt;
-                if (NewAction( handler, status->evt->data.run, action_event->action_data )) {
+                if (NewAction( handler, action_event->action, action_event->action_data )) {
                     ret= HsmStateHandled();
                 }
                 else {
-                    if (!status->evt->data.run) {
-                        Builder_Error( builder,"no action specified for run");
-                    }
-                    else {
-                        Builder_Error( builder,"couldnt allocate action for run");
-                    }
+                    Builder_Error( builder, !action_event->action ? "no action specified" : "couldnt allocate action");
                     ret= HsmStateError();
                 }                
             }
@@ -573,9 +642,8 @@ void hsmShutdown()
 //---------------------------------------------------------------------------
 hsm_state hsmResolveId( int id ) 
 {
-    state_t* state= Builder_FindState( &gBuilder, id );
-    // TODO: generic last error system for system
-    return State_FinishedBuilding(state) ? &(state->desc) : NULL;
+    const hash_entry_t* entry= Hash_FindEntry( &(gBuilder.hash), id );
+    return (hsm_state) entry ? entry->clientData :  0;
 }
 
 //---------------------------------------------------------------------------
@@ -585,174 +653,96 @@ hsm_state hsmResolve( const char * name )
 }
 
 //---------------------------------------------------------------------------
-void hsmStartId( hsm_machine hsm, int id )
+hsm_bool hsmStartId( hsm_machine hsm, int id )
 {
-    state_t* state= Builder_FindState( &gBuilder, id );
-    HsmStart( hsm, state ? &(state->desc) : HsmStateError() );
+    return HsmStart( hsm, hsmResolveId( id ) );
 }
 
 //---------------------------------------------------------------------------
-void hsmStart( hsm_machine hsm, const char * name )
+hsm_bool hsmStart( hsm_machine hsm, const char * name )
 {
-    hsmStartId( hsm, hsmState( name ) );
+    return hsmStartId( hsm, hsmState( name ) );
 }
 
 //---------------------------------------------------------------------------
-// from the passed name, and the current state of the builder machine 
-// we can know the named state's parent, we use this opportunity to create appropriate links.
-// though, potentially, it could be save all the way till the very end
-//
-// this has to get more sophisticated
-// if bare names ex. "Child" mean Parent::Child
-// then how do we refer to plain parent (etc.) when we want it.
-// for now we can assume they are always bare names
-// i do, though
-
-// TODO:
-// unless the names get (consistantly) expanded fully to their complete size
-// ( or split to their smallest size? ) it's going to be hard to compare
-// but since collision is so painful, we might want to try, atleast in debug.
-
 int hsmState( const char * name )
 {
     int ret=0;
-    hsm_uint32 id= CRC32( name );
-    hash_entry_t* hash;
-    state_t *current= Builder_CurrentState(&gBuilder);
-    hash= Hash_CreateEntry( &gBuilder.hash, id, 0 );
-    if (hash) {
-        // in order to handle goto, we have to create the state desc but
-        // in truth, we don't know much at all about the state.
-        if (!hash->clientData) {
-            hash->clientData= NewState( name, id );
+    if (name) {
+        hsm_uint32 id= HSM_HASH32( name );
+        state_t *current= Builder_CurrentState(&gBuilder);
+        /** 
+         * note: i actually tried pre-allocating hsmState objects
+         * and storing those in hsmGoto, but if the user code is using string names, 
+         * the allocation has to know how/whether to copy the string;
+         * that's not always obvious until hsmBegin()
+         */
+        hash_entry_t* hash= Hash_CreateEntry( &gBuilder.hash, id, 0 );
+        if (hash) {
+            ret= id;
         }
-        ret= id;
-    }
-    return ret;
-
-    if (hash) {
-        ret= id;
-    }
-    return ret;
-}
-
-//---------------------------------------------------------------------------
-// these dont trigger till complete, so need to look at how that works.
-// doubtless, will have to copy off string, a pointer or offset to the memory that we have to fixup
-// TODO: refs aren't completely necessary, though they are sometimes helpful. revisit?
-#if 0
-#if 0
-
-// requires hsm_state
-
-/*
-enum hsmHints
-{
-    HSM_SIBLING,
-    HSM_CHILD,
-    HSM_SELF
-};
-*/
-/**
- * Declare a new state.
- *
- * @param scope Scope of the passed name.
- * @param name Name relative to the scope
- *
- * @return int opaque handle to an internal name reference
- *
- * The name underlying the returned value is idempotent, but the returned value only does the best it can.
- * The value returned may not be the same as hsmState, even when they refer to the same state.
- * The variability of the returned value occurs because the scope may not even exist when the ref is declared.
- */
-// int hsmRef( enum hsmHints scope, const char * name );
-#endif
-
-int hsmRef( enum hsmHints scope, const char * name )
-{
-    int ret=0;
-    const char * scopes[] = {
-        "SIBLING", "CHILD", "SELF"
-    };
-    const bool knownscope= (scope>=0 && (scope < (sizeof(scopes)/sizeof(*scopes))));
-    assert( knownscope && "unknown scope requested" );
-    if (knownscope) 
-    {
-        state_t * current= Builder_CurrentState(&gBuilder);
-        assert( current && "scope only makes sense when there's context" );
-        if (current) {
-            hsm_uint32 id=  CRC32_CAT( name, CRC32_CAT( "!", current->id ) );
-            hash_entry_t* hash= Hash_CreateEntry( &gBuilder.hash, id, 0 );
-            if (hash) {
-                // i don't want to build a state b/c it's so large
-                // options: hash could hold an empty client data
-                // we could expand the hash entry with a second client data
-                // ( flags for instance )
-                // we could have a double dereference through hash
-                // ( ie. client data *always* holds a 'reference' structure -
-                //   sometimes its a direct reference, sometimes indirect )
-                // flags is the least wrk, even if a little evil
-                hash->clientFlags|=1;
-                hash->clientData= BuildReference( scope, name );
-            }
-        }            
     }        
     return ret;
 }
-#endif
 
 //---------------------------------------------------------------------------
 // all of the following functions generate handlers into the builder statemachine
 //---------------------------------------------------------------------------
 
 //---------------------------------------------------------------------------
-int hsmBegin( const char * name )
+int hsmBegin( const char * name, int len )
 {
-    return hsmBeginId( hsmState( name ) );
+    const int id= hsmState( name );
+    BeginEvent evt= { _hsm_begin, id };
+    evt.name= name;
+    evt.namelen= len;
+    HsmSignalEvent( &gMachine.core, &evt.core );
+    return id;
 }
 
 //---------------------------------------------------------------------------
 int hsmBeginId( int id )
 {
-    state_t* state= Builder_FindState( &gBuilder, id );
-    BuilderEvent evt= { _hsm_begin, state };
-    HsmProcessEvent( &gMachine.core, &evt );
+    BeginEvent evt= { _hsm_begin, id };
+    HsmSignalEvent( &gMachine.core, &evt.core );
     return id;
 }
 
 //---------------------------------------------------------------------------
-void hsmOnEnter( hsm_callback_enter fn )
+void hsmOnEnterUD( hsm_callback_enter_ud entry, void *enter_data )
 {
-    BuilderEvent evt= { _hsm_enter };
-    evt.data.enter= fn;
-    HsmProcessEvent( &gMachine.core, &evt );
+    EnterEvent evt= { _hsm_enter_ud };
+    evt.enter= entry;
+    evt.enter_data= enter_data;
+    HsmSignalEvent( &gMachine.core, &evt.core );
 }
 
 //---------------------------------------------------------------------------
-void hsmOn( hsm_callback_guard guard, int guard_data )
+void hsmOnExitUD( hsm_callback_action_ud action, void *exit_data )
 {
-    GuardEvent evt= { _hsm_guard }; 
-    evt.core.data.guard= guard;
+    ActionEvent evt= { _hsm_exit_ud };
+    evt.action= action;
+    evt.action_data= exit_data;
+    HsmSignalEvent( &gMachine.core, &evt.core );
+}
+
+//---------------------------------------------------------------------------
+void hsmOnEventUD( hsm_callback_guard_ud guard, void *guard_data )
+{
+    GuardEvent evt= { _hsm_guard_ud }; 
+    evt.guard= guard;
     evt.guard_data= guard_data;
-    HsmProcessEvent( &gMachine.core, &(evt.core) );
+    HsmSignalEvent( &gMachine.core, &(evt.core) );
 }
 
 //---------------------------------------------------------------------------
-void hsmIf( hsm_callback_guard guard, int guard_data )
+void hsmTestUD( hsm_callback_guard_ud guard, void *guard_data )
 {
-    GuardEvent evt= { _hsm_guard }; 
-    evt.core.data.guard= guard;
+    GuardEvent evt= { _hsm_guard_ud }; 
+    evt.guard= guard;
     evt.guard_data= guard_data;
     evt.append= HSM_TRUE;
-    HsmProcessEvent( &gMachine.core, &(evt.core) );
-}
-
-//---------------------------------------------------------------------------
-void hsmGotoState( hsm_state state )
-{
-    BuilderEvent evt= { _hsm_goto };
-    evt.data.go= state;
-    HsmProcessEvent( &gMachine.core, &evt );
+    HsmSignalEvent( &gMachine.core, &(evt.core) );
 }
 
 //---------------------------------------------------------------------------
@@ -764,23 +754,32 @@ void hsmGoto( const char * name )
 //---------------------------------------------------------------------------
 void hsmGotoId( int id )
 {
-    state_t* state= Builder_FindState( &gBuilder, id );
-    hsmGotoState( state ? &(state->desc) : 0 );
+    BuildEvent evt= { _hsm_goto, id };
+    HsmSignalEvent( &gMachine.core, &evt );
 }
 
 //---------------------------------------------------------------------------
-void hsmRun( hsm_callback_action cb, int action_data )
+void hsmRunUD( hsm_callback_action_ud action, void *action_data )
 {
-    ActionEvent evt= { _hsm_action }; 
-    evt.core.data.run= cb;
+    ActionEvent evt= { _hsm_action_ud }; 
+    evt.action= action;
     evt.action_data= action_data;
-    HsmProcessEvent( &gMachine.core, &evt.core );
+    HsmSignalEvent( &gMachine.core, &evt.core );
 }
+
+//---------------------------------------------------------------------------
+/*
+void hsmRun( hsm_callback_action cb, void *action_data )
+{
+    ActionEvent evt= { _hsm_action_raw }; 
+    evt.core.action= cb;
+    HsmSignalEvent( &gMachine.core, &evt.core );
+}
+*/
 
 //---------------------------------------------------------------------------
 void hsmEnd()
 {
-    BuilderEvent evt= { _hsm_end };
-    HsmProcessEvent( &gMachine.core, &evt );
+    BuildEvent evt= { _hsm_end };
+    HsmSignalEvent( &gMachine.core, &evt );
 }
-

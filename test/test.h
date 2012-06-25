@@ -12,7 +12,7 @@
 #ifndef __TEST_H__
 #define __TEST_H__
 
-#include "hsm_machine.h"
+#include <hsm/hsm_machine.h>
 
 //---------------------------------------------------------------------------
 typedef struct hsm_event_rec CharEvent;

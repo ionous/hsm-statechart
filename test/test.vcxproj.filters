@@ -30,6 +30,9 @@
     <ClCompile Include="samek_plus_test.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="lua_test.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="test.h">

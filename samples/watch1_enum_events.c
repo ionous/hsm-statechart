@@ -7,7 +7,7 @@
  * Code licensed under the "New BSD" (BSD 3-Clause) License
  * See License.txt for complete information.
  */
-#include "hsm_machine.h"    // the state machine
+#include <hsm/hsm_machine.h> // the state machine
 #include "watch.h"          // watch object
 #include "platform.h"       // console input/output
 
@@ -211,7 +211,7 @@ int watch1_enum_events( int argc, char* argv[] )
             // one of the handler functions will get called as a result
             // ( for example: StoppedStateEvent. ) 
             WatchEvent evt= { events[index] };
-            HsmProcessEvent( hsm, &evt );
+            HsmSignalEvent( hsm, &evt );
             printf(".");
         }
         else {
@@ -221,7 +221,7 @@ int watch1_enum_events( int argc, char* argv[] )
         // and sends the event to the appropriate state. noting (in the code above) that only 
         // RunningStateEvent has code does anything when it hears the tick event.
             TickEvent tick= { WATCH_TICK, 1 };
-            HsmProcessEvent( hsm, &tick.core );
+            HsmSignalEvent( hsm, &tick.core );
             PlatformSleep(500);
         }
     };

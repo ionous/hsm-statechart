@@ -55,7 +55,7 @@ typedef struct hsm_context_machine_rec hsm_context_machine_t;
  *
  * 1. Initialize with HsmMachine()
  * 2. Start the machine with HsmStart()
- * 3. Send events with HsmProcessEvent()
+ * 3. Send events with HsmSignalEvent()
  *
  * Not meant to be manipulated directly.
  */
@@ -128,7 +128,7 @@ hsm_bool HsmStart( hsm_machine hsm, hsm_state state );
  * The system will launch actions, trigger transitions, etc.
  * @return #HSM_TRUE if handled
  */
-hsm_bool HsmProcessEvent( hsm_machine hsm, hsm_event evt );
+hsm_bool HsmSignalEvent( hsm_machine hsm, hsm_event evt );
 
 /**
  * Determine if a machine has been started, and has not reached a terminal, nor an error state.
@@ -148,7 +148,7 @@ hsm_bool HsmIsInState( const hsm_machine hsm, hsm_state state );
 
 /**
  * A machine in a final state has deliberately killed itself.
- * HsmProcessEvent() will no longer trigger event callbacks for this machine.
+ * HsmSignalEvent() will no longer trigger event callbacks for this machine.
  * 
  * @return The globally shared final state token.
  */
@@ -156,7 +156,7 @@ hsm_state HsmStateFinal();
 
 /**
  * Token state for when a machine has inadvertently killed itself. 
- * HsmProcessEvent() will no longer trigger event callbacks for this machine.
+ * HsmSignalEvent() will no longer trigger event callbacks for this machine.
  *
  * @return The globally shared error pseduo-state.
  */

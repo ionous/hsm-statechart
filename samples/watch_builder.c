@@ -7,8 +7,8 @@
  * Code licensed under the "New BSD" (BSD 3-Clause) License
  * See License.txt for complete information.
  */
-#include "hsm_machine.h"    // the state machine
-#include "hsm_builder.h"
+#include <hsm/hsm_machine.h>    // the state machine
+#include <hsm/builder/hsm_builder.h>
 #include "watch.h"          // watch object
 #include "platform.h"       // console input/output
 
@@ -86,22 +86,22 @@ int buildWatchMachine(int parent)
 
         hsmOnEnter( 
             ActiveStateEnter );
-        hsmOni( WATCH_RESET_PRESSED );
+        hsmOnEventi( WATCH_RESET_PRESSED );
         hsmGoto( running );
 
         hsmBegin( stopped );
         {
-            hsmOni( WATCH_TOGGLE_PRESSED );
+            hsmOnEventi( WATCH_TOGGLE_PRESSED );
             hsmGoto( running );
         }
         hsmEnd();
 
         hsmBegin( running );
         {
-            hsmOni( WATCH_TOGGLE_PRESSED );
+            hsmOnEventi( WATCH_TOGGLE_PRESSED );
             hsmGoto( stopped );
 
-            hsmOni( WATCH_TICK );
+            hsmOnEventi( WATCH_TICK );
             hsmRun( RunTickTime );
         }
         hsmEnd();

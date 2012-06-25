@@ -73,7 +73,7 @@ typedef void (*hsm_callback_context_popped)( hsm_status status, void * user_data
  *
  * By design hsm_info only provides information for situtations user code can't sus out via the hsm_machine.h interface.
  * For instance, there isn't a callback on a transition to #HsmStateError, since user code can already detect errors via
- * the return codes of HsmProcessEvent() and HsmIsRunning()
+ * the return codes of HsmSignalEvent() and HsmIsRunning()
  */
 struct hsm_info_rec
 {

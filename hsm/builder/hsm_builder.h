@@ -23,22 +23,41 @@
 #ifndef __HSM_BUILDER_H__
 #define __HSM_BUILDER_H__
 
-
 /**
- * Action callback.
+ * Enter callback w/ user data.
  *
- * @param status Current state of the machine. 
+ * @see hsm_callback_enter, hsmOnEnterUD
  */
-typedef void(*hsm_callback_action)( hsm_status status, int action_data );
+typedef hsm_context (*hsm_callback_enter_ud)( hsm_status status, void * enter_data );
 
 /**
- * Guard callback.
+ * Action callback w/ user data.
  *
  * @param status Current state of the machine. 
- * @param guard_data The userdata passed to hsmOn(), hsmIf()
+ * @param action_data The userdata passed to hsmOnActionUD()
+ *
+ * @see hsm_callback_action, hsmOnActionUD, hsmOnExitUD
+ */
+typedef void(*hsm_callback_action_ud)( hsm_status status, void * action_data );
+
+/**
+ * Guard callback w/ user data
+ *
+ * @param status Current state of the machine. 
+ * @param guard_data The userdata passed 
  * @return Return #HSM_TRUE if the guard passes and the transition,actions should be handled; #HSM_FALSE if the guard filters the transition,actions.
+ * 
+ * @see hsm_callback_guard, hsmOnEventUD, hsmTestUD
  */
-typedef hsm_bool(*hsm_callback_guard)( hsm_status status, int guard_data );
+typedef hsm_bool(*hsm_callback_guard_ud)( hsm_status status, void *guard_data );
+
+/**
+ * Exit callback w/ user data.
+ *
+ * @see hsm_callback_enter, hsmOnEnterUD
+ */
+typedef hsm_callback_action_ud hsm_callback_exit_ud;
+
 
 /**
  * Builder initialization.
@@ -55,15 +74,16 @@ void hsmStartup();
 void hsmShutdown();
 
 /**
- * 
+ * Start the passed machine using the passed named state
+ * @param hsm Machine to initialize
+ * @param name Name of state to start
  */
-void hsmStart( hsm_machine, const char * name );
+hsm_bool hsmStart( hsm_machine hsm, const char * name );
 
 /**
- * 
+ * @see hsmStart
  */
-void hsmStartId( hsm_machine, int );
-
+hsm_bool hsmStartId( hsm_machine, int );
 
 /**
  * Declare a new state.
@@ -87,18 +107,17 @@ int hsmState( const char * name );
 
 /**
  * Define a named state.
- * Same as hsmBeginId(), just using a string name instead.
- */
-int hsmBegin( const char * name );
-
-/**
- * Define an already declared state.
-
+ *
  * Every hsmBegin() must, eventually, be paired with a matching hsmEnd(),
  * Until then, all operations, including calls including hsmState() are considered owned by this state.
  *
  * @param state A state id returned by hsmState() or hsmRef().
  * @return The same state id that was passed in.
+ */
+int hsmBegin( const char * name, int len );
+
+/**
+ * Define an already declared state.
  *
  * @see hsmState, hsmEnd
  */
@@ -108,8 +127,21 @@ int hsmBeginId( int state );
  * Specify a callback for state entry
  *
  * @param entry Callback triggered on state enter
+ * @param user_data Data passed to callback
+ *
+ * @note user_data lifetime must be longer than the state descriptions
  */
-void hsmOnEnter( hsm_callback_enter entry );
+void hsmOnEnterUD( hsm_callback_enter_ud entry, void * user_data );
+
+/**
+ * Specify a callback for state exit
+ *
+ * @param exit Callback triggered on state exit
+ * @param user_data Data passed to callback
+ *
+ * @note user_data lifetime must be longer than the state descriptions
+ */
+void hsmOnExitUD( hsm_callback_action_ud exit, void * user_data );
 
 /**
  * Event handler initialization.
@@ -119,18 +151,18 @@ void hsmOnEnter( hsm_callback_enter entry );
  * @param guard Boolean function to call.
  * @param guard_data Data passed to callback.
  */
-void hsmOn( hsm_callback_guard guard, int guard_data );
+void hsmOnEventUD( hsm_callback_guard_ud guard, void* guard_data );
 
 /**
  * Add a guard to the current event handler.
- * Works the same as hsmOn except it doesn't create a new handler, only adds a new guard on to the existing one(s)
+ * Works the same as hsmOnEvent except it doesn't create a new handler, only adds a new guard on to the existing one(s)
  * 
  * @param guard Boolean function to call.
  * @param guard_data Data passed to callback.
  *
- * @see hsmOn.
+ * @see hsmOnEvent.
  */
-void hsmIf( hsm_callback_guard guard, int guard_data );
+void hsmTestUD( hsm_callback_guard_ud guard, void* guard_data );
 
 
 /**
@@ -141,12 +173,6 @@ void hsmGoto( const char * name );
 
 /**
  * The event handler being declared should transition to another state.
- * same as hsmGotoId().
- */
-void hsmGotoState( hsm_state );
-
-/**
- * The event handler being declared should transition to another state.
  * 
  * @param state The id of a state returned by hsmState() or hsmRef() to transition to. 
  *
@@ -154,13 +180,11 @@ void hsmGotoState( hsm_state );
  */
 void hsmGotoId( int state );
 
-
 /**
  * The event handler being declared should run the passed action.
  * @param action The action to run.
- * @param action_data Userdata to pass to action function.
  */
-void hsmRun( hsm_callback_action action, int action_data );
+void hsmRunUD( hsm_callback_action_ud action, void * action_data );
 
 /**
  * Pairs with hsmBegin()
@@ -183,6 +207,23 @@ hsm_state hsmResolve( const char * name );
  * @note Requires that hsmEnd() has been called for the state in question.
  */
 hsm_state hsmResolveId( int id );
+
+/**
+ * 
+ */
+#define HSM_HASH32(x) hsmStringHash( x, 0x811c9dc5 )
+
+/**
+ * 
+ */
+#define HSM_HASH32_CAT(x,v) hsmStringHash( x, v )
+
+/**
+ * compute strlwr'd fnva hash
+ * @param string string to hash
+ * @param seed seed value for hash
+ */
+hsm_uint32 hsmStringHash(const char *string, hsm_uint32 seed );
 
 
 #endif // #ifndef __HSM_BUILDER_H__
