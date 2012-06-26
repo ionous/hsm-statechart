@@ -72,6 +72,7 @@ hsm_bool InitSequence()
 hsm_bool SamekPlusTest();
 hsm_bool SamekPlusBuilderTest();
 
+// this is turned on in test.vcxproj
 #ifdef TEST_LUA
 hsm_bool LuaTest();
 #endif
