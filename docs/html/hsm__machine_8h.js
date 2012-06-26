@@ -8,7 +8,7 @@ var hsm__machine_8h =
     [ "HsmMachine", "hsm__machine_8h.html#a1d929cdbbb5066bd93e2f7f196394230", null ],
     [ "HsmMachineWithContext", "hsm__machine_8h.html#a7b65eb9c8ba636189595f96e90081bbb", null ],
     [ "HsmStart", "hsm__machine_8h.html#a3bb4f85b389637492451bf6e5429eaa2", null ],
-    [ "HsmProcessEvent", "hsm__machine_8h.html#a3f02ed86bdd1d778e3ccc0c38cebebb6", null ],
+    [ "HsmSignalEvent", "hsm__machine_8h.html#a2e5511e0812b7613e3d1e496908bc8d0", null ],
     [ "HsmIsRunning", "hsm__machine_8h.html#a893207a7a8345aad604bd01a84ee9eb4", null ],
     [ "HsmIsInState", "hsm__machine_8h.html#a3463ad5a97144c3c652b4f677644bcba", null ],
     [ "HsmStateFinal", "hsm__machine_8h.html#a385e51689fbbf6376b00a27029b7f79a", null ],

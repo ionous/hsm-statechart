@@ -24,6 +24,7 @@
  * @li See hsm_machine_rec or hsm_context_machine_rec for info on creating a state machine.
  * @li See hsm_info.h for ways to spy on the internal processing of running machines.
  * @li See hsm_builder.h on the new builder interface.
+ * @li See hula.h for information on lua bindings.
  *
  * @section License
  *

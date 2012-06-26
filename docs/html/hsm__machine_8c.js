@@ -19,6 +19,6 @@ var hsm__machine_8c =
     [ "HsmIsRunning", "hsm__machine_8c.html#a893207a7a8345aad604bd01a84ee9eb4", null ],
     [ "HsmIsInState", "hsm__machine_8c.html#a3463ad5a97144c3c652b4f677644bcba", null ],
     [ "HsmStart", "hsm__machine_8c.html#a7117ece3956d53414f80e1a340161f8a", null ],
-    [ "HsmProcessEvent", "hsm__machine_8c.html#a3f02ed86bdd1d778e3ccc0c38cebebb6", null ],
+    [ "HsmSignalEvent", "hsm__machine_8c.html#a2e5511e0812b7613e3d1e496908bc8d0", null ],
     [ "hsm_global_callbacks", "hsm__machine_8c.html#ae9ac36a57432aa642d0ddb459e690f1c", null ]
 ];

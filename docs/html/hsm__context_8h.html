@@ -102,6 +102,7 @@ $(document).ready(function(){initNavTree('hsm__context_8h.html','');});
 <div class="header">
   <div class="summary">
 <a href="#nested-classes">Data Structures</a> &#124;
+<a href="#typedef-members">Typedefs</a> &#124;
 <a href="#func-members">Functions</a>  </div>
   <div class="headertitle">
 <div class="title">hsm_context.h File Reference</div>  </div>
@@ -120,10 +121,15 @@ Data Structures</h2></td></tr>
 <tr class="memitem:structhsm__context__stack__rec"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="hsm__context_8h.html#structhsm__context__stack__rec">hsm_context_stack_rec</a></td></tr>
 <tr class="memdesc:structhsm__context__stack__rec"><td class="mdescLeft">&#160;</td><td class="mdescRight">Per state machine instance manager of context data.  <a href="hsm__context_8h.html#structhsm__context__stack__rec">More...</a><br/></td></tr>
 </table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2><a name="typedef-members"></a>
+Typedefs</h2></td></tr>
+<tr class="memitem:ad88f48148553f7cfe63cce03b3d16bab"><td class="memItemLeft" align="right" valign="top">typedef void(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="hsm__context_8h.html#ad88f48148553f7cfe63cce03b3d16bab">hsm_callback_popped_context</a> )(<a class="el" href="hsm__context_8h.html#structhsm__context__rec">hsm_context_t</a> *)</td></tr>
+<tr class="memdesc:ad88f48148553f7cfe63cce03b3d16bab"><td class="mdescLeft">&#160;</td><td class="mdescRight">Hear about your context object after just after its been popped.  <a href="#ad88f48148553f7cfe63cce03b3d16bab"></a><br/></td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2><a name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:a767601181421c4624f6ef3e473900c36"><td class="memItemLeft" align="right" valign="top"><a class="el" href="hsm__forwards_8h.html#aa0e37ff043d2dd5216cc762ca03046cb">hsm_context</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="hsm__context_8h.html#a767601181421c4624f6ef3e473900c36">HsmContext</a> (<a class="el" href="hsm__context_8h.html#structhsm__context__rec">hsm_context_t</a> *)</td></tr>
-<tr class="memdesc:a767601181421c4624f6ef3e473900c36"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initializes the context structure ( not strictly necessary )  <a href="#a767601181421c4624f6ef3e473900c36"></a><br/></td></tr>
+<tr class="memitem:a37882939881b43db4f51a7cc24544f11"><td class="memItemLeft" align="right" valign="top"><a class="el" href="hsm__forwards_8h.html#aa0e37ff043d2dd5216cc762ca03046cb">hsm_context</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="hsm__context_8h.html#a37882939881b43db4f51a7cc24544f11">HsmContextAlloc</a> (size_t size)</td></tr>
+<tr class="memdesc:a37882939881b43db4f51a7cc24544f11"><td class="mdescLeft">&#160;</td><td class="mdescRight">Helper to create a new context object.  <a href="#a37882939881b43db4f51a7cc24544f11"></a><br/></td></tr>
 <tr class="memitem:a3bf4d9a77484ff5e5d12cf8e0776d937"><td class="memItemLeft" align="right" valign="top"><a class="el" href="hsm__context_8h.html#structhsm__context__stack__rec">hsm_context_stack</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="hsm__context_8h.html#a3bf4d9a77484ff5e5d12cf8e0776d937">HsmContextStack</a> (<a class="el" href="hsm__context_8h.html#structhsm__context__stack__rec">hsm_context_stack_t</a> *stack)</td></tr>
 <tr class="memdesc:a3bf4d9a77484ff5e5d12cf8e0776d937"><td class="mdescLeft">&#160;</td><td class="mdescRight">Resets the hsm_context_stack structure.  <a href="#a3bf4d9a77484ff5e5d12cf8e0776d937"></a><br/></td></tr>
 </table>
@@ -145,8 +151,23 @@ Functions</h2></td></tr>
 <p>You can "derive" from this structure by making the first member of your own structure</p>
 <dl class="section note"><dt>Note:</dt><dd>lifetime must be &gt;= duration of its associated state(s). </dd></dl>
 
-<p>Definition at line <a class="el" href="hsm__context_8h_source.html#l00030">30</a> of file <a class="el" href="hsm__context_8h_source.html">hsm_context.h</a>.</p>
-</div>
+<p>Definition at line <a class="el" href="hsm__context_8h_source.html#l00040">40</a> of file <a class="el" href="hsm__context_8h_source.html">hsm_context.h</a>.</p>
+</div><table class="fieldtable">
+<tr><th colspan="3">Data Fields</th></tr>
+<tr><td class="fieldtype">
+<a class="anchor" id="a8255e503c7879da580d5a697dba582a7"></a><a class="el" href="hsm__context_8h.html#structhsm__context__rec">hsm_context_t</a> *</td>
+<td class="fieldname">
+parent</td>
+<td class="fielddoc">
+</td></tr>
+<tr><td class="fieldtype">
+<a class="anchor" id="ad0208ce8f889006d0c5f3d92c030dd2b"></a><a class="el" href="hsm__context_8h.html#ad88f48148553f7cfe63cce03b3d16bab">hsm_callback_popped_context</a></td>
+<td class="fieldname">
+popped</td>
+<td class="fielddoc">
+per context callback </td></tr>
+</table>
+
 </div>
 </div>
 <a name="structhsm__context__stack__rec" id="structhsm__context__stack__rec"></a>
@@ -161,7 +182,7 @@ Functions</h2></td></tr>
 <div class="textblock"><p>Per state machine instance manager of context data. </p>
 <p>note: the most effienct implementation depends on the sparsity of the stack if it's very sparse: a list of (context,depth) tuples might be best if it's very full: an array of [context,...] with blank elements(*) might be best flagging is somewhere in between, though, all methods are probably fine for most people. </p>
 
-<p>Definition at line <a class="el" href="hsm__context_8h_source.html#l00053">53</a> of file <a class="el" href="hsm__context_8h_source.html">hsm_context.h</a>.</p>
+<p>Definition at line <a class="el" href="hsm__context_8h_source.html#l00075">75</a> of file <a class="el" href="hsm__context_8h_source.html">hsm_context.h</a>.</p>
 </div><table class="fieldtable">
 <tr><th colspan="3">Data Fields</th></tr>
 <tr><td class="fieldtype">
@@ -186,24 +207,58 @@ bit flags for whether a push added unique data </td></tr>
 
 </div>
 </div>
-<hr/><h2>Function Documentation</h2>
-<a class="anchor" id="a767601181421c4624f6ef3e473900c36"></a>
+<hr/><h2>Typedef Documentation</h2>
+<a class="anchor" id="ad88f48148553f7cfe63cce03b3d16bab"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="hsm__forwards_8h.html#aa0e37ff043d2dd5216cc762ca03046cb">hsm_context</a> HsmContext </td>
+          <td class="memname">typedef void(* hsm_callback_popped_context)(<a class="el" href="hsm__context_8h.html#structhsm__context__rec">hsm_context_t</a> *)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Hear about your context object after just after its been popped. </p>
+<p>Can be used to free memory for state instance data you allocated during state entry. It's designed like a destructor and so doesn't provide any parameters other than itself.</p>
+<dl class="params"><dt>Parameters:</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">hsm_context_t*</td><td>The context being freed</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section see"><dt>See also:</dt><dd><a class="el" href="hsm__context_8h.html#a3bf4d9a77484ff5e5d12cf8e0776d937" title="Resets the hsm_context_stack structure.">HsmContextStack</a>, <a class="el" href="hsm__state_8h.html#a0cb7e4f750bdd83a03d75df4714f2efa" title="Macro for declaring a state + enter callback.">HSM_STATE_ENTER</a> </dd></dl>
+
+<p>Definition at line <a class="el" href="hsm__context_8h_source.html#l00032">32</a> of file <a class="el" href="hsm__context_8h_source.html">hsm_context.h</a>.</p>
+
+</div>
+</div>
+<hr/><h2>Function Documentation</h2>
+<a class="anchor" id="a37882939881b43db4f51a7cc24544f11"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="hsm__forwards_8h.html#aa0e37ff043d2dd5216cc762ca03046cb">hsm_context</a> HsmContextAlloc </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="hsm__context_8h.html#structhsm__context__rec">hsm_context_t</a> *&#160;</td>
-          <td class="paramname"></td><td>)</td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>size</em></td><td>)</td>
           <td></td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p>Initializes the context structure ( not strictly necessary ) </p>
+<p>Helper to create a new context object. </p>
+<p>It will be auto-freed when popped.</p>
+<dl class="params"><dt>Parameters:</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">size</td><td>Total size of the user context structure. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns:</dt><dd>Newly allocated context data, NULL if the allocation failed.</dd></dl>
+<p>Sets the <a class="el" href="hsm__context_8h.html#ad0208ce8f889006d0c5f3d92c030dd2b" title="per context callback">hsm_context_rec::popped</a> handler to an internal free function. You can also allocate your objects on your own if you want more control. </p>
 
-<p>Definition at line <a class="el" href="hsm__context_8c_source.html#l00019">19</a> of file <a class="el" href="hsm__context_8c_source.html">hsm_context.c</a>.</p>
+<p>Definition at line <a class="el" href="hsm__context_8c_source.html#l00026">26</a> of file <a class="el" href="hsm__context_8c_source.html">hsm_context.c</a>.</p>
 
 </div>
 </div>
@@ -230,7 +285,7 @@ bit flags for whether a push added unique data </td></tr>
 </dl>
 <dl class="section return"><dt>Returns:</dt><dd>the stack passed in. </dd></dl>
 
-<p>Definition at line <a class="el" href="hsm__context_8c_source.html#l00031">31</a> of file <a class="el" href="hsm__context_8c_source.html">hsm_context.c</a>.</p>
+<p>Definition at line <a class="el" href="hsm__context_8c_source.html#l00039">39</a> of file <a class="el" href="hsm__context_8c_source.html">hsm_context.c</a>.</p>
 
 </div>
 </div>
@@ -240,7 +295,7 @@ bit flags for whether a push added unique data </td></tr>
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="dir_6c36b64852547327283732128225c9d7.html">hsm</a></li><li class="navelem"><a class="el" href="hsm__context_8h.html">hsm_context.h</a></li>
-    <li class="footer">Generated on Fri Jun 22 2012 00:43:28 for hsm-statechart by
+    <li class="footer">Generated on Tue Jun 26 2012 12:17:26 for hsm-statechart by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.1.1 </li>
   </ul>
