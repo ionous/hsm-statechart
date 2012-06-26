@@ -186,7 +186,7 @@ static hsm_state RunGenericEvent( hsm_status status )
 static state_t* NewState( state_t* parent, const char * name, int namelen )
 {   
     // note: calloc is keeping strncpy null terminated
-    state_t* state=(state_t*) calloc( 1, sizeof( state_t ) + namelen );
+    state_t* state=(state_t*) calloc( 1, sizeof( state_t ) + namelen + 1 );
     if (state) {
         if (!namelen) {
             state->desc.name= name;
@@ -196,7 +196,7 @@ static state_t* NewState( state_t* parent, const char * name, int namelen )
             char* dest= (char*) ((size_t)state) + sizeof( state_t );
             assert( name && "namelen needs name" );
             if (name) {
-                strncpy( dest, name, namelen-1 );
+                strncpy( dest, name, namelen );
                 state->desc.name= dest;
             }                
         }
@@ -333,6 +333,11 @@ struct builder_rec
  * builder_rec helper macro to record an error string
  */
 #define Builder_Error( b, e ) (b)->error=e
+
+/**
+ * 
+ */
+#define Builder_Valid( b ) ((b)->hash.bucketPtr !=0)
 
 //---------------------------------------------------------------------------
 /**
@@ -633,17 +638,23 @@ void hsmStartup()
 //---------------------------------------------------------------------------
 void hsmShutdown()
 {
-    if (!--gStartCount) {
+    if (gStartCount>0) {
         const hsm_bool free_client_data= HSM_TRUE;
         Hash_DeleteTable( &gBuilder.hash, free_client_data );
+        --gStartCount;
     }        
 }
 
 //---------------------------------------------------------------------------
 hsm_state hsmResolveId( int id ) 
 {
-    const hash_entry_t* entry= Hash_FindEntry( &(gBuilder.hash), id );
-    return (hsm_state) entry ? entry->clientData :  0;
+    hsm_state ret=0;
+    assert( gStartCount );
+    if ( gStartCount && HsmIsRunning(&gBuilder) ) {
+        const hash_entry_t* entry= Hash_FindEntry( &(gBuilder.hash), id );
+        ret= (hsm_state) entry ? entry->clientData :  0;
+    }        
+    return ret;
 }
 
 //---------------------------------------------------------------------------
@@ -668,7 +679,8 @@ hsm_bool hsmStart( hsm_machine hsm, const char * name )
 int hsmState( const char * name )
 {
     int ret=0;
-    if (name) {
+    assert( gStartCount );
+    if ( gStartCount ) {
         hsm_uint32 id= HSM_HASH32( name );
         state_t *current= Builder_CurrentState(&gBuilder);
         /** 
@@ -692,57 +704,80 @@ int hsmState( const char * name )
 //---------------------------------------------------------------------------
 int hsmBegin( const char * name, int len )
 {
+    int ret=0;
     const int id= hsmState( name );
-    BeginEvent evt= { _hsm_begin, id };
-    evt.name= name;
-    evt.namelen= len;
-    HsmSignalEvent( &gMachine.core, &evt.core );
+    if (id) {
+        BeginEvent evt= { _hsm_begin, id };
+        evt.name= name;
+        evt.namelen= len;
+        if (HsmSignalEvent( &gMachine.core, &evt.core )) {
+            ret= id;
+        }
+    }        
     return id;
 }
 
 //---------------------------------------------------------------------------
 int hsmBeginId( int id )
 {
-    BeginEvent evt= { _hsm_begin, id };
-    HsmSignalEvent( &gMachine.core, &evt.core );
-    return id;
+    int ret=0;
+    assert( gStartCount );
+    if ( gStartCount ) {
+        BeginEvent evt= { _hsm_begin, id };
+        if( HsmSignalEvent( &gMachine.core, &evt.core ) ) {
+            ret=id;
+        }            
+    }        
+    return ret;
 }
 
 //---------------------------------------------------------------------------
 void hsmOnEnterUD( hsm_callback_enter_ud entry, void *enter_data )
 {
-    EnterEvent evt= { _hsm_enter_ud };
-    evt.enter= entry;
-    evt.enter_data= enter_data;
-    HsmSignalEvent( &gMachine.core, &evt.core );
+    assert( gStartCount );
+    if ( gStartCount ) {
+        EnterEvent evt= { _hsm_enter_ud };
+        evt.enter= entry;
+        evt.enter_data= enter_data;
+        HsmSignalEvent( &gMachine.core, &evt.core );
+    }        
 }
 
 //---------------------------------------------------------------------------
 void hsmOnExitUD( hsm_callback_action_ud action, void *exit_data )
 {
-    ActionEvent evt= { _hsm_exit_ud };
-    evt.action= action;
-    evt.action_data= exit_data;
-    HsmSignalEvent( &gMachine.core, &evt.core );
+    assert( gStartCount );
+    if ( gStartCount ) {
+        ActionEvent evt= { _hsm_exit_ud };
+        evt.action= action;
+        evt.action_data= exit_data;
+        HsmSignalEvent( &gMachine.core, &evt.core );
+    }        
 }
 
 //---------------------------------------------------------------------------
 void hsmOnEventUD( hsm_callback_guard_ud guard, void *guard_data )
 {
-    GuardEvent evt= { _hsm_guard_ud }; 
-    evt.guard= guard;
-    evt.guard_data= guard_data;
-    HsmSignalEvent( &gMachine.core, &(evt.core) );
+    assert( gStartCount );
+    if ( gStartCount ) {
+        GuardEvent evt= { _hsm_guard_ud }; 
+        evt.guard= guard;
+        evt.guard_data= guard_data;
+        HsmSignalEvent( &gMachine.core, &(evt.core) );
+    }        
 }
 
 //---------------------------------------------------------------------------
 void hsmTestUD( hsm_callback_guard_ud guard, void *guard_data )
 {
-    GuardEvent evt= { _hsm_guard_ud }; 
-    evt.guard= guard;
-    evt.guard_data= guard_data;
-    evt.append= HSM_TRUE;
-    HsmSignalEvent( &gMachine.core, &(evt.core) );
+    assert( gStartCount );
+    if ( gStartCount ) {
+        GuardEvent evt= { _hsm_guard_ud }; 
+        evt.guard= guard;
+        evt.guard_data= guard_data;
+        evt.append= HSM_TRUE;
+        HsmSignalEvent( &gMachine.core, &(evt.core) );
+    }        
 }
 
 //---------------------------------------------------------------------------
@@ -754,17 +789,23 @@ void hsmGoto( const char * name )
 //---------------------------------------------------------------------------
 void hsmGotoId( int id )
 {
-    BuildEvent evt= { _hsm_goto, id };
-    HsmSignalEvent( &gMachine.core, &evt );
+    assert( gStartCount );
+    if ( gStartCount ) {
+        BuildEvent evt= { _hsm_goto, id };
+        HsmSignalEvent( &gMachine.core, &evt );
+    }        
 }
 
 //---------------------------------------------------------------------------
 void hsmRunUD( hsm_callback_action_ud action, void *action_data )
 {
-    ActionEvent evt= { _hsm_action_ud }; 
-    evt.action= action;
-    evt.action_data= action_data;
-    HsmSignalEvent( &gMachine.core, &evt.core );
+    assert( gStartCount );
+    if ( gStartCount ) {
+         ActionEvent evt= { _hsm_action_ud }; 
+        evt.action= action;
+        evt.action_data= action_data;
+        HsmSignalEvent( &gMachine.core, &evt.core );
+    }        
 }
 
 //---------------------------------------------------------------------------
@@ -780,6 +821,9 @@ void hsmRun( hsm_callback_action cb, void *action_data )
 //---------------------------------------------------------------------------
 void hsmEnd()
 {
-    BuildEvent evt= { _hsm_end };
-    HsmSignalEvent( &gMachine.core, &evt );
+    assert( gStartCount );
+    if ( gStartCount ) {
+        BuildEvent evt= { _hsm_end };
+        HsmSignalEvent( &gMachine.core, &evt );
+    }        
 }
