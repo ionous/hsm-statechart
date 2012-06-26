@@ -12,6 +12,8 @@
 #include "hash.h"
 #include "hsm_builder.h"
 
+#define _CRT_SECURE_NO_WARNINGS
+
 #include <assert.h>
 #include <stdlib.h>
 #include <stddef.h>
@@ -35,10 +37,13 @@ hsm_uint32 hsmStringHash(const char *string, hsm_uint32 hval)
     return hval;
 }
 
-// the things we build:
+// oh the things we'll build: a hat, a cat, a series of typedefs, all that.
 typedef struct state_rec    state_t;
 typedef struct guard_rec    guard_t;
 typedef struct action_rec   action_t;
+typedef struct process_rec  process_t;
+typedef struct process_rec_ud  process_ud_t;
+typedef struct process_rec_raw process_raw_t;
 typedef struct handler_rec  handler_t;
 
 //---------------------------------------------------------------------------
@@ -51,20 +56,22 @@ struct state_rec
 {
     hsm_state_t desc;       // the common statedescriptor
 
+    // TODO? add flags to avoid thunks for enter, and exit when using user_data?
+    // ( see process for what it does )
+
     hsm_callback_enter_ud enter;
     void * enter_ud;
 
     hsm_callback_action_ud exit;
     void * exit_ud;
 
-    handler_t * handlers;   // list of events to handle
+    process_t* process;   // list of processors to handle events
 };
 
 // querries for build status
 #define Entry_ReadyToBuild( e )     ((e) && !(e)->clientData)
 #define Entry_FinishedBuilding( e ) ((e) &&  (e)->clientData && (((hsm_state)(e)->clientData)->process== RunGenericEvent))
 #define Entry_BuildInProgress( e )  ((e) &&  (e)->clientData && (((hsm_state)(e)->clientData)->process!= RunGenericEvent))
-
 
 //---------------------------------------------------------------------------
 /**
@@ -94,7 +101,60 @@ struct guard_rec
 
 //---------------------------------------------------------------------------
 /**
- * event handler data.
+ * event processor flags.
+ * the flags allow us to avoid a thunk for user data
+ * without the flags we'd have to call a generic function, which would then call a user data function
+ * ( exit_ud works like that right now )
+ *
+ * @see process_rec 
+ */
+enum process_flags 
+{
+    ProcessCallback=1<<0,           // user has specified a callback
+    ProcessHandler= 1<<1,           // user has constructed a list of guards and actions via the builder interface
+    ProcessUd     = 1<<2,           // there's user data to send to the callback
+    // now: you can already see, and i've already thought: 
+    // can't the guards and actions all share the ud of the processor?
+    // maybe so -- needs some investigation.
+};
+
+#define CALL_PROCESS( rec, status ) ( ((rec)->flags & ProcessUd) ? \
+                                        ( ((process_ud_t* )(rec))->process( status, ((process_ud_t*) (rec))->process_data ) ):\
+                                        ( ((process_raw_t*)(rec))->process( status )) )
+
+/**
+ * event processing data
+ * one state process becomes a tree of processing, scoped by entry and exit.
+ */
+struct process_rec
+{
+    enum process_flags flags;
+    process_t *next;                // if not us, who? if not now, next?
+};
+
+/**
+ * event processing with a callback :}
+ */
+struct process_rec_raw
+{
+    process_t core;
+    hsm_callback_process_event process;
+};
+
+/**
+ * extends process with user data.
+ */
+struct process_rec_ud
+{
+    process_t core;
+    hsm_callback_process_ud process;
+    void * process_data;
+};
+
+/**
+ * extends process with automatic processing data:
+ * actions, guards, etc.
+ 
  * one each event defined via the hsmBuilder interface.
  * may well be used for guards and events.
  *
@@ -105,14 +165,14 @@ struct guard_rec
  * ( could also store the id, but entry is safe, and fast, so why not. )
  *
  * now, its desired that hsmBuilder and core states interoperate
- * that's where hsmRegisterState comes from
+ * that's where a future hsmRegisterState comes from
  */
 struct handler_rec
 {
+    process_t core;
     guard_t guard;
     action_t *actions;      // if we do match: we may have things to do
     hash_entry_t* target;   //             not to mention, places to '.
-    handler_t  *next;       // if not us, who? if not now, next?
 };
 
 /**
@@ -148,32 +208,38 @@ static hsm_state RunGenericEvent( hsm_status status )
 {
     hsm_state ret=NULL;
     state_t* state= StateFromStatus( status );
-    handler_t* et;
-    // look through the built event handlers
-    for (et= state->handlers; et; et=et->next) { 
-        // determine if some guard blocks the event from running
-        guard_t* guard;
-        for (guard= &(et->guard); guard; guard=guard->next) {
-            if (!guard->match( status, guard->guard_data )) {
+    const process_t* et;
+    // look through the specified event processors
+    for (et= state->process; et; et=et->next) {
+        if (et->flags & ProcessCallback) {
+            ret= CALL_PROCESS( et, status );
+        }
+        else {
+            handler_t * handler= (handler_t*)et;
+            // determine if some guard blocks the event from running
+            guard_t* guard;
+            for (guard= &(handler->guard); guard; guard=guard->next) {
+                if (!guard->match( status, guard->guard_data )) {
+                    break;
+                }
+            }
+            // no guard blocks this handler from running,:
+            if (!guard) {
+                // run action(s)
+                action_t* at;
+                for (at= handler->actions; at; at=at->next) {
+                    at->run( status, at->action_data );
+                }
+                // transition to target, or flag as handled.
+                if (handler->target) {
+                    ret= (hsm_state) handler->target->clientData;
+                }
+                else {
+                    ret= HsmStateHandled();
+                }
                 break;
             }
-        }
-        // nope: no guard blocks this event from running
-        if (!guard) {
-            // run action(s)
-            action_t* at;
-            for (at= et->actions; at; at=at->next) {
-                at->run( status, at->action_data );
-            }
-            // transition to target, or flag as handled.
-            if (et->target) {
-                ret= (hsm_state) et->target->clientData;
-            }
-            else {
-                ret= HsmStateHandled();
-            }
-            break;
-        }
+        }            
     }
     return ret;
 }
@@ -219,21 +285,46 @@ static state_t* NewState( state_t* parent, const char * name, int namelen )
 /**
  * @internal construct a new event object
  */
-static handler_t* NewHandler( state_t* state, hsm_callback_guard_ud match, void * guard_data )
+static process_t* NewProcessUD( state_t* state, hsm_callback_process_ud process, void * process_data )
+{
+    process_t* ret= NULL;
+    if (state && process) {
+        process_ud_t * processor= (process_ud_t*) calloc( 1, sizeof( process_ud_t ) );
+        if (processor) {
+            ret= &(processor->core);
+            // set up the processor cbs
+            processor->process= process;
+            processor->process_data= process_data;
+            // link to the list of (other) processors for this state:
+            ret->flags= ProcessCallback|ProcessUd;
+            ret->next= state->process;
+            state->process= ret;
+        }        
+    }        
+    return ret;
+}
+
+//---------------------------------------------------------------------------
+/**
+ * @internal construct a new event object
+ */
+static process_t* NewHandler( state_t* state, hsm_callback_guard_ud match, void * guard_data )
 {   
-    handler_t* handler= NULL;
+    process_t* ret=0;
     if (state && match) {
-        handler= (handler_t*) calloc( 1, sizeof( handler_t ) );
+        handler_t* handler= (handler_t*) calloc( 1, sizeof( handler_t ) );
         if (handler) {
+            ret= &(handler->core);
             // setup the first guard:
             handler->guard.match= match;
             handler->guard.guard_data= guard_data;
-            // link to the list of handlers for this state:
-            handler->next= state->handlers;
-            state->handlers= handler;
+            // link to the list of (other) processors for this state:
+            ret->flags= ProcessHandler;
+            ret->next= state->process;
+            state->process= ret;
         }        
     }        
-    return handler;
+    return ret;
 }
 
 //---------------------------------------------------------------------------
@@ -296,20 +387,19 @@ enum builder_events
     _hsm_begin,
     _hsm_end,
 
-    _hsm_guard_ud,
-    //_hsm_guard_raw,
-
     _hsm_enter_ud, 
     //_hsm_enter_raw,
 
     _hsm_exit_ud,
-    //_hsm_exit_raw,
+    _hsm_exit_raw,
 
+    _hsm_process_ud,
+
+    _hsm_guard_ud,
+    //_hsm_guard_raw,
     _hsm_action_ud,
     //_hsm_action_raw,
-    
     _hsm_goto,
-    
 };
 
 /**
@@ -332,7 +422,10 @@ struct builder_rec
 /**
  * builder_rec helper macro to record an error string
  */
-#define Builder_Error( b, e ) (b)->error=e
+static void Builder_Error( builder_t*builder, const char * error ) 
+{
+    builder->error=error; // handy spot for a breakpoint
+}
 
 /**
  * 
@@ -348,23 +441,22 @@ typedef struct hsm_event_rec BuildEvent;
 struct hsm_event_rec
 {
     builder_events_t type;
-    union _data {
-        int id;
-        void * data;
-        hsm_callback_enter  raw_enter;
-        hsm_callback_action raw_action;
-        hsm_callback_guard  raw_guard;
-
-    }
-    data;
 };
 
 typedef struct begin_event_rec BeginEvent;
 struct begin_event_rec
 {
     BuildEvent core;
+    int id;
     const char * name;
     int namelen;
+};
+
+typedef struct state_event_rec StateEvent;
+struct state_event_rec
+{
+    BuildEvent core;
+    int id;
 };
 
 typedef struct enter_event_rec EnterEvent;
@@ -375,6 +467,15 @@ struct enter_event_rec
     void * enter_data;   
 };
 
+typedef struct process_event_rec ProcessEvent;
+struct process_event_rec
+{
+    BuildEvent core;
+    hsm_callback_process_ud process;
+    void * process_data;
+};
+
+
 typedef struct guard_event_rec GuardEvent;
 struct guard_event_rec
 {
@@ -384,6 +485,12 @@ struct guard_event_rec
     hsm_bool append;
 };
 
+typedef struct raw_action_event_rec RawActionEvent;
+struct raw_action_event_rec
+{
+    BuildEvent core;
+    hsm_callback_action  action;
+};
 
 typedef struct action_event_rec ActionEvent;
 struct action_event_rec
@@ -398,7 +505,7 @@ HSM_STATE( Building, HsmTopState, BuildingIdle );
     HSM_STATE( BuildingIdle, Building, 0 );
     HSM_STATE_ENTER( BuildingState, Building, BuildingBody );
         HSM_STATE( BuildingBody, BuildingState, 0 );
-        HSM_STATE_ENTER( BuildingGuard, BuildingState, 0 );
+        HSM_STATE_ENTER( BuildingHandler, BuildingState, 0 );
 
 
 //---------------------------------------------------------------------------
@@ -411,7 +518,8 @@ static hsm_state BuildingEvent( hsm_status status )
     switch (status->evt->type) {
         case _hsm_begin: 
         {
-            hash_entry_t* entry= Hash_FindEntry( &builder->hash, status->evt->data.id );
+            StateEvent*event=(StateEvent*)status->evt;
+            hash_entry_t* entry= Hash_FindEntry( &builder->hash, event->id );
             if (Entry_ReadyToBuild( entry )) {
                 ret= BuildingState();
             }
@@ -458,10 +566,14 @@ static hsm_context BuildingStateEnter( hsm_status status )
     builder_t * builder= ((builder_t*)status->ctx);
     BeginEvent * evt= (BeginEvent*)(status->evt);
     state_t* parent= Builder_CurrentState( builder );     // parent of the new state is the current state
-
-    hash_entry_t* entry= Hash_CreateEntry( &(builder->hash), evt->core.data.id, 0 );
-    state_t* new_state= NewState( parent, evt->name, evt->namelen );
-
+    BeginEvent*event=(BeginEvent*)status->evt;
+    hash_entry_t* entry;
+    state_t* new_state;
+    
+    assert( status->evt->type == _hsm_begin );
+    entry= Hash_CreateEntry( &(builder->hash), evt->id, 0 );
+    new_state= NewState( parent, evt->name, evt->namelen );
+        
     assert( new_state && entry->clientData == 0);
     if (new_state && entry->clientData == 0) 
     {
@@ -486,6 +598,10 @@ static hsm_context BuildingStateEnter( hsm_status status )
 }
 
 //---------------------------------------------------------------------------
+/**
+ * note: transitioning to BuildingBody() pulls the user out of BuildingHandler if that's where they are
+ * without disrupting the fact we are still building a states; it correctly ends the event handler build.
+ */
 static hsm_state BuildingStateEvent( hsm_status status )
 {
     hsm_state ret= NULL;
@@ -499,29 +615,55 @@ static hsm_state BuildingStateEvent( hsm_status status )
                 current->desc.enter= RunGenericEnter;
                 current->enter= event->enter;
                 current->enter_ud= event->enter_data;
-                ret= HsmStateHandled();
+                ret= BuildingBody();
             }
             else {
                 Builder_Error( builder, current->desc.enter ? "enter already specified." : "enter is null." );
                 ret= HsmStateError();
             }
         }
-        case _hsm_exit_ud: {
-            const ActionEvent* event= (const ActionEvent*)status->evt;
+        break;
+        case _hsm_exit_raw: {
+            const RawActionEvent* event= (const RawActionEvent*)status->evt;
             if (!current->desc.exit && event->action) {
-                current->desc.exit= RunGenericExit;
-                current->exit= event->action;
-                current->exit_ud= event->action_data;
-                ret= HsmStateHandled();
+                current->desc.exit= event->action;
+                ret= BuildingBody();
             }
             else {
                 Builder_Error( builder, current->desc.exit ? "exit already specified." : "exit is null." );
                 ret= HsmStateError();
             }
         }
-        break; // a new event handler
+        break;
+        case _hsm_exit_ud: {
+            const ActionEvent* event= (const ActionEvent*)status->evt;
+            if (!current->desc.exit && event->action) {
+                current->desc.exit= RunGenericExit;
+                current->exit= event->action;
+                current->exit_ud= event->action_data;
+                ret= BuildingBody();
+            }
+            else {
+                Builder_Error( builder, current->desc.exit ? "exit already specified." : "exit is null." );
+                ret= HsmStateError();
+            }
+        }
+        break;
+        case _hsm_process_ud: {
+            const ProcessEvent* event= (const ProcessEvent*)status->evt;
+            if (event->process) {
+                NewProcessUD( current, event->process, event->process_data );
+                ret= BuildingBody();
+            }
+            else {
+                Builder_Error( builder, "process is null." );
+                ret= HsmStateError();
+            }
+        }
+        break; 
         case _hsm_guard_ud: {
-            ret= BuildingGuard();
+            // build a event handler
+            ret= BuildingHandler();
         }
         break;
         case _hsm_end: {
@@ -536,7 +678,7 @@ static hsm_state BuildingStateEvent( hsm_status status )
             }
             else {
                 builder->current= (state_t*) current->desc.parent;                    
-                ret= HsmStateHandled();
+                ret= BuildingBody();
             }
         }            
         break;
@@ -545,9 +687,9 @@ static hsm_state BuildingStateEvent( hsm_status status )
 }
 
 //---------------------------------------------------------------------------
-// On: 
+// If, and And: 
 //---------------------------------------------------------------------------
-static hsm_context BuildingGuardEnter( hsm_status status )
+static hsm_context BuildingHandlerEnter( hsm_status status )
 {
     builder_t * builder= ((builder_t*)status->ctx);
     GuardEvent * guard= (GuardEvent*)status->evt;
@@ -560,18 +702,21 @@ static hsm_context BuildingGuardEnter( hsm_status status )
 }
 
 //---------------------------------------------------------------------------
-static hsm_state BuildingGuardEvent( hsm_status status )
+static hsm_state BuildingHandlerEvent( hsm_status status )
 {
     hsm_state ret=NULL;
     builder_t* builder= ((builder_t*)status->ctx);
     state_t* state= Builder_CurrentState( builder );
     assert(state);
     if (state) {
-        handler_t* handler= state->handlers;
+        // we shouldnt be in this state unless the process is a handler...
+        handler_t* handler= (handler_t*) state->process;
+        assert( state->process->flags & ProcessHandler );
 
         switch (status->evt->type) {
             case _hsm_goto: {
-                const int go= status->evt->data.id;
+                const StateEvent* event= (const StateEvent*)status->evt;
+                const int go= event->id;
                 hash_entry_t* target= Hash_FindEntry( &(builder->hash), go );
                 if (!handler->target && target) {
                     handler->target= target;
@@ -650,7 +795,7 @@ hsm_state hsmResolveId( int id )
 {
     hsm_state ret=0;
     assert( gStartCount );
-    if ( gStartCount && HsmIsRunning(&gBuilder) ) {
+    if ( gStartCount && HsmIsRunning(&gMachine.core) ) {
         const hash_entry_t* entry= Hash_FindEntry( &(gBuilder.hash), id );
         ret= (hsm_state) entry ? entry->clientData :  0;
     }        
@@ -707,9 +852,7 @@ int hsmBegin( const char * name, int len )
     int ret=0;
     const int id= hsmState( name );
     if (id) {
-        BeginEvent evt= { _hsm_begin, id };
-        evt.name= name;
-        evt.namelen= len;
+        BeginEvent evt= { _hsm_begin, id, name, len };
         if (HsmSignalEvent( &gMachine.core, &evt.core )) {
             ret= id;
         }
@@ -736,33 +879,46 @@ void hsmOnEnterUD( hsm_callback_enter_ud entry, void *enter_data )
 {
     assert( gStartCount );
     if ( gStartCount ) {
-        EnterEvent evt= { _hsm_enter_ud };
-        evt.enter= entry;
-        evt.enter_data= enter_data;
+        EnterEvent evt= { _hsm_enter_ud, entry, enter_data };
         HsmSignalEvent( &gMachine.core, &evt.core );
     }        
 }
 
+//---------------------------------------------------------------------------
+void hsmOnExit( hsm_callback_action action )
+{
+    assert( gStartCount );
+    if ( gStartCount ) {
+        RawActionEvent evt= { _hsm_exit_raw, action };
+        HsmSignalEvent( &gMachine.core, &evt.core );
+    }        
+}
 //---------------------------------------------------------------------------
 void hsmOnExitUD( hsm_callback_action_ud action, void *exit_data )
 {
     assert( gStartCount );
     if ( gStartCount ) {
-        ActionEvent evt= { _hsm_exit_ud };
-        evt.action= action;
-        evt.action_data= exit_data;
+        ActionEvent evt= { _hsm_exit_ud, action, exit_data };
         HsmSignalEvent( &gMachine.core, &evt.core );
     }        
 }
 
 //---------------------------------------------------------------------------
-void hsmOnEventUD( hsm_callback_guard_ud guard, void *guard_data )
+void hsmOnEventUD( hsm_callback_process_ud process, void* process_data )
 {
     assert( gStartCount );
     if ( gStartCount ) {
-        GuardEvent evt= { _hsm_guard_ud }; 
-        evt.guard= guard;
-        evt.guard_data= guard_data;
+        ProcessEvent evt= { _hsm_process_ud, process, process_data }; 
+        HsmSignalEvent( &gMachine.core, &(evt.core) );
+    }        
+}
+
+//---------------------------------------------------------------------------
+void hsmIfUD( hsm_callback_guard_ud guard, void *guard_data )
+{
+    assert( gStartCount );
+    if ( gStartCount ) {
+        GuardEvent evt= { _hsm_guard_ud, guard, guard_data }; 
         HsmSignalEvent( &gMachine.core, &(evt.core) );
     }        
 }
@@ -772,10 +928,7 @@ void hsmTestUD( hsm_callback_guard_ud guard, void *guard_data )
 {
     assert( gStartCount );
     if ( gStartCount ) {
-        GuardEvent evt= { _hsm_guard_ud }; 
-        evt.guard= guard;
-        evt.guard_data= guard_data;
-        evt.append= HSM_TRUE;
+        GuardEvent evt= { _hsm_guard_ud, guard, guard_data, HSM_TRUE }; 
         HsmSignalEvent( &gMachine.core, &(evt.core) );
     }        
 }
@@ -791,8 +944,8 @@ void hsmGotoId( int id )
 {
     assert( gStartCount );
     if ( gStartCount ) {
-        BuildEvent evt= { _hsm_goto, id };
-        HsmSignalEvent( &gMachine.core, &evt );
+        StateEvent evt= { _hsm_goto, id };
+        HsmSignalEvent( &gMachine.core, &evt.core );
     }        
 }
 
@@ -801,22 +954,10 @@ void hsmRunUD( hsm_callback_action_ud action, void *action_data )
 {
     assert( gStartCount );
     if ( gStartCount ) {
-         ActionEvent evt= { _hsm_action_ud }; 
-        evt.action= action;
-        evt.action_data= action_data;
+        ActionEvent evt= { _hsm_action_ud, action, action_data }; 
         HsmSignalEvent( &gMachine.core, &evt.core );
     }        
 }
-
-//---------------------------------------------------------------------------
-/*
-void hsmRun( hsm_callback_action cb, void *action_data )
-{
-    ActionEvent evt= { _hsm_action_raw }; 
-    evt.core.action= cb;
-    HsmSignalEvent( &gMachine.core, &evt.core );
-}
-*/
 
 //---------------------------------------------------------------------------
 void hsmEnd()

@@ -28,18 +28,21 @@ hsm_bool LuaTest()
     if (L) { // darn you missing c-99 features
         int x= luaL_loadfile(L, "samek_plus.lua");
         int err= lua_pcall(L, 0, 1, 0);                 // call the file, we expect one return
-        hsmStartup();
-        if (!err) {
+        if (err) {
+            printf("error in lua script");
+        }
+        else {
             int stateid;
+            hsmStartup();
             if (HulaBuildState( L, lua_gettop(L), &stateid )==0) {
-                hsm_machine_t machine;
+                hsm_context_machine_t machine;
                 res= TestEventSequence( 
-                        HsmMachine( &machine ), 
+                        HsmMachineWithContext( &machine, 0 ), 
                         hsmResolveId( stateid ), 
                         SamekPlusSequence() );
             }            
+            hsmShutdown();
         }
-        hsmShutdown();
     }        
     lua_close(L);
     return res;

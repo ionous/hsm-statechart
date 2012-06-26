@@ -23,6 +23,15 @@
 #ifndef __HSM_BUILDER_H__
 #define __HSM_BUILDER_H__
 
+
+
+/**
+ * Event handler callback w/ user data
+ * 
+ * @see hsm_callback_process_event, hsmOnEventUD
+ */
+typedef hsm_state(*hsm_callback_process_ud)( hsm_status status, void * user_data );
+
 /**
  * Enter callback w/ user data.
  *
@@ -47,7 +56,7 @@ typedef void(*hsm_callback_action_ud)( hsm_status status, void * action_data );
  * @param guard_data The userdata passed 
  * @return Return #HSM_TRUE if the guard passes and the transition,actions should be handled; #HSM_FALSE if the guard filters the transition,actions.
  * 
- * @see hsm_callback_guard, hsmOnEventUD, hsmTestUD
+ * @see hsm_callback_guard, hsmIfUD, hsmTestUD
  */
 typedef hsm_bool(*hsm_callback_guard_ud)( hsm_status status, void *guard_data );
 
@@ -137,11 +146,27 @@ void hsmOnEnterUD( hsm_callback_enter_ud entry, void * user_data );
  * Specify a callback for state exit
  *
  * @param exit Callback triggered on state exit
+ */
+void hsmOnExit( hsm_callback_action exit );
+
+/**
+ * Specify a callback for state exit w/ user data
+ *
+ * @param exit Callback triggered on state exit
  * @param user_data Data passed to callback
  *
  * @note user_data lifetime must be longer than the state descriptions
  */
 void hsmOnExitUD( hsm_callback_action_ud exit, void * user_data );
+
+/**
+ * Event handler initialization.
+ * Call the passed event handler function. 
+ * 
+ * @param process event handler function to call
+ * @param process_data Data passed to callback when an event is sent to a state.
+ */
+void hsmOnEventUD( hsm_callback_process_ud process, void* process_data );
 
 /**
  * Event handler initialization.
@@ -151,16 +176,16 @@ void hsmOnExitUD( hsm_callback_action_ud exit, void * user_data );
  * @param guard Boolean function to call.
  * @param guard_data Data passed to callback.
  */
-void hsmOnEventUD( hsm_callback_guard_ud guard, void* guard_data );
+void hsmIfUD( hsm_callback_guard_ud guard, void* guard_data );
 
 /**
  * Add a guard to the current event handler.
- * Works the same as hsmOnEvent except it doesn't create a new handler, only adds a new guard on to the existing one(s)
+ * Works the same as hsmIf except it doesn't create a new handler, only adds a new guard on to the existing one(s)
  * 
  * @param guard Boolean function to call.
  * @param guard_data Data passed to callback.
  *
- * @see hsmOnEvent.
+ * @see hsmIf.
  */
 void hsmTestUD( hsm_callback_guard_ud guard, void* guard_data );
 

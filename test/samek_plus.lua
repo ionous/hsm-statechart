@@ -25,7 +25,9 @@ end
 
 chart= {
 	s0 = {
-	  -- entry =
+	  entry=function(ctx)
+				return { foo= 0 }
+			end,
 	  -- exit =
 	  init = 's1',
 	  e    = 's211',
@@ -41,13 +43,13 @@ chart= {
 
 		s11 = {
 		  g = 's211',
-		  h = function(status)
-				if (status.foo~=0) then
-				  status.foo=0
+		  h = function(ctx)
+				if (ctx.foo~=0) then
+				  ctx.foo=0
 				  return true
 				end
 			  end
-			},
+		},
 
 		s12 = {
 		  -- empty leaf state
@@ -61,9 +63,9 @@ chart= {
 		s21 = {
 		  init = 's211',
 		  b    = 's211',
-		  h    = function( status )
-				  if (status.foo==0) then
-					status.foo=0
+		  h    = function(ctx)
+				  if (ctx.foo==0) then
+					ctx.foo=0
 					return 's21'
 				  end
 				end,

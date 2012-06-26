@@ -194,7 +194,7 @@ hsm_bool HsmSignalEvent( hsm_machine hsm, hsm_event evt )
         HsmContextIterator( &it, HSM_STACK( hsm ) );
         do {
             if (handler->process) {
-                hsm_status_t status= { hsm, handler, it.context, evt};
+                hsm_status_t status= { hsm, handler, it.context, evt };
                 next_state= handler->process( &status ) ;
                 if (next_state) {
                     break;

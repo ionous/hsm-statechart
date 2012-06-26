@@ -86,22 +86,22 @@ int buildWatchMachine(int parent)
 
         hsmOnEnter( 
             ActiveStateEnter );
-        hsmOnEventi( WATCH_RESET_PRESSED );
+        hsmIfi( WATCH_RESET_PRESSED );
         hsmGoto( running );
 
         hsmBegin( stopped );
         {
-            hsmOnEventi( WATCH_TOGGLE_PRESSED );
+            hsmIfi( WATCH_TOGGLE_PRESSED );
             hsmGoto( running );
         }
         hsmEnd();
 
         hsmBegin( running );
         {
-            hsmOnEventi( WATCH_TOGGLE_PRESSED );
+            hsmIfi( WATCH_TOGGLE_PRESSED );
             hsmGoto( stopped );
 
-            hsmOnEventi( WATCH_TICK );
+            hsmIfi( WATCH_TICK );
             hsmRun( RunTickTime );
         }
         hsmEnd();
