@@ -12,8 +12,6 @@
 #include "hash.h"
 #include "hsm_builder.h"
 
-#define _CRT_SECURE_NO_WARNINGS
-
 #include <assert.h>
 #include <stdlib.h>
 #include <stddef.h>
@@ -40,6 +38,8 @@ hsm_uint32 hsmStringHash(const char *string, hsm_uint32 hval)
 // oh the things we'll build: a hat, a cat, a series of typedefs, all that.
 typedef struct state_rec    state_t;
 typedef struct guard_rec    guard_t;
+typedef struct guard_rec_ud  guard_ud_t;
+typedef struct guard_rec_raw guard_raw_t;
 typedef struct action_rec   action_t;
 typedef struct process_rec  process_t;
 typedef struct process_rec_ud  process_ud_t;
@@ -91,13 +91,35 @@ struct action_rec
  * eventually want a full blown decision tree to allow ands and ors
  * right now, it's all ands
  */
+enum guard_type
+{
+    GuardUd= 1,
+    GuardRaw=2,
+};
+ 
 struct guard_rec
 {
-    int flags;
-    hsm_callback_guard_ud match;    // function to determine if this rec handles some any particular event
-    void * guard_data;           // passed to match    
+    int type;                     
     guard_t * next;
 };
+
+struct guard_rec_raw 
+{
+    guard_t core;
+    hsm_callback_guard match;      // function to determine if this rec handles some any particular event
+    void * guard_data;             // passed to match    
+};
+
+struct guard_rec_ud
+{
+    guard_t core;
+    hsm_callback_guard_ud match;   // function to determine if this rec handles some any particular event
+    void * guard_data;             // passed to match    
+};
+
+#define CALL_GUARD( rec, status ) ( ((rec)->type == GuardUd) ? \
+                                        ( ((guard_ud_t* )(rec))->match( status, ((guard_ud_t*) (rec))->guard_data ) ):\
+                                        ( ((guard_raw_t*)(rec))->match( status )) )
 
 //---------------------------------------------------------------------------
 /**
@@ -170,7 +192,7 @@ struct process_rec_ud
 struct handler_rec
 {
     process_t core;
-    guard_t guard;
+    guard_t *guard;
     action_t *actions;      // if we do match: we may have things to do
     hash_entry_t* target;   //             not to mention, places to '.
 };
@@ -218,8 +240,8 @@ static hsm_state RunGenericEvent( hsm_status status )
             handler_t * handler= (handler_t*)et;
             // determine if some guard blocks the event from running
             guard_t* guard;
-            for (guard= &(handler->guard); guard; guard=guard->next) {
-                if (!guard->match( status, guard->guard_data )) {
+            for (guard= handler->guard; guard; guard=guard->next) {
+                if (!CALL_GUARD( guard, status )) {
                     break;
                 }
             }
@@ -307,16 +329,13 @@ static process_t* NewProcessUD( state_t* state, hsm_callback_process_ud process,
 /**
  * @internal construct a new event object
  */
-static process_t* NewHandler( state_t* state, hsm_callback_guard_ud match, void * guard_data )
+static process_t* NewHandler( state_t* state )
 {   
     process_t* ret=0;
-    if (state && match) {
+    if (state) {
         handler_t* handler= (handler_t*) calloc( 1, sizeof( handler_t ) );
         if (handler) {
             ret= &(handler->core);
-            // setup the first guard:
-            handler->guard.match= match;
-            handler->guard.guard_data= guard_data;
             // link to the list of (other) processors for this state:
             ret->flags= ProcessHandler;
             ret->next= state->process;
@@ -351,23 +370,42 @@ static action_t* NewAction( handler_t* handler, hsm_callback_action_ud run, void
 /**
  * @internal construct a new guard
  */
-static guard_t* NewGuard( handler_t* handler, hsm_callback_guard_ud match, void * guard_data )
+static guard_t* NewGuardUD( handler_t* handler, hsm_callback_guard_ud match, void * guard_data )
 {   
-    guard_t* guard= NULL;
+    guard_t *ret= NULL;
     if (handler && match) {
-        guard= (guard_t*) calloc( 1, sizeof( guard_t ) );
+        guard_ud_t* guard= (guard_ud_t*) calloc( 1, sizeof( guard_ud_t ) );
         if (guard) {
             // set the default matching function
             guard->match= match;
             guard->guard_data= guard_data;
             // WARNING: link order doesnt matter right now because they are all "and" but it will for "or" and "and"
-            guard->next= handler->guard.next;
-            handler->guard.next= guard;
+            ret= &guard->core;
+            ret->type= GuardUd;
+            ret->next= handler->guard;
+            handler->guard= ret;
         }            
     }        
-    return guard;
+    return ret;
 }
 
+static guard_t* NewGuardRaw( handler_t* handler, hsm_callback_guard match )
+{   
+    guard_t *ret= NULL;
+    if (handler && match) {
+        guard_raw_t* guard= (guard_raw_t*) calloc( 1, sizeof( guard_raw_t ) );
+        if (guard) {
+            // set the default matching function
+            guard->match= match;
+            // WARNING: link order doesnt matter right now because they are all "and" but it will for "or" and "and"
+            ret= &guard->core;
+            ret->type= GuardRaw;
+            ret->next= handler->guard;
+            handler->guard= ret;
+        }            
+    }        
+    return ret;
+}
 
 //---------------------------------------------------------------------------
 // Builder Machine
@@ -387,7 +425,7 @@ enum builder_events
     _hsm_end,
 
     _hsm_enter_ud, 
-    //_hsm_enter_raw,
+    _hsm_enter_raw,
 
     _hsm_exit_ud,
     _hsm_exit_raw,
@@ -395,7 +433,8 @@ enum builder_events
     _hsm_process_ud,
 
     _hsm_guard_ud,
-    //_hsm_guard_raw,
+    _hsm_guard_raw,
+    
     _hsm_action_ud,
     //_hsm_action_raw,
     _hsm_goto,
@@ -466,6 +505,13 @@ struct enter_event_rec
     void * enter_data;   
 };
 
+typedef struct raw_enter_event_rec RawEnterEvent;
+struct raw_enter_event_rec
+{
+    BuildEvent core;
+    hsm_callback_enter enter;
+};
+
 typedef struct process_event_rec ProcessEvent;
 struct process_event_rec
 {
@@ -474,14 +520,26 @@ struct process_event_rec
     void * process_data;
 };
 
-
 typedef struct guard_event_rec GuardEvent;
 struct guard_event_rec
 {
     BuildEvent core;
+    hsm_bool append;
+};
+
+typedef struct raw_guard_event_rec RawGuardEvent;
+struct raw_guard_event_rec
+{
+    GuardEvent core;
+    hsm_callback_guard  guard;
+};
+
+typedef struct guard_event_ud_rec GuardEventUD;
+struct guard_event_ud_rec
+{
+    GuardEvent core;
     hsm_callback_guard_ud  guard;
     void * guard_data;   
-    hsm_bool append;
 };
 
 typedef struct raw_action_event_rec RawActionEvent;
@@ -622,6 +680,18 @@ static hsm_state BuildingStateEvent( hsm_status status )
             }
         }
         break;
+        case _hsm_enter_raw: {
+            const RawEnterEvent* event= (const RawEnterEvent*)status->evt;
+            if (!current->desc.enter && event->enter) {
+                current->desc.enter= event->enter;
+                ret= BuildingBody();
+            }
+            else {
+                Builder_Error( builder, current->desc.enter ? "enter already specified." : "enter is null." );
+                ret= HsmStateError();
+            }
+        }
+        break;
         case _hsm_exit_raw: {
             const RawActionEvent* event= (const RawActionEvent*)status->evt;
             if (!current->desc.exit && event->action) {
@@ -660,8 +730,10 @@ static hsm_state BuildingStateEvent( hsm_status status )
             }
         }
         break; 
-        case _hsm_guard_ud: {
-            // build a event handler
+        // start building a event handler
+        case _hsm_guard_raw: 
+        case _hsm_guard_ud: 
+        {
             ret= BuildingHandler();
         }
         break;
@@ -688,14 +760,35 @@ static hsm_state BuildingStateEvent( hsm_status status )
 //---------------------------------------------------------------------------
 // If, and And: 
 //---------------------------------------------------------------------------
+
+guard_t* NewGuardFromEvent( hsm_status status, handler_t* handler )
+{
+    guard_t* guard=0;
+    if (handler) {
+        if (status->evt->type == _hsm_guard_ud) {
+            const GuardEventUD* event= (const GuardEventUD*)status->evt;
+            guard= NewGuardUD( handler, event->guard, event->guard_data );
+        }
+        else 
+        if (status->evt->type ==  _hsm_guard_raw) {
+            const RawGuardEvent * event= (const RawGuardEvent*)status->evt;
+            guard= NewGuardRaw( handler, event->guard  );
+        }
+        else {
+            assert(0 && "unexpected event");
+        }
+    }
+    return guard;
+}
+
 static hsm_context BuildingHandlerEnter( hsm_status status )
 {
     builder_t * builder= ((builder_t*)status->ctx);
-    GuardEvent * guard= (GuardEvent*)status->evt;
     state_t* state= Builder_CurrentState( builder );
-    assert( state );
-    assert( status->evt->type == _hsm_guard_ud );
-    NewHandler( state, guard->guard, guard->guard_data );
+    guard_t* guard=0;
+    handler_t* handler= (handler_t*) NewHandler( state );
+    assert( handler );
+    guard= NewGuardFromEvent( status, handler );
     // keep the original context
     return status->ctx;
 }
@@ -727,16 +820,19 @@ static hsm_state BuildingHandlerEvent( hsm_status status )
                 }                
             }
             break;
-            case _hsm_guard_ud: {
+            case _hsm_guard_raw: 
+            case _hsm_guard_ud: 
+            {
                 const GuardEvent* guard_event= (const GuardEvent*)status->evt;
                 // on append, we want to add this guard to us
-                // otherwise we want to start a new event handler
+                // otherwise we let the parent state start a new event handler
                 if (guard_event->append) {
-                    if (NewGuard( handler, guard_event->guard, guard_event->guard_data )) {
+                    guard_t* guard= NewGuardFromEvent( status, handler );
+                    if (guard) {
                         ret= HsmStateHandled();
                     }
                     else {
-                        Builder_Error( builder, !guard_event->guard ? "no guard specified" : "couldnt allocate guard");
+                        Builder_Error( builder, "couldnt create guard");
                         ret= HsmStateError();
                     }                    
                 }
@@ -770,17 +866,17 @@ static builder_t gBuilder= {0};
 static int gStartCount=0;
 
 //---------------------------------------------------------------------------
-void hsmStartup()
+int hsmStartup()
 {
     if (!gStartCount) {
         Hash_InitTable( &gBuilder.hash );
         HsmStart( HsmMachineWithContext( &gMachine, &(gBuilder.ctx) ), Building() );
     }
-    ++gStartCount;
+    return ++gStartCount;
 }
 
 //---------------------------------------------------------------------------
-void hsmShutdown()
+int hsmShutdown()
 {
     if (gStartCount>0) {
         const hsm_bool free_client_data= HSM_TRUE;
@@ -884,6 +980,16 @@ void hsmOnEnterUD( hsm_callback_enter_ud entry, void *enter_data )
 }
 
 //---------------------------------------------------------------------------
+void hsmOnEnter( hsm_callback_enter entry )
+{
+    assert( gStartCount );
+    if ( gStartCount ) {
+        RawEnterEvent evt= { _hsm_enter_raw, entry };
+        HsmSignalEvent( &gMachine.core, &evt.core );
+    }        
+}
+
+//---------------------------------------------------------------------------
 void hsmOnExit( hsm_callback_action action )
 {
     assert( gStartCount );
@@ -913,22 +1019,32 @@ void hsmOnEventUD( hsm_callback_process_ud process, void* process_data )
 }
 
 //---------------------------------------------------------------------------
-void hsmIfUD( hsm_callback_guard_ud guard, void *guard_data )
+void hsmIf( hsm_callback_guard guard )
 {
     assert( gStartCount );
     if ( gStartCount ) {
-        GuardEvent evt= { _hsm_guard_ud, guard, guard_data }; 
-        HsmSignalEvent( &gMachine.core, &(evt.core) );
+        RawGuardEvent evt= { _hsm_guard_raw, 0, guard }; 
+        HsmSignalEvent( &gMachine.core, &(evt.core.core) );
     }        
 }
 
 //---------------------------------------------------------------------------
-void hsmTestUD( hsm_callback_guard_ud guard, void *guard_data )
+void hsmIfUD( hsm_callback_guard_ud guard, void *guard_data )
 {
     assert( gStartCount );
     if ( gStartCount ) {
-        GuardEvent evt= { _hsm_guard_ud, guard, guard_data, HSM_TRUE }; 
-        HsmSignalEvent( &gMachine.core, &(evt.core) );
+        GuardEventUD evt= { _hsm_guard_ud, 0, guard, guard_data }; 
+        HsmSignalEvent( &gMachine.core, &(evt.core.core) );
+    }        
+}
+
+//---------------------------------------------------------------------------
+void hsmAndUD( hsm_callback_guard_ud guard, void *guard_data )
+{
+    assert( gStartCount );
+    if ( gStartCount ) {
+        GuardEventUD evt= { _hsm_guard_ud, HSM_TRUE, guard, guard_data }; 
+        HsmSignalEvent( &gMachine.core, &(evt.core.core) );
     }        
 }
 

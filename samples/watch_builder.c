@@ -31,14 +31,14 @@ enum watch_events {
 // you could also wrap the events of another framework if you wanted.
 typedef struct hsm_event_rec WatchEvent;
 struct hsm_event_rec {
-    WatchEvents evt;
+    WatchEvents type;
 };
 
 // the tick event extends the basic watch event to add elapsed time.
 // you can have as many different kinds of event data as you want.
 typedef struct tick_event TickEvent;
 struct tick_event {
-    WatchEvent evt;
+    WatchEvent core;
     int time;
 };
 
@@ -61,7 +61,15 @@ static hsm_context ActiveStateEnter( hsm_status status )
 }
 
 //---------------------------------------------------------------------------
-static void RunTickTime( hsm_status status )
+/**
+ * NOTE: the second parameter is `user data`
+ * but this user data is shared for *all* watches
+ * b/c this chart can be in use simultaneously by multiple watches.
+ *
+ * its only status->hsm ( the machine ) and status->ctx ( the context data )
+ * that are potentially unique for every watch.
+ */
+static void RunTickTime( hsm_status status, void * user_data )
 {
     // our context is the watch object
     Watch* watch= ((WatchContext*)status->ctx)->watch;
@@ -73,41 +81,108 @@ static void RunTickTime( hsm_status status )
     printf("%d,", watch->elapsed_time );
 }
 
+
 //---------------------------------------------------------------------------
-#if 0
-
-int buildWatchMachine(int parent) 
+static hsm_bool MatchEvent( hsm_status status, WatchEvents evt )
 {
-    const int active= hsmState( "Active" );
-    hsmBegin( active );
+    return status->evt->type == evt;
+}
+
+#define IfEvent( val ) hsmIfUD( (hsm_callback_guard_ud) MatchEvent, (void*) val )
+
+//---------------------------------------------------------------------------
+/**
+ * the watch chart can be used by multiple machines at the same time
+ */
+hsm_state buildWatchChart() 
+{
+    int id= hsmBegin( "Active",0 );
     {
-        const int stopped= hsmState( "Stopped" ),
-                  running= hsmState( "Running" );
-
-        hsmOnEnter( 
-            ActiveStateEnter );
-        hsmIfi( WATCH_RESET_PRESSED );
-        hsmGoto( running );
-
-        hsmBegin( stopped );
+        hsmOnEnter( ActiveStateEnter );   // active state enter resets the timer
+            // if the user presses "reset" 
+            // no matter which state we're in, transition to self, that means: 
+            // reset the time ( via enter ), and enter initial state ( stopped )
+            IfEvent( WATCH_RESET_PRESSED ); 
+            hsmGoto( "Active" );
+            
+        // the first sub-state entered is the first state listed
+        // in this case the first thing active does is enter 'stopped'
+        hsmBegin( "Stopped",0 );
         {
-            hsmIfi( WATCH_TOGGLE_PRESSED );
-            hsmGoto( running );
+            IfEvent( WATCH_TOGGLE_PRESSED );
+            hsmGoto( "Running" );
         }
         hsmEnd();
-
-        hsmBegin( running );
+        hsmBegin( "Running",0 );
         {
-            hsmIfi( WATCH_TOGGLE_PRESSED );
-            hsmGoto( stopped );
+            IfEvent( WATCH_TOGGLE_PRESSED );
+            hsmGoto( "Stopped" );
 
-            hsmIfi( WATCH_TICK );
-            hsmRun( RunTickTime );
+            // on tick events, update the watch timer
+            IfEvent( WATCH_TICK );
+            hsmRunUD( RunTickTime, 0 );
         }
         hsmEnd();
     }
     hsmEnd();
-    return active;
+    return hsmResolveId(id);
 }
-#endif
+
+//---------------------------------------------------------------------------
+/**
+ * watch_builder
+ * run a stop watch using user input
+ */
+//---------------------------------------------------------------------------
+int watch_builder( int argc, char* argv[] )
+{   
+    // the builder needs an early call to initialize its internals
+    if (hsmStartup()) {
+        hsm_context_machine_t machine;
+        Watch watch;
+        WatchContext ctx= { 0, 0, &watch };
+
+        // declare a statemachine, pass our watch context data
+        hsm_machine hsm= HsmMachineWithContext( &machine, &ctx.ctx );
+        hsm_state watch_chart= buildWatchChart();
+
+
+        printf( "HsmBuilder's Stop Watch Sample.\n"
+            "Keys:\n"
+                "\t'1': reset button\n"
+                "\t'2': generic toggle button\n" );
+    
+        // start the machine, and some first state
+        HsmStart( hsm, watch_chart );
+
+        // while the statemachine is still running
+        while ( HsmIsRunning( hsm ) ) {
+            // get a key from the keyboard
+            int ch= PlatformGetKey();
+            // turn a '1' into the reset button,
+            // turn a '2' into the toggle button
+            WatchEvents events[]= { WATCH_RESET_PRESSED, WATCH_TOGGLE_PRESSED };
+            int index= ch-'1';
+            if ((index >=0) && (index < sizeof(events)/sizeof(WatchEvents))) {
+                // send the event to the state machine
+                // one of the handler functions will get called as a result
+                // ( for example: StoppedStateEvent. ) 
+                WatchEvent evt= { events[index] };
+                HsmSignalEvent( hsm, &evt );
+                printf(".");
+            }
+            else {
+            // send a tick to the machine
+            // we send this regardless of whether we think the watch is running or stopped.
+            // the logic of the statemachine internally knows which states are currently active 
+            // and sends the event to the appropriate state. noting (in the code above) that only 
+            // RunningStateEvent has code does anything when it hears the tick event.
+                TickEvent tick= { WATCH_TICK, 1 };
+                HsmSignalEvent( hsm, &tick.core );
+                PlatformSleep(500);
+            }
+        };
+    }
+    return hsmShutdown();
+}
 

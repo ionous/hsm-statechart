@@ -25,10 +25,10 @@ struct sp_context_rec {
 };
 
 //---------------------------------------------------------------------------
-void ToggleFoo( hsm_status status, void * user_data )    
+void SetFoo( hsm_status status, int user_data )    
 {
     sp_context_t*sp= (sp_context_t*)status->ctx;
-    sp->foo= !sp->foo;
+    sp->foo= user_data;
 }
 
 hsm_bool TestFoo( hsm_status status, int user_data )    
@@ -42,8 +42,9 @@ hsm_bool MatchChar( hsm_status status, int user_data )
     return status->evt->ch == user_data;
 }
 
-#define hsmIf( fn, val ) hsmIfUD( (hsm_callback_guard_ud) fn, (void*) val )
-#define hsmAnd( fn, val ) hsmTestUD( (hsm_callback_guard_ud) fn, (void*) val )
+#define IfChar( val ) hsmIfUD( (hsm_callback_guard_ud) MatchChar, (void*) val )
+#define AndTest( fn, val ) hsmAndUD( (hsm_callback_guard_ud) fn, (void*) val )
+#define Run( fn, val ) hsmRunUD( (hsm_callback_guard_ud) fn, (void*) val )
 
 //---------------------------------------------------------------------------
 hsm_state buildMachine()
@@ -51,23 +52,23 @@ hsm_state buildMachine()
     int state=
     hsmBegin( "s0", 0 );
     {
-        hsmIf( MatchChar, 'e' ); hsmGoto( "s211" );
-        hsmIf( MatchChar, 'i' ); hsmGoto( "s12" );     
+        IfChar( 'e' ); hsmGoto( "s211" );
+        IfChar( 'i' ); hsmGoto( "s12" );     
         hsmBegin( "s1", 0 );
         {
-            hsmIf( MatchChar, 'a' ); hsmGoto( "s1" );
-            hsmIf( MatchChar, 'b' ); hsmGoto( "s11" );
-            hsmIf( MatchChar, 'c' ); hsmGoto( "s2" );
-            hsmIf( MatchChar, 'd' ); hsmGoto( "s0" );
-            hsmIf( MatchChar, 'f' ); hsmGoto( "s211" );
+            IfChar( 'a' ); hsmGoto( "s1" );
+            IfChar( 'b' ); hsmGoto( "s11" );
+            IfChar( 'c' ); hsmGoto( "s2" );
+            IfChar( 'd' ); hsmGoto( "s0" );
+            IfChar( 'f' ); hsmGoto( "s211" );
             hsmBegin( "s11", 0 );
             {
-                hsmIf( MatchChar, 'g' ); 
+                IfChar( 'g' ); 
                     hsmGoto( "s211" );
 
-                hsmIf( MatchChar, 'h' ); 
-                    hsmAnd( TestFoo, 1 ); 
-                    hsmRunUD( ToggleFoo, 0 );
+                IfChar( 'h' ); 
+                AndTest( TestFoo, 1 ); 
+                    Run( SetFoo, 0 );
             }
             hsmEnd();
 
@@ -77,22 +78,22 @@ hsm_state buildMachine()
         hsmEnd();
         hsmBegin( "s2", 0 );
         {
-            hsmIf( MatchChar, 'c' ); hsmGoto( "s1" );
-            hsmIf( MatchChar, 'f' ); hsmGoto( "s11" );
+            IfChar( 'c' ); hsmGoto( "s1" );
+            IfChar( 'f' ); hsmGoto( "s11" );
             hsmBegin( "s21", 0 );
             {
-                hsmIf( MatchChar, 'b' ); 
+                IfChar( 'b' ); 
                     hsmGoto( "s211" );
 
-                hsmIf( MatchChar, 'h' ); 
-                    hsmAnd(  TestFoo, 0 );
-                    hsmRunUD( ToggleFoo, 0 );
+                IfChar( 'h' ); 
+                AndTest(  TestFoo, 0 );
+                    Run( SetFoo, 1 );
                     hsmGoto( "s21" );
 
                 hsmBegin( "s211", 0 );
                 {
-                    hsmIf( MatchChar, 'd' ); hsmGoto( "s21" );
-                    hsmIf( MatchChar, 'g' ); hsmGoto( "s0" );
+                    IfChar( 'd' ); hsmGoto( "s21" );
+                    IfChar( 'g' ); hsmGoto( "s0" );
                 }
                 hsmEnd();
             }
@@ -120,4 +121,3 @@ hsm_bool SamekPlusBuilderTest()
     hsmShutdown();
     return res;
 }
-

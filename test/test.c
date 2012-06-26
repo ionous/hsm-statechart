@@ -96,15 +96,15 @@ int main(int argc, char* argv[])
 {  
     int tests=0;
 
-#if 1
-    tests+= RUN_TEST( LuaTest );
-#else
     tests+= RUN_FALSE_TEST( FailSequence  );
     tests+= RUN_TEST( EmptySequence );
     tests+= RUN_TEST( InitSequence );
     tests+= RUN_TEST( SamekPlusTest );
     tests+= RUN_TEST( SamekPlusBuilderTest );
-#endif 
+#ifdef TEST_LUA
+    tests+= RUN_TEST( LuaTest );
+#endif
+
     printf("tests have finished with %d failures\n", -tests);
     printf("press <enter> to exit...\n");
     getchar();

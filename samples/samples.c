@@ -8,27 +8,29 @@
  */
 #include <stdio.h>
 
-typedef int(*test_function)( int argc, char* argv[] );
+typedef int(*samples_function)( int argc, char* argv[] );
 
 int watch1_named_events( int argc, char* argv[] );
 int watch1_enum_events( int argc, char* argv[] );
+int watch_builder(int argc, char* argv[] );
 
 int main(int argc, char* argv[])
 {   
-    test_function tests[]= {
+    samples_function samples[]= {
+        watch_builder,
         watch1_named_events,
         watch1_enum_events
     };
-    int test=0;
+    int which=0;
 
     if (argc > 1) {
-        sscanf( argv[1], "%d", &test );
+        sscanf( argv[1], "%d", &which );
     }
 
-    if (test >= sizeof(tests)/sizeof(test_function)) {
-        printf("unknown test");
+    if (which >= sizeof(samples)/sizeof(samples_function)) {
+        printf("unknown sample selected.");
     }
     else {
-        tests[test]( argc-1, argv+1 );
+        samples[which]( argc-1, argv+1 );
     }
 }

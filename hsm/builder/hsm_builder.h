@@ -23,8 +23,6 @@
 #ifndef __HSM_BUILDER_H__
 #define __HSM_BUILDER_H__
 
-
-
 /**
  * Event handler callback w/ user data
  * 
@@ -56,7 +54,7 @@ typedef void(*hsm_callback_action_ud)( hsm_status status, void * action_data );
  * @param guard_data The userdata passed 
  * @return Return #HSM_TRUE if the guard passes and the transition,actions should be handled; #HSM_FALSE if the guard filters the transition,actions.
  * 
- * @see hsm_callback_guard, hsmIfUD, hsmTestUD
+ * @see hsm_callback_guard, hsmIfUD, hsmAndUD
  */
 typedef hsm_bool(*hsm_callback_guard_ud)( hsm_status status, void *guard_data );
 
@@ -67,20 +65,19 @@ typedef hsm_bool(*hsm_callback_guard_ud)( hsm_status status, void *guard_data );
  */
 typedef hsm_callback_action_ud hsm_callback_exit_ud;
 
-
 /**
  * Builder initialization.
  * <b>Must</b> be called before the very first.
  * You can call hsmStartup() multiple times, but every new call requires a corresponding hsmShutdown()
  */
-void hsmStartup();
+int hsmStartup();
 
 /**
  * Builder shutdown.
  * Free all internally allocated memory.
  * All states are freed.
  */
-void hsmShutdown();
+int hsmShutdown();
 
 /**
  * Start the passed machine using the passed named state
@@ -133,7 +130,7 @@ int hsmBegin( const char * name, int len );
 int hsmBeginId( int state );
 
 /**
- * Specify a callback for state entry
+ * Specify a callback for state entry w/ user data
  *
  * @param entry Callback triggered on state enter
  * @param user_data Data passed to callback
@@ -141,6 +138,14 @@ int hsmBeginId( int state );
  * @note user_data lifetime must be longer than the state descriptions
  */
 void hsmOnEnterUD( hsm_callback_enter_ud entry, void * user_data );
+
+
+/**
+ * Specify a callback for state entry
+ *
+ * @param entry Callback triggered on state enter
+ */
+void hsmOnEnter( hsm_callback_enter entry );
 
 /**
  * Specify a callback for state exit
@@ -170,13 +175,24 @@ void hsmOnEventUD( hsm_callback_process_ud process, void* process_data );
 
 /**
  * Event handler initialization.
- * Call the passed guard function, 
+ *
+ * Call the passed guard function w/ user_data
  * only if the guard returns true #HSM_TRUE will the rest of the event trigger
  * 
  * @param guard Boolean function to call.
  * @param guard_data Data passed to callback.
  */
 void hsmIfUD( hsm_callback_guard_ud guard, void* guard_data );
+
+/**
+ * Event handler initialization.
+ *
+ * Call the passed guard function, 
+ * only if the guard returns true #HSM_TRUE will the rest of the event trigger
+ * 
+ * @param guard Boolean function to call.
+ */
+void hsmIf( hsm_callback_guard guard );
 
 /**
  * Add a guard to the current event handler.
@@ -187,8 +203,7 @@ void hsmIfUD( hsm_callback_guard_ud guard, void* guard_data );
  *
  * @see hsmIf.
  */
-void hsmTestUD( hsm_callback_guard_ud guard, void* guard_data );
-
+void hsmAndUD( hsm_callback_guard_ud guard, void* guard_data );
 
 /**
  * The event handler being declared should transition to another state.
