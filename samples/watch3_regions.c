@@ -296,7 +296,7 @@ hsm_state TimeBombState3Event( hsm_status status )
 int watch3region_events( int argc, char* argv[] )
 {   
     Watch watch;
-    WatchContext ctx= { 0, &watch };
+    WatchContext ctx= { 0, 0, &watch };
     hsm_context_machine_t machine;
     hsm_machine hsm= HsmMachineWithContext( &machine, &ctx.ctx );
     

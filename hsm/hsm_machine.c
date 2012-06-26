@@ -320,8 +320,14 @@ void HsmExit( hsm_machine hsm, hsm_event cause )
     popped= HsmContextPop( stack );
 
     // finally: let the user know
-    if (hsm_global_callbacks.on_context_popped && popped) {
-        hsm_global_callbacks.on_context_popped( &status, hsm_global_callbacks.user_data );
+    if (popped) {
+        if (hsm_global_callbacks.on_context_popped) {
+            hsm_global_callbacks.on_context_popped( &status, hsm_global_callbacks.user_data );
+        }
+        // call the "hsm_callback_context_popped" of the item thats being popped
+        if (popped->popped) {
+            popped->popped( popped );
+        }
     }
 }
 

@@ -98,7 +98,7 @@ int watch1_named_events( int argc, char* argv[] )
 {   
     hsm_context_machine_t machine;
     Watch watch;
-    WatchContext ctx= { 0, &watch };
+    WatchContext ctx= { 0, 0, &watch };
     hsm_machine hsm= HsmMachineWithContext( &machine, &ctx.ctx );
     
     printf( "Stop Watch Sample.\n"

@@ -24,58 +24,58 @@ end
 
 
 chart= {
-	s0 = {
-	  entry=function(ctx)
-				return { foo= 0 }
-			end,
-	  -- exit =
-	  init = 's1',
-	  e    = 's211',
-	  i    = 's12',
+  s0 = {
+    entry=function(ctx)
+              return { foo= 0 }
+          end,
+    -- exit =
+    init = 's1',
+    e    = 's211',
+    i    = 's12',
 
-	  s1 = {
-		init = 's11',
-		a    = 's1',
-		b    = 's11',
-		c    = 's2',
-		d    = 's0',
-		f    = 's211',
+    s1 = {
+      init = 's11',
+      a    = 's1',
+      b    = 's11',
+      c    = 's2',
+      d    = 's0',
+      f    = 's211',
 
-		s11 = {
-		  g = 's211',
-		  h = function(ctx)
-				if (ctx.foo~=0) then
-				  ctx.foo=0
-				  return true
-				end
-			  end
-		},
+      s11 = {
+        g = 's211',
+        h = function(ctx)
+              if (ctx.foo~=0) then
+                ctx.foo=0
+                return true
+              end
+            end
+      },
 
-		s12 = {
-		  -- empty leaf state
-		}
-	  },
-	  s2= {
-		c    = 's1',
-		f    = 's11',
-		init = 's21',
+      s12 = {
+        -- empty leaf state
+      }
+    },
+    s2= {
+      c    = 's1',
+      f    = 's11',
+      init = 's21',
 
-		s21 = {
-		  init = 's211',
-		  b    = 's211',
-		  h    = function(ctx)
-				  if (ctx.foo==0) then
-					ctx.foo=0
-					return 's21'
-				  end
-				end,
-		  s211 = {
-			d = 's21',
-			g = 's0',
-		  }
-		}
-	  }
-	}
+      s21 = {
+        init = 's211',
+        b    = 's211',
+        h    = function(ctx)
+                if (ctx.foo==0) then
+                  ctx.foo=1
+                  return 's21'
+                end
+              end,
+        s211 = {
+          d = 's21',
+          g = 's0',
+        }
+      }
+    }
+  }
 }
 
 if arg then table_print( chart ) end

@@ -50,14 +50,14 @@ typedef void(*hsm_callback_exiting)( hsm_status status, void * user_data );
 
 /**
  * Hear about unhandled events.
+ *
  * @param status The current state of the machine.
  * @param user_data The #hsm_info_rec.user_data.
  */
 typedef void (*hsm_callback_unhandled_event)( hsm_status status, void * user_data );
 
 /**
- * Hear about context objects that have just been popped;
- * can be used to free memory if user code allocated memory for state instance data during a state's enter callback.
+ * Hear about context objects that have just been popped
  *
  * @param status The current state of the machine. hsm_status_rec::ctx has the context which has just been removed from the stack.
  * @param user_data The #hsm_info_rec.user_data.

@@ -206,13 +206,13 @@ static void RunGenericExit( hsm_status status )
  */
 static hsm_state RunGenericEvent( hsm_status status )
 {
-    hsm_state ret=NULL;
+    hsm_state next_state=NULL;
     state_t* state= StateFromStatus( status );
     const process_t* et;
     // look through the specified event processors
-    for (et= state->process; et; et=et->next) {
+    for (et= state->process; et && !next_state; et=et->next) {
         if (et->flags & ProcessCallback) {
-            ret= CALL_PROCESS( et, status );
+            next_state= CALL_PROCESS( et, status );
         }
         else {
             handler_t * handler= (handler_t*)et;
@@ -232,16 +232,15 @@ static hsm_state RunGenericEvent( hsm_status status )
                 }
                 // transition to target, or flag as handled.
                 if (handler->target) {
-                    ret= (hsm_state) handler->target->clientData;
+                    next_state= (hsm_state) handler->target->clientData;
                 }
                 else {
-                    ret= HsmStateHandled();
+                    next_state= HsmStateHandled();
                 }
-                break;
             }
         }            
     }
-    return ret;
+    return next_state;
 }
 //---------------------------------------------------------------------------
 /**

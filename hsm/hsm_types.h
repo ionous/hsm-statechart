@@ -14,6 +14,8 @@
 #ifndef __HSM_TYPES_H__
 #define __HSM_TYPES_H__
 
+#include <stddef.h>
+
 
 /**
  * @def HSM_TRUE

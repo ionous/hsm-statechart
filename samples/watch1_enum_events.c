@@ -184,7 +184,7 @@ int watch1_enum_events( int argc, char* argv[] )
 {   
     hsm_context_machine_t machine;
     Watch watch;
-    WatchContext ctx= { 0, &watch };
+    WatchContext ctx= { 0, 0, &watch };
     
     // declare a statemachine, pass our watch context data
     hsm_machine hsm= HsmMachineWithContext( &machine, &ctx.ctx );

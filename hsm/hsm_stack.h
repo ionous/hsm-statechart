@@ -34,6 +34,7 @@ void HsmContextPush( hsm_context_stack stack, hsm_context context );
  * Remove the most recently added context.
  *
  * @param stack Stack to pop from. Can be NULL.
+ * @return the item popped
  */
 hsm_context HsmContextPop( hsm_context_stack stack );
 

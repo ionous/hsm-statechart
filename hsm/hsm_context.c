@@ -12,15 +12,23 @@
 #include <assert.h>
 #include <stddef.h>
 #include <string.h>
+#include <malloc.h>
 
 //---------------------------------------------------------------------------
 // HsmContext
 //---------------------------------------------------------------------------
-hsm_context HsmContext( hsm_context_t * ctx )
+static void HsmContextFree( hsm_context_t* ctx )
 {
-    assert( ctx );
+//    free(ctx);
+}
+
+//---------------------------------------------------------------------------
+hsm_context HsmContextAlloc( size_t size )
+{
+    hsm_context_t * ctx= calloc( 1, size );
     if (ctx) {
-        ctx->parent= NULL;
+        // doesn't point to free directly to work better with msdev's crtdebug macros
+        ctx->popped= HsmContextFree;
     }        
     return ctx;
 }
@@ -56,7 +64,7 @@ void HsmContextPush( hsm_context_stack stack, hsm_context ctx )
 // ---------------------------------------------------------------
 hsm_context HsmContextPop( hsm_context_stack stack )
 {
-    hsm_context prev= NULL;
+    hsm_context bye= NULL;
     if (stack && stack->count > 0) {
         // get the presence tester
         hsm_uint32 bit= (1 << --stack->count);
@@ -65,14 +73,14 @@ hsm_context HsmContextPop( hsm_context_stack stack )
             // clear that bit
             stack->presence &= ~bit;
             // get the most recent thing pushed
-            prev= stack->context;
+            bye= stack->context;
             // and remove it 
-            if (prev) {
-                stack->context= prev->parent;
+            if (bye) {
+                stack->context= bye->parent;
             }                
         }
     }
-    return prev;
+    return bye;
 }
 
 //---------------------------------------------------------------------------

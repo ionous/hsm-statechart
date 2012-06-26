@@ -71,7 +71,10 @@ hsm_bool InitSequence()
 
 hsm_bool SamekPlusTest();
 hsm_bool SamekPlusBuilderTest();
+
+#ifdef TEST_LUA
 hsm_bool LuaTest();
+#endif
 
 //---------------------------------------------------------------------------
 // Test Helper 
@@ -93,15 +96,15 @@ int main(int argc, char* argv[])
 {  
     int tests=0;
 
-    #if 0    
+#if 1
     tests+= RUN_TEST( LuaTest );
-    #else
+#else
     tests+= RUN_FALSE_TEST( FailSequence  );
     tests+= RUN_TEST( EmptySequence );
     tests+= RUN_TEST( InitSequence );
     tests+= RUN_TEST( SamekPlusTest );
     tests+= RUN_TEST( SamekPlusBuilderTest );
-   #endif 
+#endif 
     printf("tests have finished with %d failures\n", -tests);
     printf("press <enter> to exit...\n");
     getchar();

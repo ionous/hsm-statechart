@@ -20,7 +20,17 @@ typedef struct hsm_context_rec hsm_context_t;
 typedef struct hsm_context_stack_rec hsm_context_stack_t;
 typedef struct hsm_context_stack_rec *hsm_context_stack;
 
-//---------------------------------------------------------------------------
+/**
+ * Hear about your context object after just after its been popped.
+ * Can be used to free memory for state instance data you allocated during state entry.
+ * It's designed like a destructor and so doesn't provide any parameters other than itself.
+ *
+ * @param hsm_context_t* The context being freed
+ *
+ * @see HsmContextStack, HSM_STATE_ENTER
+ */
+typedef void (*hsm_callback_popped_context)( hsm_context_t* );
+
 /**
  * A per state instance context object.
  * You can "derive" from this structure by making the first member of your own structure
@@ -31,15 +41,27 @@ struct hsm_context_rec
 {
     /**
      * @internal: pointer to next highest unique context
+     * managed by the system
      */
     hsm_context_t* parent;
+
+    /**
+     * per context callback
+     */
+    hsm_callback_popped_context popped;
 };
 
 /**
- * Initializes the context structure
- * ( not strictly necessary )
+ * Helper to create a new context object.
+ * It will be auto-freed when popped.
+ * 
+ * @param size Total size of the user context structure.
+ * @return Newly allocated context data, NULL if the allocation failed.
+ * 
+ * Sets the hsm_context_rec::popped handler to an internal free function.
+ * You can also allocate your objects on your own if you want more control.
  */
-hsm_context HsmContext( hsm_context_t * );
+hsm_context HsmContextAlloc( size_t size );
 
 //---------------------------------------------------------------------------
 /**
@@ -69,7 +91,6 @@ struct hsm_context_stack_rec
     hsm_uint16 presence;
 };
 
-//---------------------------------------------------------------------------
 /**
  * Resets the hsm_context_stack structure.
  * @param stack Stack to initialize.
