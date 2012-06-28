@@ -168,7 +168,11 @@ struct hula_ctx_rec
      */
     int lua_ref;
 
-    // TODO: add ref counting to share the memory?
+    /**
+     * count the number of times this hula_ctx_rec is shared amongst parents and children
+     * dont release the lua data until the last state using the lua_ref data is done.
+     */
+    int lua_ref_count;    
 };
 
 //---------------------------------------------------------------------------
@@ -177,31 +181,46 @@ struct hula_ctx_rec
  * @internal
  * call the lua specified entry function with this state's parent context data
  * store the data returned from that function as this state's context
+ *
+ * note: every hula event callback needs a lua_State.
+ * we can use our parent lua context if it exists; 
+ * if it doesnt exist, we'll have to make one.
  */
 static hsm_context HulaEnterUD( hsm_status status, void * user_data )
 {
     hsm_context ret=0;
-    HulaContext* new_ctx;
+    HulaContext* new_ctx=0, *parent_ctx=0;
     lua_State* L= (lua_State*)user_data;
     const int check= lua_gettop(L);
 
     // get the lua specified enter= function()
-    const int hula_call= HulaGetCall( L, status->state, LUA_T_ENTER, 0 );
+    const int lua_entryfn= HulaGetCall( L, status->state, LUA_T_ENTER, 0 );
     
     // get our parent's lua data (if its also a hula state)
     if (status->state->parent && status->state->parent->exit==HulaExit) {
         // when a state gets entered, the context is its parent's context
-        HulaContext* parentctx= (HulaContext*) status->ctx;
-        lua_rawgeti( L, LUA_REGISTRYINDEX, parentctx->lua_ref );
+        parent_ctx= (HulaContext*) status->ctx;
+    }
+
+    // if our parent has lua data, then use that as this state's initial data
+    // if not: use our parent's state's c-object
+    if (parent_ctx) {
+        lua_rawgeti( L, LUA_REGISTRYINDEX, parent_ctx->lua_ref );
     }
     else {
         // i wonder what's better? the c context? or nil?
         lua_pushlightuserdata( L, status->ctx );
     }
-    
-    // call lua enter function
-    if (!lua_isfunction( L, hula_call )) {
-        lua_remove( L, hula_call );
+
+    // no entry function means no unique data for this state:
+    // re-use our parent's context ( if its not null )
+    if (!lua_isfunction( L, lua_entryfn )) {
+        lua_remove( L, lua_entryfn );
+        if (parent_ctx) {
+            lua_pop(L,1);
+            new_ctx= parent_ctx;
+            ++parent_ctx->lua_ref_count;
+        }
     }
     else {
         int err= lua_pcall(L, 1,1,0); 
@@ -211,19 +230,26 @@ static hsm_context HulaEnterUD( hsm_status status, void * user_data )
         }    
     }
 
-    // registry[ctx] to store the lua context data
-    new_ctx= (HulaContext*) HsmContextAlloc( sizeof(HulaContext) );
-    assert( new_ctx );
+    // if we have a context pointer, then it came from our parent
+    // we didn't have any unique data, so pop that data
     if (!new_ctx) {
-        lua_pop(L,1);
+        // if we dont have a context, well... we need one.
+        // use the data that's on the stack: be it the results of the pcall, or a parent's C data
+        new_ctx= (HulaContext*) HsmContextAlloc( sizeof(HulaContext) );
+        assert( new_ctx );
+        if (!new_ctx) {
+            lua_pop(L,1);
+        }
+        else {
+            new_ctx->L= L;            
+            new_ctx->lua_ref= luaL_ref( L, LUA_REGISTRYINDEX ); 
+            ret= &new_ctx->core;
+        }
     }
-    else {
-        new_ctx->L= L;            
-        new_ctx->lua_ref= luaL_ref( L, LUA_REGISTRYINDEX ); 
-        ret= &new_ctx->core;
-    }
+
     assert( check== lua_gettop(L) );            // is life good?
-    // save our state
+
+    // the machine will store our context
     return ret;
 }
 
@@ -244,14 +270,14 @@ static hsm_state HulaRunUD( hsm_status status, void * user_data )
         const int check= lua_gettop(L);
     
         // pull the function to call:
-        const int hula_call= HulaGetCall( L, status->state, 0, event_name );
+        const int lua_eventfn= HulaGetCall( L, status->state, 0, event_name );
             
         // pull lua data to parameterize the call:
         lua_rawgeti( L, LUA_REGISTRYINDEX, ctx->lua_ref );
 
         // run the function: 1 arg, 1 result
-        if (!lua_isfunction( L, hula_call )) {
-            lua_remove( L, hula_call );
+        if (!lua_isfunction( L, lua_eventfn )) {
+            lua_remove( L, lua_eventfn );
         }
         else {
             int err= lua_pcall(L, 1, 1, 0); 
@@ -292,11 +318,11 @@ static void HulaExit( hsm_status status )
     const int check= lua_gettop(L);
 
     // pull the function to call:
-    const int hula_call= HulaGetCall( L, status->state, LUA_T_EXIT, 0 );
+    const int lua_exitfn= HulaGetCall( L, status->state, LUA_T_EXIT, 0 );
 
     // call the function: one arg, zero results
-    if (!lua_isfunction( L, hula_call )) {
-        lua_remove( L, hula_call );
+    if (!lua_isfunction( L, lua_exitfn )) {
+        lua_remove( L, lua_exitfn );
     }
     else {
         int err;
@@ -312,8 +338,10 @@ static void HulaExit( hsm_status status )
     }    
 
     // release the old lua data
-    luaL_unref( L, LUA_REGISTRYINDEX, ctx->lua_ref );
-    ctx->lua_ref= LUA_NOREF;
+    if (--ctx->lua_ref_count <0) {
+        luaL_unref( L, LUA_REGISTRYINDEX, ctx->lua_ref );
+        ctx->lua_ref= LUA_NOREF;
+    }        
     assert( check== lua_gettop(L) );            // is life good?
 }
 

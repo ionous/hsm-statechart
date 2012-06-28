@@ -236,6 +236,9 @@ static hsm_state RunGenericEvent( hsm_status status )
         if (et->flags & ProcessCallback) {
             next_state= CALL_PROCESS( et, status );
         }
+        // this block of code could have been installed as a custom process callback
+        // but this avoids a separate function call, and is pretty straight forward
+        // dont know, maybe i will revist for improved code aethetics
         else {
             handler_t * handler= (handler_t*)et;
             // determine if some guard blocks the event from running
