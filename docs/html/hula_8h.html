@@ -45,6 +45,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
   <div id="navrow1" class="tabs">
     <ul class="tablist">
       <li><a href="index.html"><span>Main&#160;Page</span></a></li>
+      <li><a href="pages.html"><span>Related&#160;Pages</span></a></li>
       <li><a href="annotated.html"><span>Data&#160;Structures</span></a></li>
       <li class="current"><a href="files.html"><span>Files</span></a></li>
       <li>
@@ -101,6 +102,7 @@ $(document).ready(function(){initNavTree('hula_8h.html','');});
 
 <div class="header">
   <div class="summary">
+<a href="#typedef-members">Typedefs</a> &#124;
 <a href="#func-members">Functions</a>  </div>
   <div class="headertitle">
 <div class="title">hula.h File Reference</div>  </div>
@@ -112,57 +114,53 @@ $(document).ready(function(){initNavTree('hula_8h.html','');});
 
 <p><a href="hula_8h_source.html">Go to the source code of this file.</a></p>
 <table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2><a name="typedef-members"></a>
+Typedefs</h2></td></tr>
+<tr class="memitem:a332a795da59d5c7b0c4308bdf6d13b46"><td class="memItemLeft" align="right" valign="top">typedef hsm_bool(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="hula_8h.html#a332a795da59d5c7b0c4308bdf6d13b46">hula_callback_is_event</a> )(lua_State *L, <a class="el" href="hsm__forwards_8h.html#aaed055d181b35182dc8c2830721dbdc9">hsm_status</a> status, const char *eventname)</td></tr>
+<tr class="memdesc:a332a795da59d5c7b0c4308bdf6d13b46"><td class="mdescLeft">&#160;</td><td class="mdescRight">Control whether the event being processed matches the passed lua defined event.  <a href="#a332a795da59d5c7b0c4308bdf6d13b46"></a><br/></td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2><a name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:aa7ea54adb4c81ca0703afd9bdfea753c"><td class="memItemLeft" align="right" valign="top">hsm_bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="hula_8h.html#aa7ea54adb4c81ca0703afd9bdfea753c">HulaUserIsEvent</a> (<a class="el" href="hsm__forwards_8h.html#aaed055d181b35182dc8c2830721dbdc9">hsm_status</a> status, const char *eventname)</td></tr>
-<tr class="memdesc:aa7ea54adb4c81ca0703afd9bdfea753c"><td class="mdescLeft">&#160;</td><td class="mdescRight">The <em>user</em> must define when using hula.  <a href="#aa7ea54adb4c81ca0703afd9bdfea753c"></a><br/></td></tr>
 <tr class="memitem:ae4d3c25d3fea8dfffb7e6cc73e5b97aa"><td class="memItemLeft" align="right" valign="top">hula_error&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="hula_8h.html#ae4d3c25d3fea8dfffb7e6cc73e5b97aa">HulaBuildState</a> (lua_State *L, int idx, int *pId)</td></tr>
 <tr class="memdesc:ae4d3c25d3fea8dfffb7e6cc73e5b97aa"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create an hsm-statechart state from a lua state description.  <a href="#ae4d3c25d3fea8dfffb7e6cc73e5b97aa"></a><br/></td></tr>
 <tr class="memitem:a3f729e51c6187caa82d7adf2a618ceac"><td class="memItemLeft" align="right" valign="top">hula_error&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="hula_8h.html#a3f729e51c6187caa82d7adf2a618ceac">HulaBuildNamedState</a> (lua_State *L, int idx, const char *name, int namelen, int *pId)</td></tr>
 <tr class="memdesc:a3f729e51c6187caa82d7adf2a618ceac"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create an hsm-statechart state from a lua state description.  <a href="#a3f729e51c6187caa82d7adf2a618ceac"></a><br/></td></tr>
+<tr class="memitem:a6d08a594ed624d9968b935489603bc33"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="hula_8h.html#a6d08a594ed624d9968b935489603bc33">HulaRegister</a> (lua_State *L, <a class="el" href="hula_8h.html#a332a795da59d5c7b0c4308bdf6d13b46">hula_callback_is_event</a> is_user_event)</td></tr>
+<tr class="memdesc:a6d08a594ed624d9968b935489603bc33"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create the "hsm_statechart" type for using hierarchical statemachines in lua.  <a href="#a6d08a594ed624d9968b935489603bc33"></a><br/></td></tr>
+<tr class="memitem:a9e5e15ea9c174d372fcd5b780bca9f9f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="hula_8h.html#a9e5e15ea9c174d372fcd5b780bca9f9f">HulaNamedRegister</a> (lua_State *L, const char *typename, <a class="el" href="hula_8h.html#a332a795da59d5c7b0c4308bdf6d13b46">hula_callback_is_event</a> is_user_event)</td></tr>
+<tr class="memdesc:a9e5e15ea9c174d372fcd5b780bca9f9f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Same as HulaRegister but allows user code to rename "hsm_statechart" to something else.  <a href="#a9e5e15ea9c174d372fcd5b780bca9f9f"></a><br/></td></tr>
 </table>
 <hr/><a name="details" id="details"></a><h2>Detailed Description</h2>
 <div class="textblock"><p>Statemachine builder extensions for lua. </p>
 
 <p>Definition in file <a class="el" href="hula_8h_source.html">hula.h</a>.</p>
-</div><hr/><h2>Function Documentation</h2>
-<a class="anchor" id="aa7ea54adb4c81ca0703afd9bdfea753c"></a>
+</div><hr/><h2>Typedef Documentation</h2>
+<a class="anchor" id="a332a795da59d5c7b0c4308bdf6d13b46"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">hsm_bool HulaUserIsEvent </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="hsm__forwards_8h.html#aaed055d181b35182dc8c2830721dbdc9">hsm_status</a>&#160;</td>
-          <td class="paramname"><em>status</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const char *&#160;</td>
-          <td class="paramname"><em>eventname</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
+          <td class="memname">typedef hsm_bool(* hula_callback_is_event)(lua_State *L, <a class="el" href="hsm__forwards_8h.html#aaed055d181b35182dc8c2830721dbdc9">hsm_status</a> status, const char *eventname)</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p>The <em>user</em> must define when using hula. </p>
-<p>All events handled by lua code must be identified by string name This function enables the user to determine how an event is mapped to its name.</p>
+<p>Control whether the event being processed matches the passed lua defined event. </p>
 <dl class="params"><dt>Parameters:</dt><dd>
   <table class="params">
-    <tr><td class="paramname">eventname</td><td>Event name defined in lua. </td></tr>
-    <tr><td class="paramname">status</td><td>State of statemachine </td></tr>
+    <tr><td class="paramname">status</td><td>Current state of the machine. </td></tr>
+    <tr><td class="paramname">eventname</td><td>Event string from a lua defined statechart. </td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns:</dt><dd>HSM_TRUE if the hsm_status_rec::evt matches the passed eventname </dd></dl>
+<dl class="section return"><dt>Returns:</dt><dd>HSM_TRUE if hsm_status_rec::evt matches eventname</dd></dl>
+<dl class="section see"><dt>See also:</dt><dd><a class="el" href="hula_8h.html#a6d08a594ed624d9968b935489603bc33" title="Create the &quot;hsm_statechart&quot; type for using hierarchical statemachines in lua.">HulaRegister</a>, <a class="el" href="hsm__machine_8h.html#a2e5511e0812b7613e3d1e496908bc8d0" title="Send the passed event to the machine.">HsmSignalEvent</a> </dd></dl>
+
+<p>Definition at line <a class="el" href="hula_8h_source.html#l00033">33</a> of file <a class="el" href="hula_8h_source.html">hula.h</a>.</p>
 
 </div>
 </div>
+<hr/><h2>Function Documentation</h2>
 <a class="anchor" id="ae4d3c25d3fea8dfffb7e6cc73e5b97aa"></a>
 <div class="memitem">
 <div class="memproto">
@@ -177,13 +175,13 @@ Functions</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">int&#160;</td>
-          <td class="paramname"><em>chartidx</em>, </td>
+          <td class="paramname"><em>idx</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">int *&#160;</td>
-          <td class="paramname"><em>pid</em>&#160;</td>
+          <td class="paramname"><em>pId</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -195,7 +193,6 @@ Functions</h2></td></tr>
 
 <p>Create an hsm-statechart state from a lua state description. </p>
 <p>( Uses hsm-builder to accomplish the task )</p>
-<p>top_state_example= { top_state_example_name= {...} }</p>
 <dl class="params"><dt>Parameters:</dt><dd>
   <table class="params">
     <tr><td class="paramname">L</td><td>Lua state </td></tr>
@@ -205,9 +202,10 @@ Functions</h2></td></tr>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns:</dt><dd>error code</dd></dl>
-<dl class="section see"><dt>See also:</dt><dd><a class="el" href="hsm__builder_8h.html#a6fcf2030bd45065a782c496502ab7ac4" title="Define a named state.">hsmBegin</a>, <a class="el" href="hula_8h.html#a3f729e51c6187caa82d7adf2a618ceac" title="Create an hsm-statechart state from a lua state description.">HulaBuildNamedState</a> </dd></dl>
+<div class="fragment"><div class="line">      top_state_example= { top_state_example_name= {...} }</div>
+</div><!-- fragment --><dl class="section see"><dt>See also:</dt><dd><a class="el" href="hsm__builder_8h.html#a6fcf2030bd45065a782c496502ab7ac4" title="Define a named state.">hsmBegin</a>, <a class="el" href="hula_8h.html#a3f729e51c6187caa82d7adf2a618ceac" title="Create an hsm-statechart state from a lua state description.">HulaBuildNamedState</a> </dd></dl>
 
-<p>Definition at line <a class="el" href="hula_8c_source.html#l00476">476</a> of file <a class="el" href="hula_8c_source.html">hula.c</a>.</p>
+<p>Definition at line <a class="el" href="hula_8c_source.html#l00590">590</a> of file <a class="el" href="hula_8c_source.html">hula.c</a>.</p>
 
 </div>
 </div>
@@ -243,7 +241,7 @@ Functions</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">int *&#160;</td>
-          <td class="paramname"><em>pid</em>&#160;</td>
+          <td class="paramname"><em>pId</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -255,8 +253,8 @@ Functions</h2></td></tr>
 
 <p>Create an hsm-statechart state from a lua state description. </p>
 <p>( Uses hsm-builder to accomplish the task )</p>
-<p>no_top_level_example = { init = 's1', s1 = {...}, s2= {...} }</p>
-<dl class="params"><dt>Parameters:</dt><dd>
+<div class="fragment"><div class="line">      no_top_level_example = { init = <span class="stringliteral">&#39;s1&#39;</span>, s1 = {...}, s2= {...} }</div>
+</div><!-- fragment --><dl class="params"><dt>Parameters:</dt><dd>
   <table class="params">
     <tr><td class="paramname">L</td><td>Lua state </td></tr>
     <tr><td class="paramname">idx</td><td>Index on the stack of the table containing the state description </td></tr>
@@ -267,11 +265,83 @@ Functions</h2></td></tr>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns:</dt><dd>error code</dd></dl>
-<dl class="section see"><dt>See also:</dt><dd><a class="el" href="hsm__builder_8h.html#a6fcf2030bd45065a782c496502ab7ac4" title="Define a named state.">hsmBegin</a>, <a class="el" href="hula_8h.html#ae4d3c25d3fea8dfffb7e6cc73e5b97aa" title="Create an hsm-statechart state from a lua state description.">HulaBuildState</a></dd></dl>
-<p>Create an hsm-statechart state from a lua state description.</p>
-<p>} </p>
+<dl class="section see"><dt>See also:</dt><dd><a class="el" href="hsm__builder_8h.html#a6fcf2030bd45065a782c496502ab7ac4" title="Define a named state.">hsmBegin</a>, <a class="el" href="hula_8h.html#ae4d3c25d3fea8dfffb7e6cc73e5b97aa" title="Create an hsm-statechart state from a lua state description.">HulaBuildState</a> </dd></dl>
 
-<p>Definition at line <a class="el" href="hula_8c_source.html#l00516">516</a> of file <a class="el" href="hula_8c_source.html">hula.c</a>.</p>
+<p>Definition at line <a class="el" href="hula_8c_source.html#l00630">630</a> of file <a class="el" href="hula_8c_source.html">hula.c</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a6d08a594ed624d9968b935489603bc33"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void HulaRegister </td>
+          <td>(</td>
+          <td class="paramtype">lua_State *&#160;</td>
+          <td class="paramname"><em>L</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="hula_8h.html#a332a795da59d5c7b0c4308bdf6d13b46">hula_callback_is_event</a>&#160;</td>
+          <td class="paramname"><em>is_user_event</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Create the "hsm_statechart" type for using hierarchical statemachines in lua. </p>
+<dl class="params"><dt>Parameters:</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">L</td><td>Lua state to register ( luaL_register ) the hula interface </td></tr>
+    <tr><td class="paramname">is_user_event</td><td>Optional callback to control how c-defined event structs match up with lua-declared event names. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p>Definition at line <a class="el" href="hula__lib_8c_source.html#l00240">240</a> of file <a class="el" href="hula__lib_8c_source.html">hula_lib.c</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a9e5e15ea9c174d372fcd5b780bca9f9f"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void HulaNamedRegister </td>
+          <td>(</td>
+          <td class="paramtype">lua_State *&#160;</td>
+          <td class="paramname"><em>L</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const char *&#160;</td>
+          <td class="paramname"><em>typename</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="hula_8h.html#a332a795da59d5c7b0c4308bdf6d13b46">hula_callback_is_event</a>&#160;</td>
+          <td class="paramname"><em>is_user_event</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Same as HulaRegister but allows user code to rename "hsm_statechart" to something else. </p>
+<dl class="section see"><dt>See also:</dt><dd><a class="el" href="hula_8h.html#a6d08a594ed624d9968b935489603bc33" title="Create the &quot;hsm_statechart&quot; type for using hierarchical statemachines in lua.">HulaRegister</a> </dd></dl>
+
+<p>Definition at line <a class="el" href="hula__lib_8c_source.html#l00204">204</a> of file <a class="el" href="hula__lib_8c_source.html">hula_lib.c</a>.</p>
 
 </div>
 </div>
@@ -281,7 +351,7 @@ Functions</h2></td></tr>
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="dir_6c36b64852547327283732128225c9d7.html">hsm</a></li><li class="navelem"><a class="el" href="dir_9659424d7ed6dfd520a332e018c4f96c.html">hula</a></li><li class="navelem"><a class="el" href="hula_8h.html">hula.h</a></li>
-    <li class="footer">Generated on Tue Jun 26 2012 12:17:26 for hsm-statechart by
+    <li class="footer">Generated on Sun Jul 1 2012 15:02:16 for hsm-statechart by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.1.1 </li>
   </ul>

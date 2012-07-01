@@ -1,7 +1,7 @@
 /**
  * @file hsm_stack.h
  *
- * Internal stack manipulation routines used by hsm_machine.
+ * Internal stack manipulation routines used by hsm_machine for managing per state instance data.
  *
  * \internal
  * Copyright (c) 2012, everMany, LLC.
@@ -24,9 +24,8 @@ typedef struct hsm_context_iterator_rec* hsm_context_iterator;
  * Add a new context to the stack.
  *
  * @param stack Can be NULL.
- * @param context The new context. NULL is legal, but not recommended.
- * @note The current implementation uses a linked list of pointers, so handling NULL is necessary or the list would break.
- * currently, therefore, a context of NULL means "reuse the parent context", but it's possible this behavior may change in the future.
+ * @param context The new context.
+ * Once a valid context has been pushed it is illegal to push a NULL context
  */
 void HsmContextPush( hsm_context_stack stack, hsm_context context );
 

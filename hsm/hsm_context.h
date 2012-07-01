@@ -94,8 +94,10 @@ struct hsm_context_stack_rec
 /**
  * Resets the hsm_context_stack structure.
  * @param stack Stack to initialize.
- * @return the stack passed in.
+ * @param init  Optional starting state; pushes record differences from this.
+ * @return The stack passed in.
+ * @see HsmContextPush
  */
-hsm_context_stack HsmContextStack( hsm_context_stack_t* stack );
+hsm_context_stack HsmContextStack( hsm_context_stack_t* stack, hsm_context init );
 
 #endif // __HSM_CONTEXT_H__

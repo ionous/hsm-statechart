@@ -19,7 +19,7 @@
 //---------------------------------------------------------------------------
 static void HsmContextFree( hsm_context_t* ctx )
 {
-//    free(ctx);
+    free(ctx);
 }
 
 //---------------------------------------------------------------------------
@@ -36,10 +36,11 @@ hsm_context HsmContextAlloc( size_t size )
 //---------------------------------------------------------------------------
 // HsmContextStack
 //---------------------------------------------------------------------------
-hsm_context_stack HsmContextStack( hsm_context_stack_t* stack )
+hsm_context_stack HsmContextStack( hsm_context_stack_t* stack, hsm_context ctx )
 {
     if(stack) {
         memset(stack, 0, sizeof(hsm_context_stack_t));
+        stack->context= ctx;
     }        
     return stack;
 }
@@ -48,8 +49,8 @@ hsm_context_stack HsmContextStack( hsm_context_stack_t* stack )
 void HsmContextPush( hsm_context_stack stack, hsm_context ctx )
 {
     if (stack) {
-        // push if its a unique context:
-        // (NULL means 'duplicate the previous context')
+        // invalid to push NULL once valid data exists
+        assert( !stack->context || ctx ); 
         if (ctx && (stack->context != ctx)) {
             ctx->parent    = stack->context;
             stack->context = ctx;
@@ -96,12 +97,16 @@ void HsmContextIterator( hsm_context_iterator_t* it, hsm_context_stack stack )
         else {
             it->stack= stack;
             it->context = stack->context;
-            it->sparse_index= stack->count-1; // start at *back* ( newest pushed )
+            it->sparse_index= stack->count; // start at *back* ( newest pushed )
         }
     }
 }
 
 /* ---------------------------------------------------------------------------
+   a bit in the 0th column: topmost returned a value different than the machine's outer context
+   a bit in the 1st column: child of topmost returned a value different than its parent
+   and so on.
+
    |..|...|.. <- sparse stack:
    0123456789 <- 9 states deep in the presence; _top=9
    0  1   2   <- 3 contexts in the store; _store.size()=3
@@ -111,7 +116,7 @@ void HsmContextIterator( hsm_context_iterator_t* it, hsm_context_stack stack )
  * --------------------------------------------------------------------------- */ 
 hsm_context_t* HsmParentContext( hsm_context_iterator it )
 {
-    // does pointer possess potential parent presence? perhaps.
+    // pending pointer possess potential parent presence? perhaps.
     if (it->sparse_index>0){
         hsm_uint32 bit= (1 << --it->sparse_index);
         if ((it->stack->presence & bit) !=0) {

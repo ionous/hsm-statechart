@@ -332,6 +332,28 @@ static process_t* NewProcessUD( state_t* state, hsm_callback_process_ud process,
 /**
  * @internal construct a new event object
  */
+static process_t* NewProcessRaw( state_t* state, hsm_callback_process_event process )
+{
+    process_t* ret= NULL;
+    if (state && process) {
+        process_raw_t* processor= (process_raw_t*) calloc( 1, sizeof( process_raw_t ) );
+        if (processor) {
+            ret= &(processor->core);
+            // set up the processor cbs
+            processor->process= process;
+            // link to the list of (other) processors for this state:
+            ret->flags= ProcessCallback;
+            ret->next= state->process;
+            state->process= ret;
+        }        
+    }        
+    return ret;
+}
+
+//---------------------------------------------------------------------------
+/**
+ * @internal construct a new event object
+ */
 static process_t* NewHandler( state_t* state )
 {   
     process_t* ret=0;
@@ -434,6 +456,7 @@ enum builder_events
     _hsm_exit_raw,
 
     _hsm_process_ud,
+    _hsm_process_raw,
 
     _hsm_guard_ud,
     _hsm_guard_raw,
@@ -515,8 +538,16 @@ struct raw_enter_event_rec
     hsm_callback_enter enter;
 };
 
-typedef struct process_event_rec ProcessEvent;
-struct process_event_rec
+typedef struct raw_process_event_rec RawProcessEvent;
+struct raw_process_event_rec
+{
+    BuildEvent core;
+    hsm_callback_process_event process;
+};
+
+
+typedef struct process_event_ud_rec ProcessEventUd;
+struct process_event_ud_rec
 {
     BuildEvent core;
     hsm_callback_process_ud process;
@@ -721,8 +752,20 @@ static hsm_state BuildingStateEvent( hsm_status status )
             }
         }
         break;
+        case _hsm_process_raw: {
+            const RawProcessEvent* event= (const RawProcessEvent*)status->evt;
+            if (event->process) {
+                NewProcessRaw( current, event->process );
+                ret= BuildingBody();
+            }
+            else {
+                Builder_Error( builder, "process is null." );
+                ret= HsmStateError();
+            }
+        }
+        break; 
         case _hsm_process_ud: {
-            const ProcessEvent* event= (const ProcessEvent*)status->evt;
+            const ProcessEventUd* event= (const ProcessEventUd*)status->evt;
             if (event->process) {
                 NewProcessUD( current, event->process, event->process_data );
                 ret= BuildingBody();
@@ -886,6 +929,7 @@ int hsmShutdown()
         Hash_DeleteTable( &gBuilder.hash, free_client_data );
         --gStartCount;
     }        
+    return gStartCount;
 }
 
 //---------------------------------------------------------------------------
@@ -959,6 +1003,7 @@ int hsmBegin( const char * name, int len )
 }
 
 //---------------------------------------------------------------------------
+#if 0 // not sure that builder will work properly without the string version
 int hsmBeginId( int id )
 {
     int ret=0;
@@ -971,6 +1016,7 @@ int hsmBeginId( int id )
     }        
     return ret;
 }
+#endif
 
 //---------------------------------------------------------------------------
 void hsmOnEnterUD( hsm_callback_enter_ud entry, void *enter_data )
@@ -1012,11 +1058,21 @@ void hsmOnExitUD( hsm_callback_action_ud action, void *exit_data )
 }
 
 //---------------------------------------------------------------------------
+void hsmOnEvent( hsm_callback_process_event process )
+{
+    assert( gStartCount );
+    if ( gStartCount ) {
+        RawProcessEvent evt= { _hsm_process_raw, process }; 
+        HsmSignalEvent( &gMachine.core, &(evt.core) );
+    }        
+}
+
+//---------------------------------------------------------------------------
 void hsmOnEventUD( hsm_callback_process_ud process, void* process_data )
 {
     assert( gStartCount );
     if ( gStartCount ) {
-        ProcessEvent evt= { _hsm_process_ud, process, process_data }; 
+        ProcessEventUd evt= { _hsm_process_ud, process, process_data }; 
         HsmSignalEvent( &gMachine.core, &(evt.core) );
     }        
 }

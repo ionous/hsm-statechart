@@ -129,10 +129,9 @@ hsm_machine HsmMachineWithContext( hsm_context_machine_t* hsm, hsm_context ctx )
     if (hsm && HsmMachine( &(hsm->core) )) {
         // flag that this has a context stack
         hsm->core.flags|= HSM_FLAGS_CTX;
-        // initialize the stack
-        HsmContextStack( &(hsm->stack) );
-        // add the outermost context
-        HsmContextPush( &(hsm->stack), ctx );
+        // initialize the stack & set the outermost context
+        // we later use push to detect differences from this starting point
+        HsmContextStack( &(hsm->stack), ctx );
     }
     return &(hsm->core);
 }

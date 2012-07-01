@@ -41,7 +41,13 @@ typedef hsm_state(*hsm_callback_process_event)( hsm_status status );
  *
  * @param evt The #hsm_event that needs handling.
  * 
- * @return Optionally: a new #hsm_context. The context will be passed to all sequequent calls to the state's #hsm_callback_process_event and the state's #hsm_callback_exit.
+ * @return Optionally: a new #hsm_context_rec. The context will be passed to all 
+ *         subsequent calls to the state's #hsm_callback_process_event and the state's #hsm_callback_exit.
+ *
+ * @note The return value must not be null if the status.ctx was not null. 
+ *       Returning null when status.ctx is valid indicates a critical error has occured. 
+ *       ex. enter could not allocate context memory
+ * 
  */
 typedef hsm_context (*hsm_callback_enter)( hsm_status status );
 

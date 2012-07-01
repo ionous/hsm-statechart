@@ -50,13 +50,13 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;TEST_LUA</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;TEST_LUA;_CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>$(SolutionDir);$(LUA_DEV)\include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>$(OutputPath)\hsm.lib;$(OutputPath)\builder.lib;$(OutputPath)\hula.lib;</AdditionalDependencies>
+      <AdditionalDependencies>$(OutputPath)\hsm.lib;$(OutputPath)\builder.lib;$(OutputPath)\hula.lib;$(LUA_DEV)\lib\lua51.lib</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(LUA_DEV)\lib</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
@@ -89,6 +89,9 @@
   <ItemGroup>
     <ClInclude Include="samek_plus.h" />
     <ClInclude Include="test.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="samek_plus.lua" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

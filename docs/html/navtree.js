@@ -2,6 +2,7 @@ var NAVTREE =
 [
   [ "hsm-statechart", "index.html", [
     [ "hsmstate-chart", "index.html", null ],
+    [ "Lua Event Matching", "hula_event_matching.html", null ],
     [ "Data Structures", null, [
       [ "Data Structures", "annotated.html", null ],
       [ "Data Structure Index", "classes.html", null ],
@@ -26,7 +27,7 @@ var NAVTREE =
 var NAVTREEINDEX =
 [
 "annotated.html",
-"hula_8c.html#aad38c4d6202797e474112d7662680b56",
+"hula_8c.html#a5a8645c3dd4d20a2e8b6e79fd9e92170",
 ];
 
 var navTreeSubIndices = new Array();

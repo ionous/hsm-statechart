@@ -13,13 +13,17 @@ typedef int(*samples_function)( int argc, char* argv[] );
 int watch1_named_events( int argc, char* argv[] );
 int watch1_enum_events( int argc, char* argv[] );
 int watch_builder(int argc, char* argv[] );
+int watch_lua(int argc, char* argv[] );
 
 int main(int argc, char* argv[])
 {   
     samples_function samples[]= {
+#ifdef TEST_LUA        
+        //watch_lua,
+#endif
         watch_builder,
         watch1_named_events,
-        watch1_enum_events
+        watch1_enum_events,
     };
     int which=0;
 

@@ -1,8 +1,9 @@
-/**
+/** 
  * @file hsm_builder.h
  *
  * Declarative interface for defining states.
  *
+ * The builder is a layer on top of the core hsm statemachine code.
  * The builder is a layer on top of the core hsm statemachine code.
  * It is not necessary to use, or even include, the builder to use hsm-statechart.
  *
@@ -23,6 +24,8 @@
 #ifndef __HSM_BUILDER_H__
 #define __HSM_BUILDER_H__
 
+// #include <hsm/hsm_machine.h>
+
 /**
  * Event handler callback w/ user data
  * 
@@ -41,9 +44,9 @@ typedef hsm_context (*hsm_callback_enter_ud)( hsm_status status, void * enter_da
  * Action callback w/ user data.
  *
  * @param status Current state of the machine. 
- * @param action_data The userdata passed to hsmOnActionUD()
+ * @param action_data The userdata passed to the action callback.
  *
- * @see hsm_callback_action, hsmOnActionUD, hsmOnExitUD
+ * @see hsm_callback_action, hsmRunUD, hsmOnExitUD
  */
 typedef void(*hsm_callback_action_ud)( hsm_status status, void * action_data );
 
@@ -117,28 +120,12 @@ int hsmState( const char * name );
  * Every hsmBegin() must, eventually, be paired with a matching hsmEnd(),
  * Until then, all operations, including calls including hsmState() are considered owned by this state.
  *
- * @param state A state id returned by hsmState() or hsmRef().
+ * @param name Unique identifier for the state. 
+ * @param len Length of the name. If 0, builder treats the string as a literal, and does not copy the name.
+ * 
  * @return The same state id that was passed in.
  */
 int hsmBegin( const char * name, int len );
-
-/**
- * Define an already declared state.
- *
- * @see hsmState, hsmEnd
- */
-int hsmBeginId( int state );
-
-/**
- * Specify a callback for state entry w/ user data
- *
- * @param entry Callback triggered on state enter
- * @param user_data Data passed to callback
- *
- * @note user_data lifetime must be longer than the state descriptions
- */
-void hsmOnEnterUD( hsm_callback_enter_ud entry, void * user_data );
-
 
 /**
  * Specify a callback for state entry
@@ -148,9 +135,21 @@ void hsmOnEnterUD( hsm_callback_enter_ud entry, void * user_data );
 void hsmOnEnter( hsm_callback_enter entry );
 
 /**
+ * Specify a callback for state entry w/ user data
+ *
+ * @param entry Callback triggered on state enter
+ * @param user_data Data passed to callback
+ *
+ * @note user_data lifetime must be longer than the state descriptions
+ * @see hsmOnEnter
+ */
+void hsmOnEnterUD( hsm_callback_enter_ud entry, void * user_data );
+
+/**
  * Specify a callback for state exit
  *
  * @param exit Callback triggered on state exit
+ * @see hsmOnExitUD
  */
 void hsmOnExit( hsm_callback_action exit );
 
@@ -161,22 +160,46 @@ void hsmOnExit( hsm_callback_action exit );
  * @param user_data Data passed to callback
  *
  * @note user_data lifetime must be longer than the state descriptions
+ * @see hsmOnExit
  */
 void hsmOnExitUD( hsm_callback_action_ud exit, void * user_data );
 
 /**
- * Event handler initialization.
- * Call the passed event handler function. 
+ * Declare a new event handler.
+ * Call the passed event handler function w/ user data. 
  * 
- * @param process event handler function to call
+ * @param process Event handler function to call when the state receives an event from the statemachine.
+ * 
+ * @see hsmOnEventUD, HsmSignalEvent
+ */
+void hsmOnEvent( hsm_callback_process_event process );
+
+/**
+ * Declare a new event handler.
+ * Call the passed event handler function w/ user data. 
+ * 
+ * @param process Event handler function to call when the state receives an event from the statemachine.
  * @param process_data Data passed to callback when an event is sent to a state.
+ *
+ * @see hsmOnEvent
  */
 void hsmOnEventUD( hsm_callback_process_ud process, void* process_data );
 
 /**
+ * Begin the declaration of a new event handler.
+ *
+ * Call the passed guard function, 
+ * Inly if the guard returns true #HSM_TRUE will the rest of the event trigger.
+ * 
+ * @param guard Boolean function to call.
+ * @see hsmIfUD, hsmAnd, hsmGoto, hsmRun
+ */
+void hsmIf( hsm_callback_guard guard );
+
+/**
  * Event handler initialization.
  *
- * Call the passed guard function w/ user_data
+ * Call the passed guard function w/ user data
  * only if the guard returns true #HSM_TRUE will the rest of the event trigger
  * 
  * @param guard Boolean function to call.
@@ -184,15 +207,10 @@ void hsmOnEventUD( hsm_callback_process_ud process, void* process_data );
  */
 void hsmIfUD( hsm_callback_guard_ud guard, void* guard_data );
 
-/**
- * Event handler initialization.
- *
- * Call the passed guard function, 
- * only if the guard returns true #HSM_TRUE will the rest of the event trigger
- * 
- * @param guard Boolean function to call.
+/*! Not Implemented. Use hsmAndUD with NULL userdata instead.
+ *  @see hsmAndUD
  */
-void hsmIf( hsm_callback_guard guard );
+void hsmAnd( void * unimplemented );
 
 /**
  * Add a guard to the current event handler.
@@ -206,64 +224,88 @@ void hsmIf( hsm_callback_guard guard );
 void hsmAndUD( hsm_callback_guard_ud guard, void* guard_data );
 
 /**
- * The event handler being declared should transition to another state.
- * same as hsmGotoId().
+ * An event handler started by hsmIf(UD) should transition to the named state.
+ * 
+ * @see hsmGotoId, hsmIf
  */
 void hsmGoto( const char * name );
 
 /**
- * The event handler being declared should transition to another state.
+ * An event handler started by hsmIf(UD) should transition to the id'd state.
  * 
  * @param state The id of a state returned by hsmState() or hsmRef() to transition to. 
  *
- * @see hsmState, hsmEnd
+ * @see hsmGoto, hsmState, hsmEnd
  */
 void hsmGotoId( int state );
 
+
+/*! Not Implemented. Use hsmRunUD with NULL userdata instead.
+ *  @see hsmRunUD
+ */
+ void hsmRun( void * unimplmented );
+
 /**
- * The event handler being declared should run the passed action.
+ * Run an action after meeting the conditions for the current event handler.
+ *
  * @param action The action to run.
+ * @param action_data User data passed to the action callback.
+ *
+ * @see hsmIf
  */
 void hsmRunUD( hsm_callback_action_ud action, void * action_data );
 
 /**
- * Pairs with hsmBegin()
- * @see hsmBegin()
+ * Complete the declaration of a state started by hsmBegin().
+ *
+ * @see hsmBegin
  */
 void hsmEnd();
 
 /**
  * Return an hsm_state from a builder state.
+ *
  * @param name String name of state
  * @return The #hsm_state; NULL if the named state hasn't been built.
  * @note Requires that hsmEnd() has been called for the state in question.
+ * @see hsmResolveId
  */
 hsm_state hsmResolve( const char * name );
 
 /**
  * Return a core hsm_state from an id.
+ *
  * @param id A state id returned by hsmState() or hsmRef().
  * @return The #hsm_state; NULL if the named state hasn't been built.
  * @note Requires that hsmEnd() has been called for the state in question.
+ *
+ * @see hsmResolve
  */
 hsm_state hsmResolveId( int id );
 
 /**
- * 
+ * Macro for seeding hsmStringHash
+ * @param string String to hash.
+ * @see hsmStringHash
  */
-#define HSM_HASH32(x) hsmStringHash( x, 0x811c9dc5 )
+#define HSM_HASH32(string) hsmStringHash( string, 0x811c9dc5 )
 
 /**
- * 
+ * Macro for joining a new hash with an old hash
+ * @param string String to hash.
+ * @param hash Old hash value.
  */
-#define HSM_HASH32_CAT(x,v) hsmStringHash( x, v )
+#define HSM_HASH32_CAT(string,hash) hsmStringHash( string, hash )
 
 /**
- * compute strlwr'd fnva hash
- * @param string string to hash
- * @param seed seed value for hash
+ * Compute a strlwr'd FNV-A hash.
+ *
+ * @param string String to hash.
+ * @param seed Seed value for hash.
+ * 
+ * @see HSM_HASH32, HSM_HASH32_CAT
  */
 hsm_uint32 hsmStringHash(const char *string, hsm_uint32 seed );
 
-
 #endif // #ifndef __HSM_BUILDER_H__
+

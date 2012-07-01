@@ -25,7 +25,7 @@ end
 
 chart= {
   s0 = {
-    entry=function(ctx)
+    entry=function()
               return { foo= 0 }
           end,
     -- exit =
@@ -43,9 +43,9 @@ chart= {
 
       s11 = {
         g = 's211',
-        h = function(ctx)
-              if (ctx.foo~=0) then
-                ctx.foo=0
+        h = function(context)
+              if (context.foo~=0) then
+                context.foo=0
                 return true
               end
             end
@@ -63,9 +63,9 @@ chart= {
       s21 = {
         init = 's211',
         b    = 's211',
-        h    = function(ctx)
-                if (ctx.foo==0) then
-                  ctx.foo=1
+        h    = function(context)
+                if (context.foo==0) then
+                  context.foo=1
                   return 's21'
                 end
               end,

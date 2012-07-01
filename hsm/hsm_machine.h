@@ -17,14 +17,17 @@
  *
  * <b>hsm-statechart</b> is an easy to use hiearchical state machine for C and C++. It's 
  * hosted on google code at http://code.google.com/p/hsm-statechart/.\n
+ * 
+ * This doxygen generated documentation is intended as a API reference.
+ * For tutorials and how to get started, please see the website.
  *
  * @section Overview
  *
- * @li See #HSM_STATE for information about declaring new states.
- * @li See hsm_machine_rec or hsm_context_machine_rec for info on creating a state machine.
- * @li See hsm_info.h for ways to spy on the internal processing of running machines.
- * @li See hsm_builder.h on the new builder interface.
- * @li See hula.h for information on lua bindings.
+ * @li See #HSM_STATE for macro declaration of new states.
+ * @li See hsm_machine_rec or hsm_context_machine_rec on creating a state machine.
+ * @li See hsm_info.h to spy on the internal processing of running machines.
+ * @li See hsm_builder.h for the new builder interface.
+ * @li See hula.h for the lua bindings.
  *
  * @section License
  *
@@ -46,7 +49,7 @@ typedef struct hsm_machine_rec hsm_machine_t;
 typedef struct hsm_context_machine_rec hsm_context_machine_t;
 
 // give the lower 16 to user flags
-#define HSM_FLAGS_CTX      (1<<16)
+#define HSM_FLAGS_CTX      (1<<16)   // is the machine a context machine
 //#define HSM_FLAGS_INFO   (1<<17)   // flags per thing to log?
 //#define HSM_FLAGS_REGION (1<<18)
 
@@ -57,8 +60,6 @@ typedef struct hsm_context_machine_rec hsm_context_machine_t;
  * 1. Initialize with HsmMachine()
  * 2. Start the machine with HsmStart()
  * 3. Send events with HsmSignalEvent()
- *
- * Not meant to be manipulated directly.
  */
 struct hsm_machine_rec
 {
@@ -75,7 +76,7 @@ struct hsm_machine_rec
 };
 
 /**
- * Extends hsm_machine_rec with a context stack.
+ * Extends hsm_machine_rec with a context stack to provide per-state instance data.
  */
 struct hsm_context_machine_rec
 {

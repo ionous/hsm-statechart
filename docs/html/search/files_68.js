@@ -13,5 +13,6 @@ var searchData=
   ['hsm_5fstatus_2eh',['hsm_status.h',['../hsm__status_8h.html',1,'']]],
   ['hsm_5ftypes_2eh',['hsm_types.h',['../hsm__types_8h.html',1,'']]],
   ['hula_2ec',['hula.c',['../hula_8c.html',1,'']]],
-  ['hula_2eh',['hula.h',['../hula_8h.html',1,'']]]
+  ['hula_2eh',['hula.h',['../hula_8h.html',1,'']]],
+  ['hula_5flib_2eh',['hula_lib.h',['../hula__lib_8h.html',1,'']]]
 ];

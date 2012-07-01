@@ -36,5 +36,8 @@ hsm_bool TestEventSequence( hsm_machine hsm, hsm_state first, const char ** seq 
     HSM_STATE( s, p, i ); \
     hsm_state s##Event( hsm_status status ) { return NULL; }
 
+// flag for hsm machine to stop a machine from logging
+#define TEST_HSM_NO_LOGGING 1
+
 
 #endif // #ifndef __TEST_H__

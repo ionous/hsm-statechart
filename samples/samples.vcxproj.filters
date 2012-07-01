@@ -44,5 +44,11 @@
     <ClCompile Include="watch_builder.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="watch_lua.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="watch.lua" />
   </ItemGroup>
 </Project>

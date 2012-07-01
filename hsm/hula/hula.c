@@ -9,15 +9,16 @@
  * See License.txt for complete information.
  */
 #include <hsm/hsm_machine.h>
-#include <hsm/builder/hsm_builder.h>
-#include "hula.h"
-
 #include <lua.h>
 #include <lauxlib.h>
 
+#include "hula.h"
+#include "hula_lib.h"
+#include "hula_types.h"
+#include <hsm/builder/hsm_builder.h>
+
 #include <assert.h>
 #include <string.h>
-#include <malloc.h>
 
 const char * HULA_ERR_UNKNOWN= "HULA_ERR_UNKNOWN";
 // invalid arg passed to function
@@ -47,6 +48,28 @@ struct nstring_rec
 
 #define lua_tonstring( L, idx, nstring ) (nstring)->string= lua_tolstring( L, idx, &((nstring)->len) )
 #define lua_pushnstring( L, nstring ) lua_pushlstring( L, (nstring).string, (nstring).len )
+
+/**
+ * @internal helper for calling back into lua during event processing
+ *
+ * @param table Index of the packed event
+ * @param element First index within the table to start copying
+ * @param count Count of elements already on the stack in prep for the call
+ */
+int lua_unpack_and_pcall( lua_State * L, int table, int element, int count )
+{
+    // yes, technically, it has to be a table:
+    // in the startup case though, it's convienent to keep things simple and pass nothing at all.
+    if (lua_istable(L, table)) {
+        int len= lua_objlen( L, table );
+        for (element; element<=len; ++element, ++count) {
+            lua_rawgeti( L, table, element );
+        }
+        lua_pushvalue( L, table );
+        ++count;
+    }
+    return lua_pcall(L, count, 1, 0); 
+}
 
 //---------------------------------------------------------------------------
 // State Tables
@@ -113,7 +136,7 @@ static int HulaCreateStateTable( lua_State * L, nstring_t statename )
     const int check= lua_gettop(L);
     const int tables= HulaGetStateTables( L );  // pull tables onto the stack
     lua_pushnstring( L, statename );            // key=statename
-    lua_newtable(L);                            // value={}
+    lua_createtable(L, 0,1);                    // value={}
     lua_settable( L, tables );                  // tables[key]=value
     lua_getfield( L, tables, statename.string );// pull the value{} back
     lua_remove( L, tables );                    // remove the tables
@@ -124,20 +147,100 @@ static int HulaCreateStateTable( lua_State * L, nstring_t statename )
 
 /**
  * @internal
- * pull a state table function to call on the stack
+ * Pull a state table entry onto the stack.
+ * @code
+ *   entry= function()
+ *   my_custom_event= 'my_next_state'
+ * @endcode
+ * 
+ * @param rawi If eventname is null, an index to one of the predefined event types ( ex. LUA_T_EXIT )
+ * @param eventname Name of the table entry
  */
-int HulaGetCall( lua_State* L, hsm_state state, int rawi, const char * name )
+int HulaGetEvent( lua_State* L, hsm_state state, int rawi, const char * eventname )
 {
     const int state_table= HulaGetStateTable( L, state );
-    if (!name) {
+    if (!eventname) {
         lua_rawgeti( L, state_table, rawi ); 
     }
     else {
-        lua_pushstring( L, name );
+        lua_pushstring( L, eventname );
         lua_gettable( L, state_table );
     }
     lua_remove( L,state_table );
     return lua_gettop( L );
+}
+
+/*---------------------------------------------------------------------------*/
+/**
+ * @page hula_event_matching Lua Event Matching
+ *
+ * The lua function signature for entry and exit:
+ * @code
+ *   entry= function( context, event name, parameters, ..., event table )
+ * @endcode
+ * 
+ * The lua function signature for handlers is:
+ * @code
+ *   event= function( context, parameters, ..., event table )
+ * @endcode
+ *
+ * During event processing, however, Hula requires the top item the top item on the lua stack must be an "event table" of the format:
+ * @code
+ *   { event name, event parameter 1, ..., event parameter n, keys=optional }
+ * @endcode
+ *
+ * HulaRegister() does the necessary adaptations for machines based in lua.
+ * If your state machines are based in C, but are defined in lua, 
+ * you will have to create the event table yourself.
+ * See the examples and the google code website for more details.
+ */
+/*---------------------------------------------------------------------------*/
+
+/**
+ * @internal the default matching function
+ */
+static hsm_bool HulaDefaultIsEvent( lua_State* L, hsm_status status, const char * event_name )
+{
+    hsm_bool matches= HSM_FALSE;
+    
+    // get the event name from the event table
+    const char * source_event;
+    lua_rawgeti( L, -1, 1 );
+    source_event= luaL_checkstring( L, -1 );
+    
+    // compare
+    matches= strcmp( source_event, event_name )==0;
+    lua_pop( L, 1 );
+
+    return matches;
+}
+
+/**
+ * @internal 
+ * return the user's event matching function
+ * its stored with the hula metatable so that the user can customize it at registration time
+ */
+static hula_callback_is_event HulaGetIsEvent( lua_State * L )
+{
+    hula_callback_is_event cb= HulaDefaultIsEvent;
+    luaL_getmetatable( L, HULA_METATABLE );
+    // the metatable may not exist if the user is declaring states in lua, 
+    // but managing the statemachine in C ( ie. has no need to call HulaRegister )
+    if  (!lua_istable(L, -1)) {
+        lua_pop(L, 1);
+    }
+    else {
+        lua_getfield(L,-1, HULA_EVENT_TEST );
+        if (!lua_isnil( L, -1)) {
+            hula_callback_is_event store= (hula_callback_is_event) lua_touserdata( L,-1 );
+            assert( store );
+            if (store) {
+                cb= store;
+            }
+        }            
+        lua_pop(L, 2);
+    }
+    return cb;
 }
 
 //---------------------------------------------------------------------------
@@ -148,39 +251,32 @@ static hsm_context HulaEnterUD( hsm_status status, void * user_data );
 static hsm_state HulaRunUD( hsm_status status, void * user_data );
 static void HulaExit( hsm_status status );
 
-typedef struct hula_ctx_rec HulaContext;
-struct hula_ctx_rec 
+//---------------------------------------------------------------------------
+/**
+ * create a hula context referring to the the lua data that's on the stack at the passed index.
+ * the data on the stack gets popped.
+ */
+static hula_context_t * HulaCreateContext( lua_State *L, int index )
 {
-    /**
-     * core context data: hula_ctx_rec extends the base context.
-     */
-    hsm_context_t core;
-
-    /**
-     * lua state that's managed by this state
-     * ( this is generally constant across the whole machine )
-     */
-    lua_State *L;
-
-    /**
-     * a luaL_ref to lua data generated by the state's entry
-     * currently uses the registry, would it be better (faster?) to use state tables?
-     */
-    int lua_ref;
-
-    /**
-     * count the number of times this hula_ctx_rec is shared amongst parents and children
-     * dont release the lua data until the last state using the lua_ref data is done.
-     */
-    int lua_ref_count;    
-};
+    hula_context_t * new_ctx= (hula_context_t*) HsmContextAlloc( sizeof(hula_context_t) );
+    if (!new_ctx) {
+        lua_pop(L,1);
+    }
+    else {
+        new_ctx->L= L;            
+        new_ctx->lua_ref= luaL_ref( L, LUA_REGISTRYINDEX ); 
+    }
+    return new_ctx;
+}    
 
 //---------------------------------------------------------------------------
-
 /**
  * @internal
  * call the lua specified entry function with this state's parent context data
  * store the data returned from that function as this state's context
+ *
+ * entry,exit need=> context, event, payload
+ * stack looks like: event, payload, ...
  *
  * note: every hula event callback needs a lua_State.
  * we can use our parent lua context if it exists; 
@@ -188,28 +284,29 @@ struct hula_ctx_rec
  */
 static hsm_context HulaEnterUD( hsm_status status, void * user_data )
 {
-    hsm_context ret=0;
-    HulaContext* new_ctx=0, *parent_ctx=0;
+    hula_context_t* new_ctx=0, *parent_ctx=0;
     lua_State* L= (lua_State*)user_data;
-    const int check= lua_gettop(L);
+    const int top= lua_gettop(L);
 
     // get the lua specified enter= function()
-    const int lua_entryfn= HulaGetCall( L, status->state, LUA_T_ENTER, 0 );
+    const int lua_entryfn= HulaGetEvent( L, status->state, LUA_T_ENTER, 0 );
     
     // get our parent's lua data (if its also a hula state)
     if (status->state->parent && status->state->parent->exit==HulaExit) {
         // when a state gets entered, the context is its parent's context
-        parent_ctx= (HulaContext*) status->ctx;
+        parent_ctx= (hula_context_t*) status->ctx;
     }
 
     // if our parent has lua data, then use that as this state's initial data
     // if not: use our parent's state's c-object
-    if (parent_ctx) {
-        lua_rawgeti( L, LUA_REGISTRYINDEX, parent_ctx->lua_ref );
+    //
+    // note: push *before* determining whether the user has specified an entry function;
+    // this data gets used for creating a lua context for this state, regardless.
+    if (!parent_ctx) {
+        lua_pushnil( L );
     }
     else {
-        // i wonder what's better? the c context? or nil?
-        lua_pushlightuserdata( L, status->ctx );
+        lua_rawgeti( L, LUA_REGISTRYINDEX, parent_ctx->lua_ref );
     }
 
     // no entry function means no unique data for this state:
@@ -223,86 +320,85 @@ static hsm_context HulaEnterUD( hsm_status status, void * user_data )
         }
     }
     else {
-        int err= lua_pcall(L, 1,1,0); 
+        int err= lua_unpack_and_pcall( L, top, 1, 1 ); 
         if (err) {
             const char * msg=lua_tostring(L,-1);
             lua_pop(L,1);//? TODO: and do what on error exactly?
         }    
     }
 
-    // if we have a context pointer, then it came from our parent
-    // we didn't have any unique data, so pop that data
+    // if we don't have a context, we need one.
     if (!new_ctx) {
-        // if we dont have a context, well... we need one.
-        // use the data that's on the stack: be it the results of the pcall, or a parent's C data
-        new_ctx= (HulaContext*) HsmContextAlloc( sizeof(HulaContext) );
+        new_ctx= HulaCreateContext( L, -1 ); 
         assert( new_ctx );
-        if (!new_ctx) {
-            lua_pop(L,1);
-        }
-        else {
-            new_ctx->L= L;            
-            new_ctx->lua_ref= luaL_ref( L, LUA_REGISTRYINDEX ); 
-            ret= &new_ctx->core;
-        }
     }
 
-    assert( check== lua_gettop(L) );            // is life good?
+    assert( top== lua_gettop(L) );            // is life good?
 
-    // the machine will store our context
-    return ret;
+    // the machine keeps the context
+    return new_ctx ? &(new_ctx->core) : 0;
 }
 
 //---------------------------------------------------------------------------
 /**
  * @internal
  * callback for every action in lua that was assigned a function()
- * @param status hsm_status_rec::ctx contains HulaContext setup in HulaEnter
+ * @param status hsm_status_rec::ctx contains hula_context_t setup in HulaEnter
  * @param user_data is the const char * of the event string
  */
 static hsm_state HulaRunUD( hsm_status status, void * user_data )
 {
     hsm_state ret=0;
-    const char * event_name= (const char*) user_data;
-    if (HulaUserIsEvent( status, event_name )) {
-        HulaContext*ctx= (HulaContext*)(status->ctx);
+    // context for these states is always a hula context because of on enter 
+    hula_context_t*ctx= (hula_context_t*)(status->ctx);
+    assert( ctx );
+    if (ctx) {
         lua_State* L= ctx->L;
-        const int check= lua_gettop(L);
+        const char * event_name= (const char*) user_data;
     
-        // pull the function to call:
-        const int lua_eventfn= HulaGetCall( L, status->state, 0, event_name );
-            
-        // pull lua data to parameterize the call:
-        lua_rawgeti( L, LUA_REGISTRYINDEX, ctx->lua_ref );
-
-        // run the function: 1 arg, 1 result
-        if (!lua_isfunction( L, lua_eventfn )) {
-            lua_remove( L, lua_eventfn );
-        }
-        else {
-            int err= lua_pcall(L, 1, 1, 0); 
-            if (err) {
-                const char * msg=lua_tostring(L,-1);
-                lua_pop(L,1);//? TODO: and do what on error exactly?
-                ret= HsmStateError();
+        hula_callback_is_event cb= HulaGetIsEvent( L );
+        if (cb && cb( L, status, event_name ) )
+        {
+            const int top= lua_gettop(L);
+   
+            // push the relevant entry from the state table
+            const int evthandler= HulaGetEvent( L, status->state, 0, event_name );
+            if (!lua_isfunction( L, evthandler )) {
+                const char * targetname= luaL_checkstring(L, evthandler );
+                ret= targetname ? hsmResolve( targetname ) : 0;
+                if (!ret) {
+                    ret= HsmStateError();
+                }                
+                lua_pop(L,1); // pop the table entry
             }
             else {
-                // evaluate the results
-                if (lua_isstring( L, -1 )) {
-                    const char * name= lua_tostring( L, -1 );
-                    ret= hsmResolve( name );
+                int err;
+                // context first
+                lua_rawgeti( L, LUA_REGISTRYINDEX, ctx->lua_ref );
+                // unpack the event table, skipping the event name 
+                err= lua_unpack_and_pcall( L, top, 2, 1 ); 
+                if (err) {
+                    const char * msg=lua_tostring(L,-1);
+                    lua_pop(L,1);//? TODO: and do what on error exactly?
+                    ret= HsmStateError();
                 }
-                else
-                if (lua_isboolean( L, -1 ) && lua_toboolean( L, -1 )) {
-                    ret= HsmStateHandled();
+                else {
+                    // evaluate the results
+                    if (lua_isstring( L, -1 )) {
+                        const char * name= lua_tostring( L, -1 );
+                        ret= hsmResolve( name );
+                    }
+                    else
+                    if (lua_isboolean( L, -1 ) && lua_toboolean( L, -1 )) {
+                        ret= HsmStateHandled();
+                    }
+                    // pop the function results
+                    lua_pop(L,1);
                 }
-                // pop the function results
-                lua_pop(L,1);
             }
+            assert( top== lua_gettop(L) );            // is life good?
         }
-        assert( check== lua_gettop(L) );            // is life good?
-    }
-    
+    }    
     // return the next state
     return ret;
 }
@@ -313,12 +409,12 @@ static hsm_state HulaRunUD( hsm_status status, void * user_data )
  */
 static void HulaExit( hsm_status status )
 {
-    HulaContext*ctx= (HulaContext*)(status->ctx);
+    hula_context_t*ctx= (hula_context_t*)(status->ctx);
     lua_State* L= ctx->L;
-    const int check= lua_gettop(L);
+    const int top= lua_gettop(L);
 
     // pull the function to call:
-    const int lua_exitfn= HulaGetCall( L, status->state, LUA_T_EXIT, 0 );
+    const int lua_exitfn= HulaGetEvent( L, status->state, LUA_T_EXIT, 0 );
 
     // call the function: one arg, zero results
     if (!lua_isfunction( L, lua_exitfn )) {
@@ -326,11 +422,10 @@ static void HulaExit( hsm_status status )
     }
     else {
         int err;
-        // pull context data to pass it to function
-        lua_pushlightuserdata( L, ctx );
-        lua_gettable( L, LUA_REGISTRYINDEX );
-
-        err= lua_pcall(L, 1,0,0); //? TODO: and do what on error exactly?
+        // get the context
+        lua_rawgeti( L, LUA_REGISTRYINDEX, ctx->lua_ref );
+        // unpack the event object and call the already pushed function
+        err= lua_unpack_and_pcall( L, top, 1, 1 ); 
         if (err) {
             const char * msg=lua_tostring(L,-1);
             lua_pop(L,1);//? TODO: and do what on error exactly?
@@ -342,7 +437,7 @@ static void HulaExit( hsm_status status )
         luaL_unref( L, LUA_REGISTRYINDEX, ctx->lua_ref );
         ctx->lua_ref= LUA_NOREF;
     }        
-    assert( check== lua_gettop(L) );            // is life good?
+    assert( top== lua_gettop(L) );            // is life good?
 }
 
 //---------------------------------------------------------------------------
@@ -470,21 +565,12 @@ static hula_error _HulaBuildState( lua_State*L, const int table, nstring_t state
                         // Event: ex. { event = 'name' }, or: { event = function() end }
                         else {
                             const char *event_name= keyname.string;
-                            // see setfield below
-                            if (!is_target_name) {
-                                hsmOnEventUD( HulaRunUD, (void*) event_name );
-                            }
-                            else {
-                                // note: HulaRunUD could probably handle all of this itself....  but why not...
-                                const char * targetname= lua_tostring( L, value_idx );
-                                hsmIfUD( (hsm_callback_guard_ud) HulaUserIsEvent, (void*) event_name );
-                                hsmGotoId( hsmState( targetname ) );
-                            }
-                            // store: state_table[ 'event_name' ]= target, regardless if its a 'name' or a function()
-                            // because: when we get into HulaUserIsEvent, we need a valid 'event_name'.
-                            // for lua 5, unofficially: sharing the string memory in the registry works.
-                            // the alternative is: we'd have to copy the string memory out somewhere, and then remember to clean it up.
-                            // we might want a named events feature in builder, but avoiding the api complication for now.
+                            hsmOnEventUD( HulaRunUD, (void*) event_name );
+                            // store state_table[ 'event_name' ]= target.
+                            // to ensure HulaUserIsEvent has a valid 'event_name' pointer.
+                            // not officially supported, but sharing string memory works.
+                            // alternative: copy or ref string memory, and remember to clean it up.
+                            // might want a named events feature in builder, but avoiding the api complication for now.
                             lua_setfield( L, state_table, event_name );  // value is popped.
                         }
                     }                            
@@ -496,10 +582,9 @@ static hula_error _HulaBuildState( lua_State*L, const int table, nstring_t state
     return err;
 }
 
-
 //---------------------------------------------------------------------------
-/**
- * chart = { statename = { <statebody> } }
+/*
+ * chart = { statename = { ...statebody... } }
  */
 hula_error HulaBuildState( lua_State*L, int chartidx, int * pid ) 
 {
@@ -528,8 +613,8 @@ hula_error HulaBuildState( lua_State*L, int chartidx, int * pid )
                 nstring_t name;
                 lua_tonstring( L, nameidx, &name );
                 err= HulaBuildNamedState( L, bodyidx, name.string, name.len, pid );
-                lua_pop(L,2); // pop iterators
             }                
+            lua_pop(L,2); // pop iterators
         }            
     }        
 
@@ -538,8 +623,8 @@ hula_error HulaBuildState( lua_State*L, int chartidx, int * pid )
 }
 
 //---------------------------------------------------------------------------
-/**
- * chart = { -init='s1', s1={ <statebody> }, s2={ <statebody> }, ... }
+/*
+ * chart = { -init='s1', s1={ ...statebody... }, s2={ ...statebody... }, ... }
  */
 hula_error HulaBuildNamedState( lua_State*L, int idx, const char * name, int namelen, int * pid )
 {

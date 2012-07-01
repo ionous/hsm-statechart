@@ -50,25 +50,33 @@ static hsm_bool Verify( test_sequence_t * test, const char * string, ... )
 //---------------------------------------------------------------------------
 static void Initing( hsm_status status, void * user_data )
 {
-    Verify( (test_sequence_t*)user_data, "%s-INIT", status->state->name );
+    if (!(status->hsm->flags & TEST_HSM_NO_LOGGING)) {
+        Verify( (test_sequence_t*)user_data, "%s-INIT", status->state->name );
+    }        
 }
 
 //---------------------------------------------------------------------------
 static void Entered( hsm_status status, void * user_data )
 {
-    Verify( (test_sequence_t*)user_data, "%s-ENTRY", status->state->name );
+    if (!(status->hsm->flags & TEST_HSM_NO_LOGGING)) {
+        Verify( (test_sequence_t*)user_data, "%s-ENTRY", status->state->name );
+    }        
 }
 
 //---------------------------------------------------------------------------
 static void Exiting( hsm_status status, void * user_data )
 {
-    Verify( (test_sequence_t*)user_data, "%s-EXIT", status->state->name );
+    if (!(status->hsm->flags & TEST_HSM_NO_LOGGING)) {
+        Verify( (test_sequence_t*)user_data, "%s-EXIT", status->state->name );
+    }        
 }
 
 //---------------------------------------------------------------------------
 static void Unhandled( hsm_status status, void * user_data )
 {
-    Verify( (test_sequence_t*)user_data, "EVT-%c", ((CharEvent*)status->evt)->ch );
+    if (!(status->hsm->flags & TEST_HSM_NO_LOGGING)) {
+        Verify( (test_sequence_t*)user_data, "EVT-%c", ((CharEvent*)status->evt)->ch );
+    }        
 }
 
 //---------------------------------------------------------------------------
@@ -101,3 +109,4 @@ hsm_bool TestEventSequence( hsm_machine hsm, hsm_state first, const char ** stri
 
     return test_passed;
 }
+

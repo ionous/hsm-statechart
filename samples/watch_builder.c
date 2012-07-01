@@ -99,11 +99,11 @@ hsm_state buildWatchChart()
     int id= hsmBegin( "Active",0 );
     {
         hsmOnEnter( ActiveStateEnter );   // active state enter resets the timer
-            // if the user presses "reset" 
-            // no matter which state we're in, transition to self, that means: 
-            // reset the time ( via enter ), and enter initial state ( stopped )
-            IfEvent( WATCH_RESET_PRESSED ); 
-            hsmGoto( "Active" );
+        // if the user presses "reset" 
+        // no matter which state we're in, transition to self, that means: 
+        // reset the time ( via enter ), and enter initial state ( stopped )
+        IfEvent( WATCH_RESET_PRESSED ); 
+        hsmGoto( "Active" );
             
         // the first sub-state entered is the first state listed
         // in this case the first thing active does is enter 'stopped'
@@ -145,7 +145,6 @@ int watch_builder( int argc, char* argv[] )
         // declare a statemachine, pass our watch context data
         hsm_machine hsm= HsmMachineWithContext( &machine, &ctx.ctx );
         hsm_state watch_chart= buildWatchChart();
-
 
         printf( "HsmBuilder's Stop Watch Sample.\n"
             "Keys:\n"
