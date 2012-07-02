@@ -38,7 +38,7 @@ local stop_watch_chart= {
 
 ------------------------------------------------------------
 function run_watch_run()
-  print([[Hula's stopwatch sample.
+  print([[Hula stopwatch sample.
     Keys:
         '1': reset button
         '2': generic toggle button]])
