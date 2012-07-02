@@ -1,0 +1,17 @@
+syntax: glob
+.DS_Store
+*.vcxproj.user
+ipch/*
+Debug/*
+Release/*
+ignore/*
+*.sdf
+*.suo
+*.opensdf
+hsm-statechart*.zip
+*.obj
+*.lib
+build/*
+hsm-statechart.xcodeproj/*.*user
+hsm-statechart.xcodeproj/*.mode*
+*.*.orig

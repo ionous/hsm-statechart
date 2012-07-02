@@ -1,0 +1,42 @@
+Notes for HSM_STATE:
+
+    The wrapper for state() lets parent and child live in different translation units (.c files)
+    if all states were gauranteed to be in the same unit
+    depth could be a counter enum { enum {State##Depth = Parent##Depth+`;} and data could be static.
+
+    it might be possible to split the macro split into 'decl' and 'implement' sections
+    and create the same effect, but i think not without duplicating the parameters every usage
+
+    Additional notes for Initial State:
+
+    The initial state uses two lookup functions to ensure a valid name when initial= 0
+    and to enable link time checking that the initial state is a child of parent.
+
+for any given macro expansion the definitions are:
+
+    State##Lookup##Initial: forward declares, but doesn't implement.
+    Parent##Lookup##State : implements this in case our parent wants us as its initial state.
+    State##Lookup##0      : returns 0.
+
+so, for two these two states:
+
+    HSM_STATE( Outer, Top, Inner );
+     HSM_State( Inner, Outer, 0 );
+
+we get these this sequence of declarations:
+
+     state outer:
+        OuterLookupInner();                  <--- declared, defined later; this is the initial we want.
+        OuterLookup0() { return 0; }         <--- unused, most linkers will optimize
+        Outer() {
+          initial= OuterLookupInner();       <--- if inner isn't a child of outer, linker complains
+        }
+        TopLookupOuter() { return Outer; }   <--- unused, most linkers will optimize
+
+     state inner:
+        InnerLookup0();                      <--- this is the initial we want
+        InnerLookup0() { return 0; }         <--- and the standard implementation
+        Inner() {
+           initial= InnerLookup0();          <--- meaning we don't get an initial state.
+        }
+        OuterLookupInner() { return Inner; } <--- inneris* a child of outer, this proves it.
