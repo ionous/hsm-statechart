@@ -18,8 +18,8 @@ int watch_lua(int argc, char* argv[] );
 int main(int argc, char* argv[])
 {   
     samples_function samples[]= {
-#ifdef TEST_LUA        
-        //watch_lua,
+#ifdef TEST_LUA
+        watch_lua,
 #endif
         watch_builder,
         watch1_named_events,

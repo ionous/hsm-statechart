@@ -45,18 +45,17 @@ int watch_lua( int argc, char* argv[] )
     
     lua_State *L= lua_open();
     luaL_openlibs(L);
-    if (L) { // darn you missing c-99 features
-        luaL_register( L, "platform", lua_platform );
-        HulaRegister( L, 0 );    
-        if (hsmStartup()) {
-            int x= luaL_loadfile(L, "watch.lua");
-            res= lua_pcall(L, 0, 1, 0);                 // call the file, we expect one return
-            if (res) {
-                printf("error in lua script");
-            }
-            hsmShutdown();
-        }            
-    }        
+    luaL_register( L, "platform", lua_platform );
+    HulaRegister( L, 0 );    
+    if (hsmStartup()) {
+        int x= luaL_loadfile(L, "watch.lua");
+        res= lua_pcall(L, 0, 1, 0);                 // call the file, we expect one return
+        if (res) {
+            const char * msg= lua_tostring( L, -1 );
+            printf("error in lua script %s", msg ? msg :"unknown");
+        }
+        hsmShutdown();
+    }            
     lua_close(L);
     return res;
 }

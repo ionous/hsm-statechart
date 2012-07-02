@@ -1,23 +1,22 @@
 local chart= {
   active= {
     init = 'stopped',
-    entry= 
+    entry=
       function(watch)
-        -- ARG! need the event data
         watch.time=0
         return watch
       end,
-    evt_reset = 'active'
+    evt_reset = 'active',
     stopped = {
       evt_toggle = 'running',
     },
     running = {
       evt_toggle = 'stopped',
-      evt_tick   = 
-        --- ARG! need the context data!
-        function(watch, time) 
-          watch.time+= time
-        end
+      evt_tick   =
+        function(watch, time)
+          watch.time= watch.time + time
+          io.write( watch.time, "," )
+        end,
     }
   }
 }
@@ -29,24 +28,24 @@ function run_watch_run()
   -- create a state machine with the chart, and the watch
   local hsm= hsm_statechart.new{ chart, context= watch }
 
-  print("Hula's stopwatch sample.\n"
-           "Keys:\n"
-                "\t'1': reset button\n"
-                "\t'2': generic toggle button\n"
-                "\t'x': quit\n" );
-    
-  local key_to_event= { 1= 'evt_reset', 2= 'evt_toggle' }
-  while hsm.is_running()
+  print([[Hula's stopwatch sample.
+    Keys:
+        '1': reset button
+        '2': generic toggle button]])
+
+  local key_to_event = { ["1"]='evt_reset',
+                         ["2"]='evt_toggle' }
+  while hsm:is_running() do
     -- read one character
-    local key= platform.get_key()
+    local key= string.char( platform.get_key() )
     local event= key_to_event[key]
-    if event then 
-      hsm.signal( event )
-	  print( "." )
+    if event then
+      hsm:signal( event )
+      io.write( "." )
     else
-	  hsm.signal( 'evt_tick', 1 )
-	  platform.sleep(500)
-	end
+      hsm:signal( 'evt_tick', 1 )
+      platform.sleep(500)
+    end
   end
 end
 

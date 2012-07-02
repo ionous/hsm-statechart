@@ -31,16 +31,17 @@ static hula_machine_t* hula_check( lua_State* L, int idx )
 /**
  * @internal 
  * create a new table and fill it with a list of items from the stack
+ * expected: event name, event parameters...
  * @return index of new table
  */
 static int hula_pack( lua_State * L, int copyfrom, int copyto )
 {
     int count=0; 
-    int copy;
+    int copy=copyfrom;
     lua_newtable( L );
-    for (copy=copyfrom; copy<=copyto; ++copy, ++count) {
-        lua_pushvalue( L, copy );
-        lua_rawseti( L, -2, count );
+    while( copy<=copyto ) {
+        lua_pushvalue( L, copy++ );
+        lua_rawseti( L, -2, ++count );
     }
     return count;
 }
@@ -57,63 +58,88 @@ static int hula_pack( lua_State * L, int copyfrom, int copyto )
  */
 static int hsm_new(lua_State* L)
 {
-    int id=0;
     const int table= lua_gettop(L);
-
-    // chart can be either user data, or a machine to clone
-    lua_rawgeti( L, table, 1 );
-    if(lua_isuserdata( L, -1 )) {
-        hula_machine_t* src= hula_check( L, HULA_REC_IDX );
-        if (src) {
-            id= src->topstate;
-        }            
-        lua_pop( L, 1 );
+    if (!lua_istable(L,table)) {
+        lua_pushstring( L, "expected a table" );
+        lua_error( L );
     }
-    // or a state chart declarative table
     else {
-        hula_error err= HulaBuildState( L, HULA_CHART_IDX, &id );
-        if (err) {
-            lua_pushstring( L,err );
-            lua_error(L);
-        }    
-    }        
-
-    if (id) {
-        hsm_state init_state;
-        lua_getfield( L, table, "init" );
-        init_state= lua_isstring( L, -1) ? hsmResolve( lua_tostring( L, -1 ) ) : hsmResolveId( id );
-        lua_pop( L, 1 );
-        if (init_state) {
-            lua_pushstring( L, "resolve error");
-            lua_error(L);
+        int id=0;
+        // get the chart: chart can be either user data, or a machine to clone
+        lua_rawgeti( L, table, 1 );
+        if(lua_isuserdata( L, -1 )) {
+            hula_machine_t* src= hula_check( L, HULA_REC_IDX );
+            if (src) {
+                id= src->topstate;
+            }            
+            lua_pop( L, 1 );
         }
+        // or a state chart declarative table
         else {
-            int ctx=0;
-            lua_getfield( L, table, "context" );
-            if (!lua_isnil( L, -1 )) {
-                ctx= luaL_ref(L,-1);
+            hula_error err= HulaBuildState( L, HULA_CHART_IDX, &id );
+            if (err) {
+                lua_pushstring( L,err );
+                lua_error(L);
+            }    
+        }
+        lua_pop( L,1 ); // pop the chart
+
+        if (id) {
+            // get init(ial) state
+            hsm_state init_state;
+            lua_getfield( L, table, "init" );
+            if (lua_isstring( L, -1)) {
+                const char * statename=lua_tostring( L, -1 );
+                init_state=hsmResolve( statename );
             }
             else {
+                init_state= hsmResolveId( id );
+            }
+            lua_pop( L, 1 ); // pop init
+
+            if (!init_state) {
+                lua_pushstring( L, "resolve error during init");
+                lua_error(L);
+            }
+            else {
+                hula_machine_t* hula;
+                // get context:
+                int ctx;
+                lua_getfield( L, table, "context" );
+                ctx= luaL_ref(L, LUA_REGISTRYINDEX);
+                
                 // user data becomes return value
-                hula_machine_t* hula= (hula_machine_t*) lua_newuserdata( L, sizeof(hula_machine_t) );
+                hula= (hula_machine_t*) lua_newuserdata( L, sizeof(hula_machine_t) );
                 assert( hula );
                 if (hula) {
                     memset( hula, 0, sizeof(hula_machine_t) );
                     hula->topstate= id;
                     hula->ctx.L= L;
                     hula->ctx.lua_ref= ctx;                    
-
                     luaL_getmetatable( L, HULA_METATABLE );
                     lua_setmetatable( L, -2 );
-                    
-                    HsmMachineWithContext( &hula->hsm, &hula->ctx.core );
-                    if (!HsmStart( (hsm_machine) &hula->hsm, init_state )) {
-                        lua_pushstring( L, "couldnt start machine");
-                        lua_error( L );
-                    }
+
+                    if (HsmMachineWithContext( &hula->hsm, &hula->ctx.core )) {
+                        hula->hsm.core.flags|= HSM_FLAGS_HULA;
+                        
+                        // create the event table with "init" as the event name
+                        lua_newtable( L );
+                        lua_pushstring( L,"init" );
+                        lua_rawseti( L, -2, 1 );
+                        
+                        // start the machine
+                        if (HsmStart( (hsm_machine) &hula->hsm, init_state )) {
+                            lua_pop( L, 1 ); // remove the event table
+                        }
+                        else {
+                            lua_pop( L, 1 ); // remove the event table
+                            lua_pushstring( L, "couldnt start machine");
+                            lua_error( L );
+                        }
+                    }                        
                 }                    
             }            
-        }            
+        }
     }
     return 1; 
 }
@@ -188,7 +214,7 @@ static int hsm_tostring(lua_State *L)
     if (hula) {
         // hrmm... breaking into the lower level api....
         hsm_state topstate= hsmResolveId( hula->topstate );
-        lua_pushfstring(L, "hsm(%s:%s)", 
+        lua_pushfstring(L, "hsm_statechart: %s:%s", 
                         topstate ? topstate->name : "nil",
                         hula->hsm.core.current ? hula->hsm.core.current->name : "nil" );
         ret=1;                                      

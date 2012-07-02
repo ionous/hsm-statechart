@@ -233,7 +233,6 @@ static hula_callback_is_event HulaGetIsEvent( lua_State * L )
         lua_getfield(L,-1, HULA_EVENT_TEST );
         if (!lua_isnil( L, -1)) {
             hula_callback_is_event store= (hula_callback_is_event) lua_touserdata( L,-1 );
-            assert( store );
             if (store) {
                 cb= store;
             }
@@ -286,20 +285,26 @@ static hsm_context HulaEnterUD( hsm_status status, void * user_data )
 {
     hula_context_t* new_ctx=0, *parent_ctx=0;
     lua_State* L= (lua_State*)user_data;
-    const int top= lua_gettop(L);
+    const int event_table= lua_gettop(L);
 
     // get the lua specified enter= function()
     const int lua_entryfn= HulaGetEvent( L, status->state, LUA_T_ENTER, 0 );
     
-    // get our parent's lua data (if its also a hula state)
-    if (status->state->parent && status->state->parent->exit==HulaExit) {
-        // when a state gets entered, the context is its parent's context
+    // get our parent's hula_context_t via ugly magic.
+    // this allows us to pass our lua state, and context data to decedents
+    // mayne there's a better way.....
+    if (!status->state->parent) {
+        if (status->hsm->flags & HSM_FLAGS_HULA) {
+            hula_machine_t* parent= (hula_machine_t*) status->hsm;
+            parent_ctx= &parent->ctx;
+        }
+    }
+    else
+    if (status->state->parent->exit==HulaExit) {
         parent_ctx= (hula_context_t*) status->ctx;
     }
-
-    // if our parent has lua data, then use that as this state's initial data
-    // if not: use our parent's state's c-object
-    //
+    
+    // if our parent has lua data, use that as this state's initial data; if not: use nil
     // note: push *before* determining whether the user has specified an entry function;
     // this data gets used for creating a lua context for this state, regardless.
     if (!parent_ctx) {
@@ -320,7 +325,7 @@ static hsm_context HulaEnterUD( hsm_status status, void * user_data )
         }
     }
     else {
-        int err= lua_unpack_and_pcall( L, top, 1, 1 ); 
+        int err= lua_unpack_and_pcall( L, event_table, 1, 1 ); 
         if (err) {
             const char * msg=lua_tostring(L,-1);
             lua_pop(L,1);//? TODO: and do what on error exactly?
@@ -333,7 +338,7 @@ static hsm_context HulaEnterUD( hsm_status status, void * user_data )
         assert( new_ctx );
     }
 
-    assert( top== lua_gettop(L) );            // is life good?
+    assert( event_table== lua_gettop(L) );            // is life good?
 
     // the machine keeps the context
     return new_ctx ? &(new_ctx->core) : 0;
@@ -359,7 +364,7 @@ static hsm_state HulaRunUD( hsm_status status, void * user_data )
         hula_callback_is_event cb= HulaGetIsEvent( L );
         if (cb && cb( L, status, event_name ) )
         {
-            const int top= lua_gettop(L);
+            const int event_table= lua_gettop(L);
    
             // push the relevant entry from the state table
             const int evthandler= HulaGetEvent( L, status->state, 0, event_name );
@@ -376,7 +381,7 @@ static hsm_state HulaRunUD( hsm_status status, void * user_data )
                 // context first
                 lua_rawgeti( L, LUA_REGISTRYINDEX, ctx->lua_ref );
                 // unpack the event table, skipping the event name 
-                err= lua_unpack_and_pcall( L, top, 2, 1 ); 
+                err= lua_unpack_and_pcall( L, event_table, 2, 1 ); 
                 if (err) {
                     const char * msg=lua_tostring(L,-1);
                     lua_pop(L,1);//? TODO: and do what on error exactly?
@@ -396,7 +401,7 @@ static hsm_state HulaRunUD( hsm_status status, void * user_data )
                     lua_pop(L,1);
                 }
             }
-            assert( top== lua_gettop(L) );            // is life good?
+            assert( event_table== lua_gettop(L) );            // is life good?
         }
     }    
     // return the next state
@@ -411,7 +416,7 @@ static void HulaExit( hsm_status status )
 {
     hula_context_t*ctx= (hula_context_t*)(status->ctx);
     lua_State* L= ctx->L;
-    const int top= lua_gettop(L);
+    const int event_table= lua_gettop(L);
 
     // pull the function to call:
     const int lua_exitfn= HulaGetEvent( L, status->state, LUA_T_EXIT, 0 );
@@ -425,7 +430,7 @@ static void HulaExit( hsm_status status )
         // get the context
         lua_rawgeti( L, LUA_REGISTRYINDEX, ctx->lua_ref );
         // unpack the event object and call the already pushed function
-        err= lua_unpack_and_pcall( L, top, 1, 1 ); 
+        err= lua_unpack_and_pcall( L, event_table, 1, 1 ); 
         if (err) {
             const char * msg=lua_tostring(L,-1);
             lua_pop(L,1);//? TODO: and do what on error exactly?
@@ -437,7 +442,7 @@ static void HulaExit( hsm_status status )
         luaL_unref( L, LUA_REGISTRYINDEX, ctx->lua_ref );
         ctx->lua_ref= LUA_NOREF;
     }        
-    assert( top== lua_gettop(L) );            // is life good?
+    assert( event_table== lua_gettop(L) );            // is life good?
 }
 
 //---------------------------------------------------------------------------

@@ -50,6 +50,7 @@ typedef struct hsm_context_machine_rec hsm_context_machine_t;
 
 // give the lower 16 to user flags
 #define HSM_FLAGS_CTX      (1<<16)   // is the machine a context machine
+#define HSM_FLAGS_HULA     (1<<17)   // is the machine a hula machine
 //#define HSM_FLAGS_INFO   (1<<17)   // flags per thing to log?
 //#define HSM_FLAGS_REGION (1<<18)
 
