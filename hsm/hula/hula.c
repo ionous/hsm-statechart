@@ -598,7 +598,7 @@ hula_error HulaBuildState( lua_State*L, int chartidx, int * pid )
     
     //  we want to get the one and only entry, but we dont know its index
     lua_pushnil(L);
-    if (lua_next(L, chartidx)) {           // pops top, pull key,value on to the stack
+    if (lua_next(L, chartidx)) {           // pops top; pulls key,value on to the stack
         const int bodyidx = lua_gettop(L);
         const int nameidx = bodyidx-1;
         lua_pushvalue( L, nameidx );
@@ -634,16 +634,25 @@ hula_error HulaBuildState( lua_State*L, int chartidx, int * pid )
 hula_error HulaBuildNamedState( lua_State*L, int idx, const char * name, int namelen, int * pid )
 {
     hula_error err= HULA_ERR_UNKNOWN;
-    int id= hsmBegin( name, namelen );
-    if (id){
-        nstring_t nstring= { name, namelen };
-        const int check= lua_gettop(L);
-        err= _HulaBuildState( L, idx, nstring );
-        assert( check == lua_gettop(L) );
-        if (!err) {
-            if (pid) *pid=id;
+    int id= hsmState( name );
+    if (id) {
+        hsm_state state= hsmResolveId( id );
+        // state already has been built
+        if (state) {
+            *pid= id;
+            err=0;
         }
-        hsmEnd();
+        else 
+        if (hsmBegin( name, namelen )) {
+            nstring_t nstring= { name, namelen };
+            const int check= lua_gettop(L);
+            err= _HulaBuildState( L, idx, nstring );
+            assert( check == lua_gettop(L) );
+            if (!err) {
+                if (pid) *pid=id;
+            }
+            hsmEnd();
+        }                
     }
     return err;
 }

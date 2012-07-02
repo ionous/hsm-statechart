@@ -939,7 +939,7 @@ hsm_state hsmResolveId( int id )
     assert( gStartCount );
     if ( gStartCount && HsmIsRunning(&gMachine.core) ) {
         const hash_entry_t* entry= Hash_FindEntry( &(gBuilder.hash), id );
-        ret= (hsm_state) entry ? entry->clientData :  0;
+        ret= (hsm_state) Entry_FinishedBuilding( entry ) ? entry->clientData :  0;
     }        
     return ret;
 }

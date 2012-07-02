@@ -57,6 +57,7 @@ function run_watch_run()
   while hsm:is_running() do
     -- read one character
     local key= string.char( platform.get_key() )
+    if key == 'x' then break end
     -- change it into an event
     local event= key_to_event[key]
     -- send it to the statemachine
