@@ -29,7 +29,7 @@
   <td id="projectlogo"><img alt="Logo" src="hsm-statechart.png"/></td>
   <td style="padding-left: 0.5em;">
    <div id="projectname">hsm-statechart
-   &#160;<span id="projectnumber">0.01</span>
+   &#160;<span id="projectnumber">0.5</span>
    </div>
    <div id="projectbrief">An easy to use hierarchical state machine for C and C++</div>
   </td>
@@ -108,7 +108,7 @@ $(document).ready(function(){initNavTree('hula__lib_8h.html','');});
 </div><!--header-->
 <div class="contents">
 
-<p>Support for <a class="el" href="hula_8h.html" title="Statemachine builder extensions for lua.">hula.h</a> Implemenets the lua wrappers for hsm statechart classes.  
+<p>Implements lua wrappers for using hsm_machine in lua.  
 <a href="#details">More...</a></p>
 
 <p><a href="hula__lib_8h_source.html">Go to the source code of this file.</a></p>
@@ -121,9 +121,11 @@ Macros</h2></td></tr>
 <tr class="memdesc:a363ecc475d7d1922b88ca2a18d912849"><td class="mdescLeft">&#160;</td><td class="mdescRight">default name of the HULA_LIB's metatable  <a href="#a363ecc475d7d1922b88ca2a18d912849"></a><br/></td></tr>
 <tr class="memitem:a807b7f094e7f3a6092e03611b081f209"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="hula__lib_8h.html#a807b7f094e7f3a6092e03611b081f209">HULA_EVENT_TEST</a></td></tr>
 <tr class="memdesc:a807b7f094e7f3a6092e03611b081f209"><td class="mdescLeft">&#160;</td><td class="mdescRight">name inside the metatable of the user event matching function  <a href="#a807b7f094e7f3a6092e03611b081f209"></a><br/></td></tr>
+<tr class="memitem:a195f5a9d0b832dd1c35ef55662d4ad32"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="hula__lib_8h.html#a195f5a9d0b832dd1c35ef55662d4ad32">HULA_EVENT_NAME</a></td></tr>
+<tr class="memdesc:a195f5a9d0b832dd1c35ef55662d4ad32"><td class="mdescLeft">&#160;</td><td class="mdescRight">event table: event name  <a href="#a195f5a9d0b832dd1c35ef55662d4ad32"></a><br/></td></tr>
 </table>
 <hr/><a name="details" id="details"></a><h2>Detailed Description</h2>
-<div class="textblock"><p>Support for <a class="el" href="hula_8h.html" title="Statemachine builder extensions for lua.">hula.h</a> Implemenets the lua wrappers for hsm statechart classes. </p>
+<div class="textblock"><p>Implements lua wrappers for using hsm_machine in lua. </p>
 
 <p>Definition in file <a class="el" href="hula__lib_8h_source.html">hula_lib.h</a>.</p>
 </div><hr/><h2>Macro Definition Documentation</h2>
@@ -139,7 +141,7 @@ Macros</h2></td></tr>
 
 <p>default name of the type within lua </p>
 
-<p>Definition at line <a class="el" href="hula__lib_8h_source.html#l00021">21</a> of file <a class="el" href="hula__lib_8h_source.html">hula_lib.h</a>.</p>
+<p>Definition at line <a class="el" href="hula__lib_8h_source.html#l00020">20</a> of file <a class="el" href="hula__lib_8h_source.html">hula_lib.h</a>.</p>
 
 </div>
 </div>
@@ -155,7 +157,7 @@ Macros</h2></td></tr>
 
 <p>default name of the HULA_LIB's metatable </p>
 
-<p>Definition at line <a class="el" href="hula__lib_8h_source.html#l00026">26</a> of file <a class="el" href="hula__lib_8h_source.html">hula_lib.h</a>.</p>
+<p>Definition at line <a class="el" href="hula__lib_8h_source.html#l00025">25</a> of file <a class="el" href="hula__lib_8h_source.html">hula_lib.h</a>.</p>
 
 </div>
 </div>
@@ -171,7 +173,23 @@ Macros</h2></td></tr>
 
 <p>name inside the metatable of the user event matching function </p>
 
-<p>Definition at line <a class="el" href="hula__lib_8h_source.html#l00031">31</a> of file <a class="el" href="hula__lib_8h_source.html">hula_lib.h</a>.</p>
+<p>Definition at line <a class="el" href="hula__lib_8h_source.html#l00030">30</a> of file <a class="el" href="hula__lib_8h_source.html">hula_lib.h</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a195f5a9d0b832dd1c35ef55662d4ad32"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define HULA_EVENT_NAME</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>event table: event name </p>
+
+<p>Definition at line <a class="el" href="hula__lib_8h_source.html#l00078">78</a> of file <a class="el" href="hula__lib_8h_source.html">hula_lib.h</a>.</p>
 
 </div>
 </div>
@@ -181,7 +199,7 @@ Macros</h2></td></tr>
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="dir_6c36b64852547327283732128225c9d7.html">hsm</a></li><li class="navelem"><a class="el" href="dir_9659424d7ed6dfd520a332e018c4f96c.html">hula</a></li><li class="navelem"><a class="el" href="hula__lib_8h.html">hula_lib.h</a></li>
-    <li class="footer">Generated on Sun Jul 1 2012 15:02:16 for hsm-statechart by
+    <li class="footer">Generated on Sat Jul 7 2012 22:48:12 for hsm-statechart by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.1.1 </li>
   </ul>

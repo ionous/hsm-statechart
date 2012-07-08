@@ -1,5 +1,6 @@
 var searchData=
 [
+  ['hsm_5fassert',['HSM_ASSERT',['../hsm__types_8h.html#ae90abec415767fe632682dddda6e1567',1,'hsm_types.h']]],
   ['hsm_5fbuilder_2ec',['hsm_builder.c',['../hsm__builder_8c.html',1,'']]],
   ['hsm_5fbuilder_2eh',['hsm_builder.h',['../hsm__builder_8h.html',1,'']]],
   ['hsm_5fcallback_5faction',['hsm_callback_action',['../hsm__state_8h.html#a5a740484248abeee497979cbac897ac8',1,'hsm_state.h']]],
@@ -92,14 +93,17 @@ var searchData=
   ['hsmtopstate',['HsmTopState',['../hsm__machine_8c.html#a1ba67e8e0edddad002d4f4c44d0e73db',1,'HsmTopState():&#160;hsm_machine.c'],['../hsm__machine_8h.html#a1ba67e8e0edddad002d4f4c44d0e73db',1,'HsmTopState():&#160;hsm_machine.c']]],
   ['hula_2ec',['hula.c',['../hula_8c.html',1,'']]],
   ['hula_2eh',['hula.h',['../hula_8h.html',1,'']]],
-  ['hula_5fcallback_5fis_5fevent',['hula_callback_is_event',['../hula_8h.html#a332a795da59d5c7b0c4308bdf6d13b46',1,'hula.h']]],
+  ['hula_5fcallback_5fis_5fevent',['hula_callback_is_event',['../hula_8h.html#a07900af54bbd577f5d3e7fe289e70900',1,'hula.h']]],
+  ['hula_5fevent_5fname',['HULA_EVENT_NAME',['../hula__lib_8h.html#a195f5a9d0b832dd1c35ef55662d4ad32',1,'hula_lib.h']]],
   ['hula_5fevent_5ftest',['HULA_EVENT_TEST',['../hula__lib_8h.html#a807b7f094e7f3a6092e03611b081f209',1,'hula_lib.h']]],
   ['hula_5flib',['HULA_LIB',['../hula__lib_8h.html#a8da652ae356bd2fbb2f5315eb1d7035e',1,'hula_lib.h']]],
+  ['hula_5flib_2ec',['hula_lib.c',['../hula__lib_8c.html',1,'']]],
   ['hula_5flib_2eh',['hula_lib.h',['../hula__lib_8h.html',1,'']]],
   ['hula_5fmetatable',['HULA_METATABLE',['../hula__lib_8h.html#a363ecc475d7d1922b88ca2a18d912849',1,'hula_lib.h']]],
   ['hulabuildnamedstate',['HulaBuildNamedState',['../hula_8c.html#a4e2c1680d59b39dad3c4d5834e00c858',1,'HulaBuildNamedState(lua_State *L, int idx, const char *name, int namelen, int *pid):&#160;hula.c'],['../hula_8h.html#a3f729e51c6187caa82d7adf2a618ceac',1,'HulaBuildNamedState(lua_State *L, int idx, const char *name, int namelen, int *pId):&#160;hula.c']]],
   ['hulabuildstate',['HulaBuildState',['../hula_8c.html#ab7c72adc2621b45e9da911e423672784',1,'HulaBuildState(lua_State *L, int chartidx, int *pid):&#160;hula.c'],['../hula_8h.html#ae4d3c25d3fea8dfffb7e6cc73e5b97aa',1,'HulaBuildState(lua_State *L, int idx, int *pId):&#160;hula.c']]],
-  ['hulanamedregister',['HulaNamedRegister',['../hula_8h.html#a9e5e15ea9c174d372fcd5b780bca9f9f',1,'hula_lib.c']]],
-  ['hularegister',['HulaRegister',['../hula_8h.html#a6d08a594ed624d9968b935489603bc33',1,'hula_lib.c']]],
+  ['hulamatchevent',['HulaMatchEvent',['../hula_8c.html#a1a669c3dd22043715c4e19b90e3e1373',1,'HulaMatchEvent(const char *spec, const char *test):&#160;hula.c'],['../hula_8h.html#a1a669c3dd22043715c4e19b90e3e1373',1,'HulaMatchEvent(const char *spec, const char *test):&#160;hula.c']]],
+  ['hulanamedregister',['HulaNamedRegister',['../hula_8h.html#a9e5e15ea9c174d372fcd5b780bca9f9f',1,'HulaNamedRegister(lua_State *L, const char *typename, hula_callback_is_event is_user_event):&#160;hula_lib.c'],['../hula__lib_8c.html#a2396e0539ec5effb693eb5b2e7a7a478',1,'HulaNamedRegister(lua_State *L, const char *type, hula_callback_is_event is_event):&#160;hula_lib.c']]],
+  ['hularegister',['HulaRegister',['../hula_8h.html#a6d08a594ed624d9968b935489603bc33',1,'HulaRegister(lua_State *L, hula_callback_is_event is_user_event):&#160;hula_lib.c'],['../hula__lib_8c.html#a75b6fe2b4a116538cadf632fda800470',1,'HulaRegister(lua_State *L, hula_callback_is_event is_event):&#160;hula_lib.c']]],
   ['hsmstate_2dchart',['hsmstate-chart',['../index.html',1,'']]]
 ];

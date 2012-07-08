@@ -51,11 +51,25 @@ typedef unsigned long hsm_uint32;
 typedef unsigned short hsm_uint16;
 
 /**
+ * @brief 16
+ *
  * Maximum depth of a machine with context.
- * 16 is a decent amt of hiearchy depth, it's probably more than good enough
- * nesting regions will yield new sets of 16.
+ * 16 is a decent amt of hiearchy depth.
+ * nesting of regions will yield new sets of 16.
  */
 #define HSM_MAX_DEPTH 16
+
+
+
+#if (_DEBUG || DEBUG)
+#define HSM_ASSERT assert
+#else
+/**
+ * maps to an assert in debug builds
+ * compiles out in non-debug builds
+ */
+#define HSM_ASSERT(x) (void)(0)
+#endif
 
 
 #endif // #ifndef __HSM_TYPES_H__

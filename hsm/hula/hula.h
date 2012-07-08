@@ -22,15 +22,37 @@ typedef struct lua_State lua_State;
 typedef const char *  hula_error;
 
 /**
- * Control whether the event being processed matches the passed lua defined event
+ * Control whether the event being processed matches an event defined in lua.
  *
- * @param status Current state of the machine. 
- * @param eventname Event string from a lua defined statechart.
- * @return HSM_TRUE if hsm_status_rec::evt matches eventname
+ * @param L Active lua state.
+ * @param spec Event name specified in the lua defined statechart.
+ * @param event Event being processed by the machine.
+ * @return HSM_TRUE if hsm_event matches the event spec.
  *
- * @see HulaRegister, HsmSignalEvent
+ * @see HulaMatchEvent, HulaRegister, HsmSignalEvent
  */
-typedef hsm_bool (*hula_callback_is_event)( lua_State*L, hsm_status status, const char * eventname );
+typedef hsm_bool (*hula_callback_is_event)( lua_State*L, const char * spec, hsm_event event );
+
+/**
+ * Match an event specification to a triggered event.
+ * The matching takes into account hierarchical events.
+ * This behavior is the default behavior of lua statecharts,
+ * user code can customize this behavior via hula_callback_is_event.
+ * 
+ * @param spec Event name specified in the lua defined statechart.
+ * @param test Event name signaled by lua.
+ * @return HSM_TRUE if they match
+ * 
+ * @see hula_callback_is_event
+ * 
+ * event.item       <- specified event(s) we want to handle
+ * event.item.click <- a triggered event we match
+ * event.item       <- another match
+ * event.mouse.drag <- no match
+ * event.items      <- no match
+ * event            <- no match
+ */
+hsm_bool HulaMatchEvent( const char * spec, const char *test );
 
 /**
  * Create an hsm-statechart state from a lua state description.

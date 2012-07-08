@@ -114,7 +114,7 @@ void HsmSetInfoCallbacks( hsm_info_t* info, hsm_info_t* old_callbacks )
 //---------------------------------------------------------------------------
 hsm_machine HsmMachine( hsm_machine_t* hsm )
 {
-    assert (hsm);
+    HSM_ASSERT (hsm);
     if (hsm) {
         hsm->flags=0;
         hsm->current= NULL;
@@ -125,7 +125,7 @@ hsm_machine HsmMachine( hsm_machine_t* hsm )
 //---------------------------------------------------------------------------
 hsm_machine HsmMachineWithContext( hsm_context_machine_t* hsm, hsm_context ctx )
 {
-    assert( hsm );
+    HSM_ASSERT( hsm );
     if (hsm && HsmMachine( &(hsm->core) )) {
         // flag that this has a context stack
         hsm->core.flags|= HSM_FLAGS_CTX;
@@ -161,9 +161,9 @@ hsm_bool HsmIsInState( const hsm_machine hsm, hsm_state state )
 //---------------------------------------------------------------------------
 hsm_bool HsmStart( hsm_machine hsm, hsm_state first_state )
 {
-    assert( hsm );
-    assert( first_state && "expected valid first state for init" );
-    assert( (!hsm || !hsm->current) && "already ran init" );
+    HSM_ASSERT( hsm );
+    HSM_ASSERT( first_state && "expected valid first state for init" );
+    HSM_ASSERT( (!hsm || !hsm->current) && "already ran init" );
     
     if (hsm && !hsm->current && first_state ) 
     {
@@ -245,7 +245,7 @@ static void HsmInit( hsm_machine hsm, hsm_event cause )
     while ( initial_state= hsm->current->initial ) 
     {
         hsm_bool init_moves_to_child= initial_state->parent == hsm->current;
-        assert( init_moves_to_child && "malformed statechart: init doesnt move to child state" );
+        HSM_ASSERT( init_moves_to_child && "malformed statechart: init doesnt move to child state" );
 
         if (hsm_global_callbacks.on_init) {
             hsm_context_stack_t* stack= HSM_STACK( hsm );
@@ -272,7 +272,7 @@ static void HsmEnter( hsm_machine hsm, hsm_state state, hsm_event cause )
 {
     //FIXME-stravis: handle invalid states better?
     const hsm_bool valid_state= (state && state->depth >=0);
-    assert( valid_state );
+    HSM_ASSERT( valid_state );
     if (valid_state) {
         // note: each state gets the context of its parent in entry
         // and can optionally generate a new context in turn
@@ -364,7 +364,7 @@ static void HsmRecursiveEnter( hsm_machine hsm, hsm_state state, hsm_event cause
  III. """ [For] a transition whose target is its source state.... the state is exited and reentered, 
      triggering execution of its onentry and onexit executable content."""
  */
-#define ERROR_IF_NULL( x, msg ) while(!x) { assert(msg); return HSM_FALSE; }
+#define ERROR_IF_FALSE( x, msg ) while(!(x)) { HSM_ASSERT(msg); return HSM_FALSE; }
 
 static hsm_bool HsmTransition( hsm_machine hsm, hsm_state source, hsm_state target, hsm_event  cause )
 {
@@ -376,7 +376,7 @@ static hsm_bool HsmTransition( hsm_machine hsm, hsm_state source, hsm_state targ
     // therefore: as a first step, bring 'current' to 'source', and work towards lca from there.
     while( hsm->current != source ) {
         HsmExit( hsm, cause );
-        ERROR_IF_NULL( hsm->current, "jumped past top" );
+        ERROR_IF_FALSE( hsm->current, "jumped past top" );
     }                
 
     // quick check for self transition: the source targeted itself ( III. above )
@@ -392,16 +392,19 @@ static hsm_bool HsmTransition( hsm_machine hsm, hsm_state source, hsm_state targ
         // instead it lets the user control it via HSM_MAX_DEPTH...
         int pt=0;
         hsm_state track= target;
-        hsm_state* path_to_target=(hsm_state*) alloca( target->depth * sizeof(hsm_state) );
+        // change to help simplify lua rocks
+        //hsm_state* path_to_target=(hsm_state*) alloca( target->depth * sizeof(hsm_state) );
+        hsm_state path_to_target[ HSM_MAX_DEPTH ];
         hsm_bool external_transition= 0;
-        ERROR_IF_NULL( path_to_target, "out of space" );
+        //ERROR_IF_FALSE( path_to_target, "out of space" );
+        ERROR_IF_FALSE( target->depth < HSM_MAX_DEPTH, "transition max depth exceeded" );
  
         // source deep than target?
         if (hsm->current->depth > track->depth) {
             // *exit* up to the same level
             while( hsm->current->depth > track->depth) {
                 HsmExit( hsm, cause ); // we exit, then move, b/c, if we don't leave the node we don't want an exit 
-                ERROR_IF_NULL( hsm->current, "jumped past top" );  
+                ERROR_IF_FALSE( hsm->current, "jumped past top" );  
             }
         }
         // target deeper than source?
@@ -410,7 +413,7 @@ static hsm_bool HsmTransition( hsm_machine hsm, hsm_state source, hsm_state targ
             while (track->depth > hsm->current->depth ) {
                 path_to_target[pt++]= track;
                 track= track->parent;
-                ERROR_IF_NULL( track, "jumped past top" );
+                ERROR_IF_FALSE( track, "jumped past top" );
             }
 
         // trigger an external transition? (re: II. above)
@@ -433,7 +436,7 @@ static hsm_bool HsmTransition( hsm_machine hsm, hsm_state source, hsm_state targ
             HsmExit( hsm, cause ); 
             path_to_target[pt++]= track;
             track= track->parent;
-            ERROR_IF_NULL( hsm->current&&track, "jumped past top" );
+            ERROR_IF_FALSE( hsm->current&&track, "jumped past top" );
         }            
 
         // ( <--- note: in uml transitions actions would take place here )

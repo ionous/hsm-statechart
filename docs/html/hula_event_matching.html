@@ -29,7 +29,7 @@
   <td id="projectlogo"><img alt="Logo" src="hsm-statechart.png"/></td>
   <td style="padding-left: 0.5em;">
    <div id="projectname">hsm-statechart
-   &#160;<span id="projectnumber">0.01</span>
+   &#160;<span id="projectnumber">0.5</span>
    </div>
    <div id="projectbrief">An easy to use hierarchical state machine for C and C++</div>
   </td>
@@ -99,19 +99,28 @@ $(document).ready(function(){initNavTree('hula_event_matching.html','');});
 <div class="title">Lua Event Matching </div>  </div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><p>The lua function signature for entry and exit:</p>
-<div class="fragment"><div class="line">     entry= <span class="keyword">function</span>( context, <span class="keyword">event</span> name, parameters, ..., <span class="keyword">event</span> table )</div>
-</div><!-- fragment --><p>The lua function signature for handlers is: </p>
-<div class="fragment"><div class="line">     <span class="keyword">event</span>= <span class="keyword">function</span>( context, parameters, ..., <span class="keyword">event</span> table )</div>
-</div><!-- fragment --><p>During event processing, however, Hula requires the top item the top item on the lua stack must be an "event table" of the format: </p>
+<div class="textblock"><p>For a chart described in lua, ex:</p>
+<div class="fragment"><div class="line">   chart = { </div>
+<div class="line">      state1= {</div>
+<div class="line">         entry= <span class="keyword">function</span>....</div>
+<div class="line">         exit = <span class="keyword">function</span>.....</div>
+<div class="line">         user_defined_event = <span class="keyword">function</span>....</div>
+<div class="line">      }</div>
+<div class="line">   }</div>
+</div><!-- fragment --><p>The lua function signature for entry and exit is: </p>
+<div class="fragment"><div class="line">     entry= <span class="keyword">function</span>( context, <span class="keyword">event</span> name, <span class="keyword">event</span> parameters, ..., event_table )</div>
+</div><!-- fragment --><p>The lua function signature for user defined events removes the event name:</p>
+<div class="fragment"><div class="line">     <span class="keyword">event</span>= <span class="keyword">function</span>( context, <span class="keyword">event</span> parameters, ..., event_table )</div>
+</div><!-- fragment --><p>Internally, to pass the "event name" and "event parameters" as a unit, Hula conslidates those in a single "event table" of the format:</p>
 <div class="fragment"><div class="line">     { <span class="keyword">event</span> name, <span class="keyword">event</span> parameter 1, ..., <span class="keyword">event</span> parameter n, keys=optional }</div>
-</div><!-- fragment --><p><a class="el" href="hula_8h.html#a6d08a594ed624d9968b935489603bc33" title="Create the &quot;hsm_statechart&quot; type for using hierarchical statemachines in lua.">HulaRegister()</a> does the necessary adaptations for machines based in lua. If your state machines are based in C, but are defined in lua, you will have to create the event table yourself. See the examples and the google code website for more details. </p>
+</div><!-- fragment --><p>For machines written and executed in Lua, Hula itself handles the packing and unpacking of the event table.</p>
+<p>If your state charts are written in Lua, but executed in C, you will have to create the event table yourself. Please see the samples and the google code website for more details. </p>
 </div></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="footer">Generated on Sun Jul 1 2012 15:02:16 for hsm-statechart by
+    <li class="footer">Generated on Sat Jul 7 2012 22:48:12 for hsm-statechart by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.1.1 </li>
   </ul>

@@ -3,6 +3,7 @@ var hsm__machine_8h =
     [ "hsm_machine_rec", "hsm__machine_8h.html#structhsm__machine__rec", "hsm__machine_8h_dup" ],
     [ "hsm_context_machine_rec", "hsm__machine_8h.html#structhsm__context__machine__rec", "hsm__machine_8h_dup" ],
     [ "HSM_FLAGS_CTX", "hsm__machine_8h.html#a8b8bfbd8f3b8730c1080533d6aa7a0c5", null ],
+    [ "HSM_FLAGS_HULA", "hsm__machine_8h.html#a5b7a2055bd9e1b9e93007d66809350a1", null ],
     [ "hsm_machine_t", "hsm__machine_8h.html#a16797383cfbc9ac2fab7e9c063619f18", null ],
     [ "hsm_context_machine_t", "hsm__machine_8h.html#ace7dfeb29f41e91eee9b16260b3e825b", null ],
     [ "HsmMachine", "hsm__machine_8h.html#a1d929cdbbb5066bd93e2f7f196394230", null ],

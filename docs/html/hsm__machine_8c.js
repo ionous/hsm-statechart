@@ -2,7 +2,7 @@ var hsm__machine_8c =
 [
     [ "PSEUDO_STATE", "hsm__machine_8c.html#ae27734e5582668debb68db973903e2f9", null ],
     [ "HSM_STACK", "hsm__machine_8c.html#a0bd1b1295e7fcd8245f50964e52f4a60", null ],
-    [ "ERROR_IF_NULL", "hsm__machine_8c.html#ac60c7ee57c5f298f1893bb26620e25e4", null ],
+    [ "ERROR_IF_FALSE", "hsm__machine_8c.html#a7eb625feb8c90638a86b0ce39ef77a88", null ],
     [ "PSEUDO_STATE", "hsm__machine_8c.html#ac84d92e7be9f5afa4f1863204dafef0b", null ],
     [ "PSEUDO_STATE", "hsm__machine_8c.html#a8aede98737cb5e60f8ed2c50cd000152", null ],
     [ "PSEUDO_STATE", "hsm__machine_8c.html#ae2cacb5221fc4044f168b46b691c29d7", null ],

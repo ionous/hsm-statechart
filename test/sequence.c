@@ -84,7 +84,7 @@ hsm_bool TestEventSequence( hsm_machine hsm, hsm_state first, const char ** stri
 {
     hsm_bool test_passed= HSM_FALSE;
     hsm_bool params_okay= hsm && first && string && *string;
-    assert( params_okay );
+    HSM_ASSERT( params_okay );
     if (params_okay) {
         hsm_info_t old_callbacks;
         test_sequence_t seq = { string };

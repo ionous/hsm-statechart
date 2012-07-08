@@ -42,7 +42,7 @@ struct hula_machine_rec
 {
     hsm_context_machine_t hsm;
     hula_context_t ctx;
-    int topstate;  // necesary to clone machines
+    int topstate;  // useful for debugging, and to_string
 };
 
 #endif //__HSM_LUA_TYPES_H__

@@ -48,7 +48,7 @@ int watch_lua( int argc, char* argv[] )
     luaL_register( L, "platform", lua_platform );
     HulaRegister( L, 0 );    
     if (hsmStartup()) {
-        int x= luaL_loadfile(L, "watch.lua");
+        int x= luaL_loadfile(L, "hula//watch.lua");
         res= lua_pcall(L, 0, 1, 0);                 // call the file, we expect one return
         if (res) {
             const char * msg= lua_tostring( L, -1 );

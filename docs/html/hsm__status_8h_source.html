@@ -29,7 +29,7 @@
   <td id="projectlogo"><img alt="Logo" src="hsm-statechart.png"/></td>
   <td style="padding-left: 0.5em;">
    <div id="projectname">hsm-statechart
-   &#160;<span id="projectnumber">0.01</span>
+   &#160;<span id="projectnumber">0.5</span>
    </div>
    <div id="projectbrief">An easy to use hierarchical state machine for C and C++</div>
   </td>
@@ -111,26 +111,26 @@ $(document).ready(function(){initNavTree('hsm__status_8h.html','');});
 <div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define __HSM_STATUS_H__</span></div>
 <div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;<span class="preprocessor"></span></div>
 <div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;</div>
-<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;<span class="keyword">typedef</span> <span class="keyword">struct </span><a class="code" href="hsm__status_8h.html#structhsm__status__rec">hsm_status_rec</a> <a class="code" href="hsm__status_8h.html#structhsm__status__rec">hsm_status_t</a>;</div>
+<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;<span class="keyword">typedef</span> <span class="keyword">struct </span><a class="code" href="hsm__status_8h.html#structhsm__status__rec" title="Structure used for consolidating callback parameters.">hsm_status_rec</a> <a class="code" href="hsm__status_8h.html#structhsm__status__rec" title="Structure used for consolidating callback parameters.">hsm_status_t</a>;</div>
 <div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;</div>
 <div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;<span class="comment">//---------------------------------------------------------------------------</span></div>
-<div class="line"><a name="l00027"></a><span class="lineno"><a class="code" href="hsm__status_8h.html">   27</a></span>&#160;<span class="comment"></span><span class="keyword">struct </span><a class="code" href="hsm__status_8h.html#structhsm__status__rec">hsm_status_rec</a></div>
-<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;{</div>
-<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;    <a class="code" href="hsm__machine_8h.html#structhsm__machine__rec" title="The statemachine object.">hsm_machine</a> hsm;</div>
-<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;    <a class="code" href="hsm__state_8h.html#structhsm__state__rec" title="a state descriptor http://dev.ionous.net/2012/06/state-descriptors.html">hsm_state</a>   state;</div>
-<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;    <a class="code" href="hsm__context_8h.html#structhsm__context__rec" title="A per state instance context object.">hsm_context</a> ctx;</div>
-<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;    <a class="code" href="hsm__forwards_8h.html#ab8e8ab8d2eb97eb5cc6331d85262fb76" title="Pointer to an hsm_event_rec.">hsm_event</a>   evt;</div>
-<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;};</div>
-<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;</div>
-<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;</div>
-<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;<span class="preprocessor">#endif // #ifndef __HSM_STATUS_H__</span></div>
+<div class="line"><a name="l00031"></a><span class="lineno"><a class="code" href="hsm__status_8h.html">   31</a></span>&#160;<span class="comment"></span><span class="keyword">struct </span><a class="code" href="hsm__status_8h.html#structhsm__status__rec" title="Structure used for consolidating callback parameters.">hsm_status_rec</a></div>
+<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;{</div>
+<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;    <a class="code" href="hsm__machine_8h.html#structhsm__machine__rec" title="The statemachine object.">hsm_machine</a> hsm;</div>
+<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;    <a class="code" href="hsm__state_8h.html#structhsm__state__rec" title="a state descriptor http://dev.ionous.net/2012/06/state-descriptors.html">hsm_state</a>   state;</div>
+<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;    <a class="code" href="hsm__context_8h.html#structhsm__context__rec" title="A per state instance context object.">hsm_context</a> ctx;</div>
+<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;    <a class="code" href="hsm__forwards_8h.html#ab8e8ab8d2eb97eb5cc6331d85262fb76" title="Pointer to an hsm_event_rec.">hsm_event</a>   evt;</div>
+<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;};</div>
+<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;</div>
+<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;</div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;<span class="preprocessor">#endif // #ifndef __HSM_STATUS_H__</span></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="dir_6c36b64852547327283732128225c9d7.html">hsm</a></li><li class="navelem"><a class="el" href="hsm__status_8h.html">hsm_status.h</a></li>
-    <li class="footer">Generated on Sun Jul 1 2012 15:02:15 for hsm-statechart by
+    <li class="footer">Generated on Sat Jul 7 2012 22:48:11 for hsm-statechart by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.1.1 </li>
   </ul>

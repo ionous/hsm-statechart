@@ -92,7 +92,8 @@
     <ClCompile Include="watch_lua.c" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="watch.lua" />
+    <None Include="hula\watch.lua" />
+    <None Include="hula\watch.wx.wlua" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

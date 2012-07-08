@@ -31,10 +31,9 @@
  *
  * @section License
  *
- * hsm-statechart is copyright (c) 2012, everMany, LLC and 
- * is licensed under the "New BSD" (BSD 3-Clause) License,
- * except hsm_builder.c which uses hash table code from the University of California, Berkeley and its contributors,
- * and FNVa crc geneneration code. FNVa is in the public domain. See License.txt for complete information.
+ * All code in hsm-statechart copyright (c) 2012, everMany, LLC, and licensed under the "New BSD" (BSD 3-Clause) License,
+ * except hash.c, and hash.h which come from the University of California, Berkeley and its contributors,
+ * and the FNVa crc geneneration code which is in the public domain. See License.txt for complete information.
  */
 #pragma once
 #ifndef __HSM_MACHINE_H__

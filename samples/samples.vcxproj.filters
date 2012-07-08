@@ -13,6 +13,9 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="lua">
+      <UniqueIdentifier>{94f4e638-d79f-40df-94b3-b09a5ec88a22}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="watch.h">
@@ -49,6 +52,11 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="watch.lua" />
+    <None Include="hula\watch.lua">
+      <Filter>lua</Filter>
+    </None>
+    <None Include="hula\watch.wx.wlua">
+      <Filter>lua</Filter>
+    </None>
   </ItemGroup>
 </Project>

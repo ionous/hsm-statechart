@@ -29,7 +29,7 @@
   <td id="projectlogo"><img alt="Logo" src="hsm-statechart.png"/></td>
   <td style="padding-left: 0.5em;">
    <div id="projectname">hsm-statechart
-   &#160;<span id="projectnumber">0.01</span>
+   &#160;<span id="projectnumber">0.5</span>
    </div>
    <div id="projectbrief">An easy to use hierarchical state machine for C and C++</div>
   </td>
@@ -106,24 +106,31 @@ $(document).ready(function(){initNavTree('hula__lib_8h.html','');});
 </div><!--header-->
 <div class="contents">
 <a href="hula__lib_8h.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;</div>
-<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="preprocessor">#pragma once</span></div>
-<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#ifndef __HSM_LUA_LIB_H__</span></div>
-<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define __HSM_LUA_LIB_H__</span></div>
-<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;<span class="preprocessor"></span></div>
-<div class="line"><a name="l00021"></a><span class="lineno"><a class="code" href="hula__lib_8h.html#a8da652ae356bd2fbb2f5315eb1d7035e">   21</a></span>&#160;<span class="preprocessor">#define HULA_LIB        &quot;hsm_statechart&quot;</span></div>
-<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;<span class="preprocessor"></span></div>
-<div class="line"><a name="l00026"></a><span class="lineno"><a class="code" href="hula__lib_8h.html#a363ecc475d7d1922b88ca2a18d912849">   26</a></span>&#160;<span class="preprocessor">#define HULA_METATABLE  &quot;hsm.hula&quot;</span></div>
-<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;<span class="preprocessor"></span></div>
-<div class="line"><a name="l00031"></a><span class="lineno"><a class="code" href="hula__lib_8h.html#a807b7f094e7f3a6092e03611b081f209">   31</a></span>&#160;<span class="preprocessor">#define HULA_EVENT_TEST &quot;is_user_event&quot;   </span></div>
-<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;<span class="preprocessor"></span></div>
-<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;<span class="preprocessor">#endif // #ifndef __HSM_LUA_LIB_H__</span></div>
+<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="preprocessor">#pragma once</span></div>
+<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#ifndef __HSM_LUA_LIB_H__</span></div>
+<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define __HSM_LUA_LIB_H__</span></div>
+<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;<span class="preprocessor"></span></div>
+<div class="line"><a name="l00020"></a><span class="lineno"><a class="code" href="hula__lib_8h.html#a8da652ae356bd2fbb2f5315eb1d7035e">   20</a></span>&#160;<span class="preprocessor">#define HULA_LIB        &quot;hsm_statechart&quot;</span></div>
+<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;<span class="preprocessor"></span></div>
+<div class="line"><a name="l00025"></a><span class="lineno"><a class="code" href="hula__lib_8h.html#a363ecc475d7d1922b88ca2a18d912849">   25</a></span>&#160;<span class="preprocessor">#define HULA_METATABLE  &quot;hsm.hula&quot;</span></div>
+<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;<span class="preprocessor"></span></div>
+<div class="line"><a name="l00030"></a><span class="lineno"><a class="code" href="hula__lib_8h.html#a807b7f094e7f3a6092e03611b081f209">   30</a></span>&#160;<span class="preprocessor">#define HULA_EVENT_TEST &quot;is_user_event&quot;   </span></div>
+<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;<span class="preprocessor"></span></div>
+<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;</div>
+<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;<span class="comment">/*---------------------------------------------------------------------------*/</span></div>
+<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;<span class="comment">/*---------------------------------------------------------------------------*/</span></div>
+<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;</div>
+<div class="line"><a name="l00078"></a><span class="lineno"><a class="code" href="hula__lib_8h.html#a195f5a9d0b832dd1c35ef55662d4ad32">   78</a></span>&#160;<span class="preprocessor">#define HULA_EVENT_NAME    1</span></div>
+<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define HULA_EVENT_PAYLOAD 2</span></div>
+<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;<span class="preprocessor"></span></div>
+<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;<span class="preprocessor">#endif // #ifndef __HSM_LUA_LIB_H__</span></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="dir_6c36b64852547327283732128225c9d7.html">hsm</a></li><li class="navelem"><a class="el" href="dir_9659424d7ed6dfd520a332e018c4f96c.html">hula</a></li><li class="navelem"><a class="el" href="hula__lib_8h.html">hula_lib.h</a></li>
-    <li class="footer">Generated on Sun Jul 1 2012 15:02:15 for hsm-statechart by
+    <li class="footer">Generated on Sat Jul 7 2012 22:48:11 for hsm-statechart by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.1.1 </li>
   </ul>

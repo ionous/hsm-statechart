@@ -1,3 +1,5 @@
+require "hsm_statechart"
+
 ------------------------------------------------------------
 local stop_watch_chart= {
   active= {
@@ -30,7 +32,6 @@ local stop_watch_chart= {
       evt_tick   =
         function(watch, time)
           watch.time= watch.time + time
-          io.write( watch.time, "," )
         end,
     }
   }
@@ -40,8 +41,9 @@ local stop_watch_chart= {
 function run_watch_run()
   print([[Hula's stopwatch sample.
     Keys:
-        '1': reset button
-        '2': generic toggle button]])
+        '1': reset button,
+        '2': generic toggle button,
+        'x': quit.]])
 
   -- create a simple representation of a watch
   local watch= { time = 0 }
@@ -66,8 +68,12 @@ function run_watch_run()
       io.write( "." )
     else
     -- otherwise mimic the passage of time
+      local t= watch.time
       hsm:signal( 'evt_tick', 1 )
       platform.sleep(500)
+      if t ~= watch.time then
+          io.write( watch.time, "," )
+      end          
     end
   end
 end

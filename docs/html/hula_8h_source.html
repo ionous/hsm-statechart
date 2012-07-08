@@ -29,7 +29,7 @@
   <td id="projectlogo"><img alt="Logo" src="hsm-statechart.png"/></td>
   <td style="padding-left: 0.5em;">
    <div id="projectname">hsm-statechart
-   &#160;<span id="projectnumber">0.01</span>
+   &#160;<span id="projectnumber">0.5</span>
    </div>
    <div id="projectbrief">An easy to use hierarchical state machine for C and C++</div>
   </td>
@@ -110,31 +110,33 @@ $(document).ready(function(){initNavTree('hula_8h.html','');});
 <div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#ifndef __HSM_LUA_H__</span></div>
 <div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define __HSM_LUA_H__</span></div>
 <div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;<span class="preprocessor"></span></div>
-<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;<span class="keyword">typedef</span> <span class="keyword">struct </span>lua_State lua_State;</div>
-<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;<span class="keyword">typedef</span> <span class="keyword">const</span> <span class="keywordtype">char</span> *  hula_error;</div>
-<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;</div>
-<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;<span class="preprocessor">#ifdef WIN32</span></div>
-<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#pragma comment(lib, &quot;lua51.lib&quot;)</span></div>
-<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#endif</span></div>
-<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;<span class="preprocessor"></span></div>
-<div class="line"><a name="l00033"></a><span class="lineno"><a class="code" href="hula_8h.html#a332a795da59d5c7b0c4308bdf6d13b46">   33</a></span>&#160;<span class="keyword">typedef</span> hsm_bool (*<a class="code" href="hula_8h.html#a332a795da59d5c7b0c4308bdf6d13b46" title="Control whether the event being processed matches the passed lua defined event.">hula_callback_is_event</a>)( lua_State*L, <a class="code" href="hsm__status_8h.html#structhsm__status__rec">hsm_status</a> status, <span class="keyword">const</span> <span class="keywordtype">char</span> * eventname );</div>
-<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;</div>
-<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;hula_error <a class="code" href="hula_8c.html#ab7c72adc2621b45e9da911e423672784" title="Create an hsm-statechart state from a lua state description.">HulaBuildState</a>( lua_State*L, <span class="keywordtype">int</span> idx, <span class="keywordtype">int</span> *pId );</div>
-<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;</div>
-<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;hula_error <a class="code" href="hula_8c.html#a4e2c1680d59b39dad3c4d5834e00c858" title="Create an hsm-statechart state from a lua state description.">HulaBuildNamedState</a>( lua_State*L, <span class="keywordtype">int</span> idx, <span class="keyword">const</span> <span class="keywordtype">char</span> * name, <span class="keywordtype">int</span> namelen, <span class="keywordtype">int</span> *pId );</div>
-<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;</div>
-<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;<span class="keywordtype">void</span> <a class="code" href="hula_8h.html#a6d08a594ed624d9968b935489603bc33" title="Create the &quot;hsm_statechart&quot; type for using hierarchical statemachines in lua.">HulaRegister</a>( lua_State* L, <a class="code" href="hula_8h.html#a332a795da59d5c7b0c4308bdf6d13b46" title="Control whether the event being processed matches the passed lua defined event.">hula_callback_is_event</a> is_user_event );</div>
-<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;</div>
-<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;<span class="keywordtype">void</span> <a class="code" href="hula_8h.html#a9e5e15ea9c174d372fcd5b780bca9f9f" title="Same as HulaRegister but allows user code to rename &quot;hsm_statechart&quot; to something else...">HulaNamedRegister</a>( lua_State* L, <span class="keyword">const</span> <span class="keywordtype">char</span> * <span class="keyword">typename</span>, <a class="code" href="hula_8h.html#a332a795da59d5c7b0c4308bdf6d13b46" title="Control whether the event being processed matches the passed lua defined event.">hula_callback_is_event</a> is_user_event );</div>
-<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;</div>
-<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;<span class="preprocessor">#endif // #ifndef __HSM_LUA_H__</span></div>
+<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;<span class="comment">//#include &lt;hsm/hsm_machine.h&gt;</span></div>
+<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;<span class="comment">//#include &lt;lua.h&gt;</span></div>
+<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;<span class="comment">//#include &lt;lauxlib.h&gt;</span></div>
+<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;</div>
+<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;<span class="keyword">typedef</span> <span class="keyword">struct </span>lua_State lua_State;</div>
+<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;<span class="keyword">typedef</span> <span class="keyword">const</span> <span class="keywordtype">char</span> *  hula_error;</div>
+<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;</div>
+<div class="line"><a name="l00034"></a><span class="lineno"><a class="code" href="hula_8h.html#a07900af54bbd577f5d3e7fe289e70900">   34</a></span>&#160;<span class="keyword">typedef</span> hsm_bool (*<a class="code" href="hula_8h.html#a07900af54bbd577f5d3e7fe289e70900" title="Control whether the event being processed matches an event defined in lua.">hula_callback_is_event</a>)( lua_State*L, <span class="keyword">const</span> <span class="keywordtype">char</span> * spec, <a class="code" href="hsm__forwards_8h.html#ab8e8ab8d2eb97eb5cc6331d85262fb76" title="Pointer to an hsm_event_rec.">hsm_event</a> event );</div>
+<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;</div>
+<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;hsm_bool <a class="code" href="hula_8c.html#a1a669c3dd22043715c4e19b90e3e1373" title="Match an event specification to a triggered event.">HulaMatchEvent</a>( <span class="keyword">const</span> <span class="keywordtype">char</span> * spec, <span class="keyword">const</span> <span class="keywordtype">char</span> *test );</div>
+<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;</div>
+<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;hula_error <a class="code" href="hula_8c.html#ab7c72adc2621b45e9da911e423672784" title="Create an hsm-statechart state from a lua state description.">HulaBuildState</a>( lua_State*L, <span class="keywordtype">int</span> idx, <span class="keywordtype">int</span> *pId );</div>
+<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;</div>
+<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;hula_error <a class="code" href="hula_8c.html#a4e2c1680d59b39dad3c4d5834e00c858" title="Create an hsm-statechart state from a lua state description.">HulaBuildNamedState</a>( lua_State*L, <span class="keywordtype">int</span> idx, <span class="keyword">const</span> <span class="keywordtype">char</span> * name, <span class="keywordtype">int</span> namelen, <span class="keywordtype">int</span> *pId );</div>
+<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;</div>
+<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;<span class="keywordtype">void</span> <a class="code" href="hula_8h.html#a6d08a594ed624d9968b935489603bc33" title="Create the &quot;hsm_statechart&quot; type for using hierarchical statemachines in lua.">HulaRegister</a>( lua_State* L, <a class="code" href="hula_8h.html#a07900af54bbd577f5d3e7fe289e70900" title="Control whether the event being processed matches an event defined in lua.">hula_callback_is_event</a> is_user_event );</div>
+<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;</div>
+<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;<span class="keywordtype">void</span> <a class="code" href="hula_8h.html#a9e5e15ea9c174d372fcd5b780bca9f9f" title="Same as HulaRegister but allows user code to rename &quot;hsm_statechart&quot; to something else...">HulaNamedRegister</a>( lua_State* L, <span class="keyword">const</span> <span class="keywordtype">char</span> * <span class="keyword">typename</span>, <a class="code" href="hula_8h.html#a07900af54bbd577f5d3e7fe289e70900" title="Control whether the event being processed matches an event defined in lua.">hula_callback_is_event</a> is_user_event );</div>
+<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;</div>
+<div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;<span class="preprocessor">#endif // #ifndef __HSM_LUA_H__</span></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="dir_6c36b64852547327283732128225c9d7.html">hsm</a></li><li class="navelem"><a class="el" href="dir_9659424d7ed6dfd520a332e018c4f96c.html">hula</a></li><li class="navelem"><a class="el" href="hula_8h.html">hula.h</a></li>
-    <li class="footer">Generated on Sun Jul 1 2012 15:02:15 for hsm-statechart by
+    <li class="footer">Generated on Sat Jul 7 2012 22:48:11 for hsm-statechart by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.1.1 </li>
   </ul>

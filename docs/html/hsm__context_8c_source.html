@@ -29,7 +29,7 @@
   <td id="projectlogo"><img alt="Logo" src="hsm-statechart.png"/></td>
   <td style="padding-left: 0.5em;">
    <div id="projectname">hsm-statechart
-   &#160;<span id="projectnumber">0.01</span>
+   &#160;<span id="projectnumber">0.5</span>
    </div>
    <div id="projectbrief">An easy to use hierarchical state machine for C and C++</div>
   </td>
@@ -149,7 +149,7 @@ $(document).ready(function(){initNavTree('hsm__context_8c.html','');});
 <div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;{</div>
 <div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;    <span class="keywordflow">if</span> (stack) {</div>
 <div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;        <span class="comment">// invalid to push NULL once valid data exists</span></div>
-<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;        assert( !stack-&gt;<a class="code" href="hsm__context_8h.html#a74b87d8a36ddc6006b1f4511c8b2b48f" title="most recently added unique context pointer">context</a> || ctx ); </div>
+<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;        <a class="code" href="hsm__types_8h.html#ae90abec415767fe632682dddda6e1567" title="maps to an assert in debug builds compiles out in non-debug builds">HSM_ASSERT</a>( !stack-&gt;<a class="code" href="hsm__context_8h.html#a74b87d8a36ddc6006b1f4511c8b2b48f" title="most recently added unique context pointer">context</a> || ctx ); </div>
 <div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;        <span class="keywordflow">if</span> (ctx &amp;&amp; (stack-&gt;<a class="code" href="hsm__context_8h.html#a74b87d8a36ddc6006b1f4511c8b2b48f" title="most recently added unique context pointer">context</a> != ctx)) {</div>
 <div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;            ctx-&gt;parent    = stack-&gt;<a class="code" href="hsm__context_8h.html#a74b87d8a36ddc6006b1f4511c8b2b48f" title="most recently added unique context pointer">context</a>;</div>
 <div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;            stack-&gt;<a class="code" href="hsm__context_8h.html#a74b87d8a36ddc6006b1f4511c8b2b48f" title="most recently added unique context pointer">context</a> = ctx;</div>
@@ -188,7 +188,7 @@ $(document).ready(function(){initNavTree('hsm__context_8c.html','');});
 <div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;<span class="comment">//---------------------------------------------------------------------------</span></div>
 <div class="line"><a name="l00090"></a><span class="lineno"><a class="code" href="hsm__stack_8h.html#a8204ed8010ccfdddbc715ade452c99a4">   90</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="hsm__context_8c.html#a92505c79691b3926022a74c9657c12bd" title="Initialize the iterator to the most recent state&#39;s context.">HsmContextIterator</a>( <a class="code" href="hsm__stack_8h.html#structhsm__context__iterator__rec" title="Structure to traverse a context stack.">hsm_context_iterator_t</a>* it, <a class="code" href="hsm__context_8h.html#structhsm__context__stack__rec" title="Per state machine instance manager of context data.">hsm_context_stack</a> stack )</div>
 <div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;{</div>
-<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;    assert( it );</div>
+<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;    <a class="code" href="hsm__types_8h.html#ae90abec415767fe632682dddda6e1567" title="maps to an assert in debug builds compiles out in non-debug builds">HSM_ASSERT</a>( it );</div>
 <div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;    <span class="keywordflow">if</span> (it) {</div>
 <div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;        <span class="keywordflow">if</span> (!stack) {</div>
 <div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;            memset( it, 0, <span class="keyword">sizeof</span>(<a class="code" href="hsm__stack_8h.html#structhsm__context__iterator__rec" title="Structure to traverse a context stack.">hsm_context_iterator_t</a>));</div>
@@ -230,7 +230,7 @@ $(document).ready(function(){initNavTree('hsm__context_8c.html','');});
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="dir_6c36b64852547327283732128225c9d7.html">hsm</a></li><li class="navelem"><a class="el" href="hsm__context_8c.html">hsm_context.c</a></li>
-    <li class="footer">Generated on Sun Jul 1 2012 15:02:15 for hsm-statechart by
+    <li class="footer">Generated on Sat Jul 7 2012 22:48:11 for hsm-statechart by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.1.1 </li>
   </ul>

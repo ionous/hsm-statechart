@@ -32,7 +32,7 @@ PROJECT_NAME           = hsm-statechart
 # This could be handy for archiving the generated documentation or 
 # if some version control system is used.
 
-PROJECT_NUMBER         = 0.01
+PROJECT_NUMBER         = 0.5
 
 # Using the PROJECT_BRIEF tag one can provide an optional one line description 
 # for a project that appears at the top of each page and should give viewer 
@@ -45,7 +45,7 @@ PROJECT_BRIEF          = "An easy to use hierarchical state machine for C and C+
 # exceed 55 pixels and the maximum width should not exceed 200 pixels. 
 # Doxygen will copy the logo to the output directory.
 
-PROJECT_LOGO           = ignore/hsm-statechart.png
+PROJECT_LOGO           = C:/Projects/hsm-statechart/docs/hsm-statechart.png
 
 # The OUTPUT_DIRECTORY tag is used to specify the (relative or absolute) 
 # base path where the generated documentation will be put. 
@@ -758,7 +758,7 @@ EXCLUDE_SYMBOLS        = __*
 # directories that contain example code fragments that are included (see 
 # the \include command).
 
-EXAMPLE_PATH           = C:\projects\hsm-statechart\examples
+EXAMPLE_PATH           = C:\projects\hsm-statechart\docs\examples
 
 # If the value of the EXAMPLE_PATH tag contains directories, you can use the 
 # EXAMPLE_PATTERNS tag to specify one or more wildcard pattern (like *.cpp 
@@ -957,7 +957,7 @@ HTML_EXTRA_FILES       =
 # 180 is cyan, 240 is blue, 300 purple, and 360 is red again. 
 # The allowed range is 0 to 359.
 
-HTML_COLORSTYLE_HUE    = 220
+HTML_COLORSTYLE_HUE    = 218
 
 # The HTML_COLORSTYLE_SAT tag controls the purity (or saturation) of 
 # the colors in the HTML output. For a value of 0 the output will use 

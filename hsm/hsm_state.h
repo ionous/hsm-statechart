@@ -53,6 +53,7 @@ typedef hsm_context (*hsm_callback_enter)( hsm_status status );
 
 /**
  * A state's action callback.
+ * Also used for exit actions.
  *
  * @param status Current state of the machine. 
  */

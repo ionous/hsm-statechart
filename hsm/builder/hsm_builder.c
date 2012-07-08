@@ -17,7 +17,7 @@
 #include <stddef.h>
 #include <string.h>
 
-extern const hsm_uint32 HsmLowerTable[];
+extern const unsigned char HsmLowerTable[];
 
 //---------------------------------------------------------------------------
 // FNVa is in the public domain, http://isthe.com/chongo/tech/comp/fnv/
@@ -27,9 +27,10 @@ hsm_uint32 hsmStringHash(const char *string, hsm_uint32 hval)
     const hsm_uint32 prime32= ((hsm_uint32)0x01000193);
     const char *p=string;
     if (p) {
-        hsm_uint32 ch;
+        char ch;
         for (ch=*p; ch; ch=*(++p)) {
-            hval= (hval ^ HsmLowerTable[ch]) * prime32;
+          hsm_uint32 val= (hsm_uint32) HsmLowerTable[ch];
+          hval= (hval ^ val) * prime32;
         }
     }        
     return hval;
@@ -284,7 +285,7 @@ static state_t* NewState( state_t* parent, const char * name, int namelen )
         else {
             // point the name to just have the block of size memory
             char* dest= (char*) ((size_t)state) + sizeof( state_t );
-            assert( name && "namelen needs name" );
+            HSM_ASSERT( name && "namelen needs name" );
             if (name) {
                 strncpy( dest, name, namelen );
                 state->desc.name= dest;
@@ -661,11 +662,11 @@ static hsm_context BuildingStateEnter( hsm_status status )
     hash_entry_t* entry;
     state_t* new_state;
     
-    assert( status->evt->type == _hsm_begin );
+    HSM_ASSERT( status->evt->type == _hsm_begin );
     entry= Hash_CreateEntry( &(builder->hash), evt->id, 0 );
     new_state= NewState( parent, evt->name, evt->namelen );
         
-    assert( new_state && entry->clientData == 0);
+    HSM_ASSERT( new_state && entry->clientData == 0);
     if (new_state && entry->clientData == 0) 
     {
         entry->clientData= new_state;
@@ -821,7 +822,7 @@ guard_t* NewGuardFromEvent( hsm_status status, handler_t* handler )
             guard= NewGuardRaw( handler, event->guard  );
         }
         else {
-            assert(0 && "unexpected event");
+            HSM_ASSERT(0 && "unexpected event");
         }
     }
     return guard;
@@ -833,7 +834,7 @@ static hsm_context BuildingHandlerEnter( hsm_status status )
     state_t* state= Builder_CurrentState( builder );
     guard_t* guard=0;
     handler_t* handler= (handler_t*) NewHandler( state );
-    assert( handler );
+    HSM_ASSERT( handler );
     guard= NewGuardFromEvent( status, handler );
     // keep the original context
     return status->ctx;
@@ -845,11 +846,11 @@ static hsm_state BuildingHandlerEvent( hsm_status status )
     hsm_state ret=NULL;
     builder_t* builder= ((builder_t*)status->ctx);
     state_t* state= Builder_CurrentState( builder );
-    assert(state);
+    HSM_ASSERT(state);
     if (state) {
         // we shouldnt be in this state unless the process is a handler...
         handler_t* handler= (handler_t*) state->process;
-        assert( state->process->flags & ProcessHandler );
+        HSM_ASSERT( state->process->flags & ProcessHandler );
 
         switch (status->evt->type) {
             case _hsm_goto: {
@@ -936,7 +937,7 @@ int hsmShutdown()
 hsm_state hsmResolveId( int id ) 
 {
     hsm_state ret=0;
-    assert( gStartCount );
+    HSM_ASSERT( gStartCount );
     if ( gStartCount && HsmIsRunning(&gMachine.core) ) {
         const hash_entry_t* entry= Hash_FindEntry( &(gBuilder.hash), id );
         ret= (hsm_state) Entry_FinishedBuilding( entry ) ? entry->clientData :  0;
@@ -966,7 +967,7 @@ hsm_bool hsmStart( hsm_machine hsm, const char * name )
 int hsmState( const char * name )
 {
     int ret=0;
-    assert( gStartCount );
+    HSM_ASSERT( gStartCount );
     if ( gStartCount ) {
         hsm_uint32 id= HSM_HASH32( name );
         state_t *current= Builder_CurrentState(&gBuilder);
@@ -1007,7 +1008,7 @@ int hsmBegin( const char * name, int len )
 int hsmBeginId( int id )
 {
     int ret=0;
-    assert( gStartCount );
+    HSM_ASSERT( gStartCount );
     if ( gStartCount ) {
         BeginEvent evt= { _hsm_begin, id };
         if( HsmSignalEvent( &gMachine.core, &evt.core ) ) {
@@ -1021,7 +1022,7 @@ int hsmBeginId( int id )
 //---------------------------------------------------------------------------
 void hsmOnEnterUD( hsm_callback_enter_ud entry, void *enter_data )
 {
-    assert( gStartCount );
+    HSM_ASSERT( gStartCount );
     if ( gStartCount ) {
         EnterEvent evt= { _hsm_enter_ud, entry, enter_data };
         HsmSignalEvent( &gMachine.core, &evt.core );
@@ -1031,7 +1032,7 @@ void hsmOnEnterUD( hsm_callback_enter_ud entry, void *enter_data )
 //---------------------------------------------------------------------------
 void hsmOnEnter( hsm_callback_enter entry )
 {
-    assert( gStartCount );
+    HSM_ASSERT( gStartCount );
     if ( gStartCount ) {
         RawEnterEvent evt= { _hsm_enter_raw, entry };
         HsmSignalEvent( &gMachine.core, &evt.core );
@@ -1041,7 +1042,7 @@ void hsmOnEnter( hsm_callback_enter entry )
 //---------------------------------------------------------------------------
 void hsmOnExit( hsm_callback_action action )
 {
-    assert( gStartCount );
+    HSM_ASSERT( gStartCount );
     if ( gStartCount ) {
         RawActionEvent evt= { _hsm_exit_raw, action };
         HsmSignalEvent( &gMachine.core, &evt.core );
@@ -1050,7 +1051,7 @@ void hsmOnExit( hsm_callback_action action )
 //---------------------------------------------------------------------------
 void hsmOnExitUD( hsm_callback_action_ud action, void *exit_data )
 {
-    assert( gStartCount );
+    HSM_ASSERT( gStartCount );
     if ( gStartCount ) {
         ActionEvent evt= { _hsm_exit_ud, action, exit_data };
         HsmSignalEvent( &gMachine.core, &evt.core );
@@ -1060,7 +1061,7 @@ void hsmOnExitUD( hsm_callback_action_ud action, void *exit_data )
 //---------------------------------------------------------------------------
 void hsmOnEvent( hsm_callback_process_event process )
 {
-    assert( gStartCount );
+    HSM_ASSERT( gStartCount );
     if ( gStartCount ) {
         RawProcessEvent evt= { _hsm_process_raw, process }; 
         HsmSignalEvent( &gMachine.core, &(evt.core) );
@@ -1070,7 +1071,7 @@ void hsmOnEvent( hsm_callback_process_event process )
 //---------------------------------------------------------------------------
 void hsmOnEventUD( hsm_callback_process_ud process, void* process_data )
 {
-    assert( gStartCount );
+    HSM_ASSERT( gStartCount );
     if ( gStartCount ) {
         ProcessEventUd evt= { _hsm_process_ud, process, process_data }; 
         HsmSignalEvent( &gMachine.core, &(evt.core) );
@@ -1080,7 +1081,7 @@ void hsmOnEventUD( hsm_callback_process_ud process, void* process_data )
 //---------------------------------------------------------------------------
 void hsmIf( hsm_callback_guard guard )
 {
-    assert( gStartCount );
+    HSM_ASSERT( gStartCount );
     if ( gStartCount ) {
         RawGuardEvent evt= { _hsm_guard_raw, 0, guard }; 
         HsmSignalEvent( &gMachine.core, &(evt.core.core) );
@@ -1090,7 +1091,7 @@ void hsmIf( hsm_callback_guard guard )
 //---------------------------------------------------------------------------
 void hsmIfUD( hsm_callback_guard_ud guard, void *guard_data )
 {
-    assert( gStartCount );
+    HSM_ASSERT( gStartCount );
     if ( gStartCount ) {
         GuardEventUD evt= { _hsm_guard_ud, 0, guard, guard_data }; 
         HsmSignalEvent( &gMachine.core, &(evt.core.core) );
@@ -1100,7 +1101,7 @@ void hsmIfUD( hsm_callback_guard_ud guard, void *guard_data )
 //---------------------------------------------------------------------------
 void hsmAndUD( hsm_callback_guard_ud guard, void *guard_data )
 {
-    assert( gStartCount );
+    HSM_ASSERT( gStartCount );
     if ( gStartCount ) {
         GuardEventUD evt= { _hsm_guard_ud, HSM_TRUE, guard, guard_data }; 
         HsmSignalEvent( &gMachine.core, &(evt.core.core) );
@@ -1116,7 +1117,7 @@ void hsmGoto( const char * name )
 //---------------------------------------------------------------------------
 void hsmGotoId( int id )
 {
-    assert( gStartCount );
+    HSM_ASSERT( gStartCount );
     if ( gStartCount ) {
         StateEvent evt= { _hsm_goto, id };
         HsmSignalEvent( &gMachine.core, &evt.core );
@@ -1126,7 +1127,7 @@ void hsmGotoId( int id )
 //---------------------------------------------------------------------------
 void hsmRunUD( hsm_callback_action_ud action, void *action_data )
 {
-    assert( gStartCount );
+    HSM_ASSERT( gStartCount );
     if ( gStartCount ) {
         ActionEvent evt= { _hsm_action_ud, action, action_data }; 
         HsmSignalEvent( &gMachine.core, &evt.core );
@@ -1136,7 +1137,7 @@ void hsmRunUD( hsm_callback_action_ud action, void *action_data )
 //---------------------------------------------------------------------------
 void hsmEnd()
 {
-    assert( gStartCount );
+    HSM_ASSERT( gStartCount );
     if ( gStartCount ) {
         BuildEvent evt= { _hsm_end };
         HsmSignalEvent( &gMachine.core, &evt );

@@ -29,7 +29,7 @@
   <td id="projectlogo"><img alt="Logo" src="hsm-statechart.png"/></td>
   <td style="padding-left: 0.5em;">
    <div id="projectname">hsm-statechart
-   &#160;<span id="projectnumber">0.01</span>
+   &#160;<span id="projectnumber">0.5</span>
    </div>
    <div id="projectbrief">An easy to use hierarchical state machine for C and C++</div>
   </td>
@@ -112,6 +112,8 @@ $(document).ready(function(){initNavTree('hula_8c.html','');});
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2><a name="func-members"></a>
 Functions</h2></td></tr>
+<tr class="memitem:a1a669c3dd22043715c4e19b90e3e1373"><td class="memItemLeft" align="right" valign="top">hsm_bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="hula_8c.html#a1a669c3dd22043715c4e19b90e3e1373">HulaMatchEvent</a> (const char *spec, const char *test)</td></tr>
+<tr class="memdesc:a1a669c3dd22043715c4e19b90e3e1373"><td class="mdescLeft">&#160;</td><td class="mdescRight">Match an event specification to a triggered event.  <a href="#a1a669c3dd22043715c4e19b90e3e1373"></a><br/></td></tr>
 <tr class="memitem:ab7c72adc2621b45e9da911e423672784"><td class="memItemLeft" align="right" valign="top">hula_error&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="hula_8c.html#ab7c72adc2621b45e9da911e423672784">HulaBuildState</a> (lua_State *L, int chartidx, int *pid)</td></tr>
 <tr class="memdesc:ab7c72adc2621b45e9da911e423672784"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create an hsm-statechart state from a lua state description.  <a href="#ab7c72adc2621b45e9da911e423672784"></a><br/></td></tr>
 <tr class="memitem:a4e2c1680d59b39dad3c4d5834e00c858"><td class="memItemLeft" align="right" valign="top">hula_error&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="hula_8c.html#a4e2c1680d59b39dad3c4d5834e00c858">HulaBuildNamedState</a> (lua_State *L, int idx, const char *name, int namelen, int *pid)</td></tr>
@@ -121,6 +123,47 @@ Functions</h2></td></tr>
 <div class="textblock">
 <p>Definition in file <a class="el" href="hula_8c_source.html">hula.c</a>.</p>
 </div><hr/><h2>Function Documentation</h2>
+<a class="anchor" id="a1a669c3dd22043715c4e19b90e3e1373"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">hsm_bool HulaMatchEvent </td>
+          <td>(</td>
+          <td class="paramtype">const char *&#160;</td>
+          <td class="paramname"><em>spec</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const char *&#160;</td>
+          <td class="paramname"><em>test</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Match an event specification to a triggered event. </p>
+<p>The matching takes into account hierarchical events. This behavior is the default behavior of lua statecharts, user code can customize this behavior via hula_callback_is_event.</p>
+<dl class="params"><dt>Parameters:</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">spec</td><td>Event name specified in the lua defined statechart. </td></tr>
+    <tr><td class="paramname">test</td><td>Event name signaled by lua. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns:</dt><dd>HSM_TRUE if they match</dd></dl>
+<dl class="section see"><dt>See also:</dt><dd><a class="el" href="hula_8h.html#a07900af54bbd577f5d3e7fe289e70900" title="Control whether the event being processed matches an event defined in lua.">hula_callback_is_event</a></dd></dl>
+<p>event.item &lt;- specified event(s) we want to handle event.item.click &lt;- a triggered event we match event.item &lt;- another match event.mouse.drag &lt;- no match event.items &lt;- no match event &lt;- no match </p>
+
+<p>Definition at line <a class="el" href="hula_8c_source.html#l00321">321</a> of file <a class="el" href="hula_8c_source.html">hula.c</a>.</p>
+
+</div>
+</div>
 <a class="anchor" id="ab7c72adc2621b45e9da911e423672784"></a>
 <div class="memitem">
 <div class="memproto">
@@ -165,7 +208,7 @@ Functions</h2></td></tr>
 <div class="fragment"><div class="line">      top_state_example= { top_state_example_name= {...} }</div>
 </div><!-- fragment --><dl class="section see"><dt>See also:</dt><dd><a class="el" href="hsm__builder_8h.html#a6fcf2030bd45065a782c496502ab7ac4" title="Define a named state.">hsmBegin</a>, <a class="el" href="hula_8h.html#a3f729e51c6187caa82d7adf2a618ceac" title="Create an hsm-statechart state from a lua state description.">HulaBuildNamedState</a> </dd></dl>
 
-<p>Definition at line <a class="el" href="hula_8c_source.html#l00590">590</a> of file <a class="el" href="hula_8c_source.html">hula.c</a>.</p>
+<p>Definition at line <a class="el" href="hula_8c_source.html#l00601">601</a> of file <a class="el" href="hula_8c_source.html">hula.c</a>.</p>
 
 </div>
 </div>
@@ -227,7 +270,7 @@ Functions</h2></td></tr>
 <dl class="section return"><dt>Returns:</dt><dd>error code</dd></dl>
 <dl class="section see"><dt>See also:</dt><dd><a class="el" href="hsm__builder_8h.html#a6fcf2030bd45065a782c496502ab7ac4" title="Define a named state.">hsmBegin</a>, <a class="el" href="hula_8h.html#ae4d3c25d3fea8dfffb7e6cc73e5b97aa" title="Create an hsm-statechart state from a lua state description.">HulaBuildState</a> </dd></dl>
 
-<p>Definition at line <a class="el" href="hula_8c_source.html#l00630">630</a> of file <a class="el" href="hula_8c_source.html">hula.c</a>.</p>
+<p>Definition at line <a class="el" href="hula_8c_source.html#l00646">646</a> of file <a class="el" href="hula_8c_source.html">hula.c</a>.</p>
 
 </div>
 </div>
@@ -237,7 +280,7 @@ Functions</h2></td></tr>
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="dir_6c36b64852547327283732128225c9d7.html">hsm</a></li><li class="navelem"><a class="el" href="dir_9659424d7ed6dfd520a332e018c4f96c.html">hula</a></li><li class="navelem"><a class="el" href="hula_8c.html">hula.c</a></li>
-    <li class="footer">Generated on Sun Jul 1 2012 15:02:16 for hsm-statechart by
+    <li class="footer">Generated on Sat Jul 7 2012 22:48:11 for hsm-statechart by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.1.1 </li>
   </ul>

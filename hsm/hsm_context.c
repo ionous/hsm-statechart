@@ -50,7 +50,7 @@ void HsmContextPush( hsm_context_stack stack, hsm_context ctx )
 {
     if (stack) {
         // invalid to push NULL once valid data exists
-        assert( !stack->context || ctx ); 
+        HSM_ASSERT( !stack->context || ctx ); 
         if (ctx && (stack->context != ctx)) {
             ctx->parent    = stack->context;
             stack->context = ctx;
@@ -89,7 +89,7 @@ hsm_context HsmContextPop( hsm_context_stack stack )
 //---------------------------------------------------------------------------
 void HsmContextIterator( hsm_context_iterator_t* it, hsm_context_stack stack )
 {
-    assert( it );
+    HSM_ASSERT( it );
     if (it) {
         if (!stack) {
             memset( it, 0, sizeof(hsm_context_iterator_t));

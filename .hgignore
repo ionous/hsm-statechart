@@ -10,6 +10,9 @@ ignore/*
 *.opensdf
 hsm-statechart*.zip
 *.obj
+*.dll
+*.def
+*.exp
 *.lib
 build/*
 hsm-statechart.xcodeproj/*.*user
