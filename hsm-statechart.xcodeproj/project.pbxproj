@@ -1,0 +1,274 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 45;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		859E0A39158862B400B521FD /* hsm_context.c in Sources */ = {isa = PBXBuildFile; fileRef = 859E0A06158862B400B521FD /* hsm_context.c */; };
+		859E0A3A158862B400B521FD /* hsm_machine.c in Sources */ = {isa = PBXBuildFile; fileRef = 859E0A09158862B400B521FD /* hsm_machine.c */; };
+		859E0A3B158862B400B521FD /* main.c in Sources */ = {isa = PBXBuildFile; fileRef = 859E0A17158862B400B521FD /* main.c */; };
+		859E0A3C158862B400B521FD /* darwin_platform.c in Sources */ = {isa = PBXBuildFile; fileRef = 859E0A18158862B400B521FD /* darwin_platform.c */; };
+		859E0A3D158862B400B521FD /* watch.c in Sources */ = {isa = PBXBuildFile; fileRef = 859E0A1C158862B400B521FD /* watch.c */; };
+		859E0A3E158862B400B521FD /* watch1_enum_events.c in Sources */ = {isa = PBXBuildFile; fileRef = 859E0A1E158862B400B521FD /* watch1_enum_events.c */; };
+		859E0A3F158862B400B521FD /* watch1_named_events.c in Sources */ = {isa = PBXBuildFile; fileRef = 859E0A1F158862B400B521FD /* watch1_named_events.c */; };
+		8DD76FB00486AB0100D96B5E /* hsm-statechart.1 in CopyFiles */ = {isa = PBXBuildFile; fileRef = C6A0FF2C0290799A04C91782 /* hsm-statechart.1 */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		8DD76FAF0486AB0100D96B5E /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 8;
+			dstPath = /usr/share/man/man1/;
+			dstSubfolderSpec = 0;
+			files = (
+				8DD76FB00486AB0100D96B5E /* hsm-statechart.1 in CopyFiles */,
+			);
+			runOnlyForDeploymentPostprocessing = 1;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		859E0A06158862B400B521FD /* hsm_context.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = hsm_context.c; sourceTree = "<group>"; };
+		859E0A07158862B400B521FD /* hsm_context.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = hsm_context.h; sourceTree = "<group>"; };
+		859E0A08158862B400B521FD /* hsm_info.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = hsm_info.h; sourceTree = "<group>"; };
+		859E0A09158862B400B521FD /* hsm_machine.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = hsm_machine.c; sourceTree = "<group>"; };
+		859E0A0A158862B400B521FD /* hsm_machine.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = hsm_machine.h; sourceTree = "<group>"; };
+		859E0A0B158862B400B521FD /* hsm_stack.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = hsm_stack.h; sourceTree = "<group>"; };
+		859E0A0C158862B400B521FD /* hsm_forwards.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = hsm_forwards.h; sourceTree = "<group>"; };
+		859E0A0D158862B400B521FD /* license.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = license.txt; sourceTree = "<group>"; };
+		859E0A0E158862B400B521FD /* hsm-statechart.1 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.man; path = "hsm-statechart.1"; sourceTree = "<group>"; };
+		859E0A16158862B400B521FD /* license.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = license.txt; sourceTree = "<group>"; };
+		859E0A17158862B400B521FD /* main.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = main.c; sourceTree = "<group>"; };
+		859E0A18158862B400B521FD /* darwin_platform.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = darwin_platform.c; sourceTree = "<group>"; };
+		859E0A19158862B400B521FD /* platform.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = platform.h; sourceTree = "<group>"; };
+		859E0A1A158862B400B521FD /* test.vcxproj */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = test.vcxproj; sourceTree = "<group>"; };
+		859E0A1B158862B400B521FD /* test.vcxproj.filters */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = test.vcxproj.filters; sourceTree = "<group>"; };
+		859E0A1C158862B400B521FD /* watch.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = watch.c; sourceTree = "<group>"; };
+		859E0A1D158862B400B521FD /* watch.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = watch.h; sourceTree = "<group>"; };
+		859E0A1E158862B400B521FD /* watch1_enum_events.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = watch1_enum_events.c; sourceTree = "<group>"; };
+		859E0A1F158862B400B521FD /* watch1_named_events.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = watch1_named_events.c; sourceTree = "<group>"; };
+		8DD76FB20486AB0100D96B5E /* hsm-statechart */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "hsm-statechart"; sourceTree = BUILT_PRODUCTS_DIR; };
+		C6A0FF2C0290799A04C91782 /* hsm-statechart.1 */ = {isa = PBXFileReference; lastKnownFileType = text.man; path = "hsm-statechart.1"; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		8DD76FAD0486AB0100D96B5E /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		08FB7794FE84155DC02AAC07 /* hsm-statechart */ = {
+			isa = PBXGroup;
+			children = (
+				859E09CC158862B300B521FD /* hsm-statechart */,
+				C6A0FF2B0290797F04C91782 /* Documentation */,
+				1AB674ADFE9D54B511CA2CBB /* Products */,
+			);
+			name = "hsm-statechart";
+			sourceTree = "<group>";
+		};
+		1AB674ADFE9D54B511CA2CBB /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				8DD76FB20486AB0100D96B5E /* hsm-statechart */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		859E09CC158862B300B521FD /* hsm-statechart */ = {
+			isa = PBXGroup;
+			children = (
+				859E0A05158862B400B521FD /* hsm */,
+				859E0A0E158862B400B521FD /* hsm-statechart.1 */,
+				859E0A15158862B400B521FD /* test */,
+			);
+			name = "hsm-statechart";
+			sourceTree = "<group>";
+		};
+		859E0A05158862B400B521FD /* hsm */ = {
+			isa = PBXGroup;
+			children = (
+				859E0A06158862B400B521FD /* hsm_context.c */,
+				859E0A07158862B400B521FD /* hsm_context.h */,
+				859E0A08158862B400B521FD /* hsm_info.h */,
+				859E0A09158862B400B521FD /* hsm_machine.c */,
+				859E0A0A158862B400B521FD /* hsm_machine.h */,
+				859E0A0B158862B400B521FD /* hsm_stack.h */,
+				859E0A0C158862B400B521FD /* hsm_forwards.h */,
+				859E0A0D158862B400B521FD /* license.txt */,
+			);
+			path = hsm;
+			sourceTree = "<group>";
+		};
+		859E0A15158862B400B521FD /* test */ = {
+			isa = PBXGroup;
+			children = (
+				859E0A16158862B400B521FD /* license.txt */,
+				859E0A17158862B400B521FD /* main.c */,
+				859E0A18158862B400B521FD /* darwin_platform.c */,
+				859E0A19158862B400B521FD /* platform.h */,
+				859E0A1A158862B400B521FD /* test.vcxproj */,
+				859E0A1B158862B400B521FD /* test.vcxproj.filters */,
+				859E0A1C158862B400B521FD /* watch.c */,
+				859E0A1D158862B400B521FD /* watch.h */,
+				859E0A1E158862B400B521FD /* watch1_enum_events.c */,
+				859E0A1F158862B400B521FD /* watch1_named_events.c */,
+			);
+			path = test;
+			sourceTree = "<group>";
+		};
+		C6A0FF2B0290797F04C91782 /* Documentation */ = {
+			isa = PBXGroup;
+			children = (
+				C6A0FF2C0290799A04C91782 /* hsm-statechart.1 */,
+			);
+			name = Documentation;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		8DD76FA90486AB0100D96B5E /* hsm-statechart */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 1DEB928508733DD80010E9CD /* Build configuration list for PBXNativeTarget "hsm-statechart" */;
+			buildPhases = (
+				8DD76FAB0486AB0100D96B5E /* Sources */,
+				8DD76FAD0486AB0100D96B5E /* Frameworks */,
+				8DD76FAF0486AB0100D96B5E /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "hsm-statechart";
+			productInstallPath = "$(HOME)/bin";
+			productName = "hsm-statechart";
+			productReference = 8DD76FB20486AB0100D96B5E /* hsm-statechart */;
+			productType = "com.apple.product-type.tool";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		08FB7793FE84155DC02AAC07 /* Project object */ = {
+			isa = PBXProject;
+			buildConfigurationList = 1DEB928908733DD80010E9CD /* Build configuration list for PBXProject "hsm-statechart" */;
+			compatibilityVersion = "Xcode 3.1";
+			developmentRegion = English;
+			hasScannedForEncodings = 1;
+			knownRegions = (
+				English,
+				Japanese,
+				French,
+				German,
+			);
+			mainGroup = 08FB7794FE84155DC02AAC07 /* hsm-statechart */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				8DD76FA90486AB0100D96B5E /* hsm-statechart */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		8DD76FAB0486AB0100D96B5E /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				859E0A39158862B400B521FD /* hsm_context.c in Sources */,
+				859E0A3A158862B400B521FD /* hsm_machine.c in Sources */,
+				859E0A3B158862B400B521FD /* main.c in Sources */,
+				859E0A3C158862B400B521FD /* darwin_platform.c in Sources */,
+				859E0A3D158862B400B521FD /* watch.c in Sources */,
+				859E0A3E158862B400B521FD /* watch1_enum_events.c in Sources */,
+				859E0A3F158862B400B521FD /* watch1_named_events.c in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		1DEB928608733DD80010E9CD /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				COPY_PHASE_STRIP = NO;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_FIX_AND_CONTINUE = YES;
+				GCC_MODEL_TUNING = G5;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				INSTALL_PATH = /usr/local/bin;
+				PRODUCT_NAME = "hsm-statechart";
+			};
+			name = Debug;
+		};
+		1DEB928708733DD80010E9CD /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_MODEL_TUNING = G5;
+				INSTALL_PATH = /usr/local/bin;
+				PRODUCT_NAME = "hsm-statechart";
+			};
+			name = Release;
+		};
+		1DEB928A08733DD80010E9CD /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PREBINDING = NO;
+				SDKROOT = macosx10.6;
+			};
+			name = Debug;
+		};
+		1DEB928B08733DD80010E9CD /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				PREBINDING = NO;
+				SDKROOT = macosx10.6;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		1DEB928508733DD80010E9CD /* Build configuration list for PBXNativeTarget "hsm-statechart" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				1DEB928608733DD80010E9CD /* Debug */,
+				1DEB928708733DD80010E9CD /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		1DEB928908733DD80010E9CD /* Build configuration list for PBXProject "hsm-statechart" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				1DEB928A08733DD80010E9CD /* Debug */,
+				1DEB928B08733DD80010E9CD /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 08FB7793FE84155DC02AAC07 /* Project object */;
+}
