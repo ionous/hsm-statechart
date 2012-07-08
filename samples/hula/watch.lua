@@ -2,19 +2,22 @@ require "hsm_statechart"
 
 ------------------------------------------------------------
 local stop_watch_chart= {
+  -- each state is represented as a table
+  -- active is the top-most state
   active= {
-    -- each chart has its own watch data
+    -- entry to the active state clears the watch's timer
+    -- the watch is provided by machines using this chart
     entry=
       function(watch) 
         watch.time=0
         return watch
       end,
 
-    -- reset causes a self transition which clears the time,
-    -- no matter which sub-state the chart is in
+    -- reset causes a self transition which re-enters active
+    -- and clears the time no matter which state the machine is in
     evt_reset = 'active',  
 
-    -- watches are stopped by default:
+    -- the active state is stopped by default:
     init = 'stopped',
 
     -- while the watch is stopped: 
@@ -39,7 +42,7 @@ local stop_watch_chart= {
 
 ------------------------------------------------------------
 function run_watch_run()
-  print([[Hula's stopwatch sample.
+  print([[Hula stopwatch sample.
     Keys:
         '1': reset button,
         '2': generic toggle button,

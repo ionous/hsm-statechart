@@ -7,6 +7,7 @@ source = {
 
 description = {
   summary = "State machine engine based on UML statecharts.",
+  maintainer = "ionous",
   detailed = [[
     hsm-statechart is a hierarchical statechart engine, written in C. 
     The Lua extension makes it dead simple to write statemachines: 
@@ -18,12 +19,11 @@ description = {
     Event names map to functions ( or, for simple transitions, directly to a state name ), 
     while states names map to sub-tables.
      
-     Two calls: hsm= HsmStatechart.new( chart ) and hsm.signal( event_name ) 
-     are all that are required to run the statemahine.
+    After defining a statechart, two calls: hsm= hsm_statechart( chart ) and hsm.signal( event_name ) 
+    are all that are need to run the statemachine.
 
-     Statemachines can be used for everything from building roboust text parsers, 
-     to managing the control flow for an application, or even writing AI in games.
-     And, hsm-statechart is completely open source.
+    Statemachines can be used for everything from building roboust text parsers, 
+    to managing the control flow for an application, or even writing AI in games.
    ]],
    homepage = "http://code.google.com/p/hsm-statechart/",
    license = "New BSD License"
