@@ -2,7 +2,7 @@ package = "hsm_statechart"
 version = "0.5-1"
 
 source = {
-  url = "http://..." -- We don't have one yet
+  url = "http://hsm-statechart.googlecode.com/files/hsmstatechart-0.5.tar.gz"
 }
 
 description = {
@@ -36,19 +36,20 @@ dependencies = {
 
 build = {
   type= "builtin",
+  copy_directories = {"samples/hula/"},
   modules = {
     -- note: the module is the dll name
     hsm_statechart = {
-        sources= {
-            "../hsm/hsm_context.c",
-            "../hsm/hsm_machine.c",
-            "../hsm/builder/hash.c",
-            "../hsm/builder/lower.c",
-            "../hsm/builder/hsm_builder.c",
-            "../hsm/hula/hula.c",
-            "../hsm/hula/hula_lib.c",
-        },
-        incdirs= {".."},
+      sources= {
+        "hsm/hsm_context.c",
+        "hsm/hsm_machine.c",
+        "hsm/builder/hash.c",
+        "hsm/builder/lower.c",
+        "hsm/builder/hsm_builder.c",
+        "hsm/hula/hula.c",
+        "hsm/hula/hula_lib.c",
       },
+      incdirs= {"."},
+    },
   },     
 }

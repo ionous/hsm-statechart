@@ -1,3 +1,13 @@
+----------------------------------------------------------------------------
+-- Name:        watch.lua
+-- Purpose:     An command line stop watch that is meant to be run from C.
+--              Relies on platform specific functions not included in the rock.
+--              See: watch.wx.wlua for a runnable version.
+-- Created:     July 2012
+-- Copyright:   Copyright (c) 2012, everMany, LLC. All rights reserved.
+-- Licence:     hsm-statechart
+----------------------------------------------------------------------------
+
 require "hsm_statechart"
 
 ------------------------------------------------------------

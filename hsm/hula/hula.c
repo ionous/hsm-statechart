@@ -292,12 +292,12 @@ static hsm_context HulaEnterUD( hsm_status status, void * user_data )
     int err= lua_unpack_and_pcall( L, (status->hsm->flags & HSM_FLAGS_HULA), event_table, HULA_EVENT_NAME, 1 ); 
     if (err) {
       const char * msg=lua_tostring(L,-1);
-      lua_pop(L,1);//? TODO: and do what on error exactly?
+      lua_pop(L,1);//? TODO: we only get here if we are running a lua defined chart from c, but what on error exactly?
     }  
     else {
       // provide a "shortcut" so the lua entry handler doesnt have to remember to return the parent ctx:
       // if they return nil, then we just replace it for them.
-      if (lua_isnil(L,-1)&& (!parent_ctx)) {
+      if (lua_isnil(L,-1) && parent_ctx) {
         lua_pop(L,-1);
         lua_rawgeti( L, LUA_REGISTRYINDEX, parent_ctx->lua_ref );
       }
@@ -466,7 +466,7 @@ const char * EXIT  = "exit";
  * expects table is @-1, 
  * we're going to assume its filled with states and stuff
  */
-static hula_error _HulaBuildState( lua_State*L, const int table, nstring_t statename ) 
+static hula_error HulaBuildBody( lua_State*L, const int table, nstring_t statename ) 
 {
   hula_error err= 0;
   if (!NSTRING(statename)) {
@@ -495,11 +495,11 @@ static hula_error _HulaBuildState( lua_State*L, const int table, nstring_t state
       // ie. the right side of { 's1'= {} }
       lua_gettable( L, table );        
       if (!(initState= hsmBegin( initname.string, initname.len ))) {
-        err= "_HulaBuildState: hsmBegin initial state";
+        err= "HulaBuildBody: hsmBegin initial state";
       }
       else {
         const int check= lua_gettop(L);
-        err= _HulaBuildState( L, lua_gettop(L), initname );
+        err= HulaBuildBody( L, lua_gettop(L), initname );
         hsmEnd();
         HSM_ASSERT( check == lua_gettop(L) );
       }      
@@ -507,15 +507,18 @@ static hula_error _HulaBuildState( lua_State*L, const int table, nstring_t state
     }
 
     if (!err) {
-      // create a lua table to hold functions
+      // create a table to hold any lua callbacks
       const int state_table= HulaCreateStateTable( L, statename );
 
       // force each and every lua function to have the context management it needs
       hsmOnEnterUD( HulaEnterUD, L );
       hsmOnExit( HulaExit );
 
-      // walk the contents of the source table
+      // walk the contents of the state body
       lua_pushnil(L);
+      // note: { event = undefined_or_misnamed }
+      // is undetectable by this loop b/c the right side value is nil, clears the assigment of event
+      // might consider having a place in the register: HULA_LIB.errors to store build warnings and erros
       while (lua_next(L, table)) {
         nstring_t keyname; 
         const int value_idx= lua_gettop(L);
@@ -541,7 +544,7 @@ static hula_error _HulaBuildState( lua_State*L, const int table, nstring_t state
             }
             else {
               const int check= lua_gettop(L);
-              err= _HulaBuildState( L, value_idx, keyname );
+              err= HulaBuildBody( L, value_idx, keyname );
               HSM_ASSERT( check== lua_gettop(L) );
               hsmEnd(); 
             }
@@ -658,7 +661,7 @@ hula_error HulaBuildNamedState( lua_State*L, int idx, const char * name, int nam
     if (hsmBegin( name, namelen )) {
       const nstring_t nstring= { name, namelen };
       const int check= lua_gettop(L);
-      err= _HulaBuildState( L, idx, nstring );
+      err= HulaBuildBody( L, idx, nstring );
       HSM_ASSERT( check == lua_gettop(L) );
       if (!err) {
         if (pid) *pid=id;

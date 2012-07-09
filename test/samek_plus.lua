@@ -1,26 +1,33 @@
-function table_print (tt, indent, done)
-  done = done or {}
-  indent = indent or 0
-  if type(tt) == "table" then
-    for key, value in pairs (tt) do
+function table_print (tt, indent)
+  local indent = indent or 0
+  if type(tt) ~= "table" then
+    io.write( tt .. "\n" )
+  else
+    local a,d = {}, {}
+    for k,v in next,tt do
+      local str= tostring(k) -- lua cant sort string and numbers together :(
+      a[#a+1]= str
+      d[str]= k
+    end
+    table.sort(a)
+    for _,akey in next, a do
+      local key= d[akey]
+      local value= tt[ key ]
       io.write(string.rep (" ", indent)) -- indent it
-      if type (value) == "table" and not done [value] then
-        done [value] = true
-        io.write(string.format("[%s] => table\n", tostring (key)));
-        io.write(string.rep (" ", indent+4)) -- indent it
-        io.write("(\n");
-        table_print (value, indent + 7, done)
-        io.write(string.rep (" ", indent+4)) -- indent it
-        io.write(")\n");
+      if type (value) == "table" then -- and not done [value] then
+        -- done [value] = true
+        io.write(string.format('["%s"] = {\n', tostring (key)));
+        table_print (value, indent + 2, done)
+        io.write(string.rep (" ", indent)) -- indent it
+        io.write("},\n");
       else
-        io.write(string.format("[%s] => %s\n",
-            tostring (key), tostring(value)))
+        io.write(string.format('["%s"] = %s,\n',
+          tostring (key), tostring(value)))
       end
     end
-  else
-    io.write(tt .. "\n")
   end
 end
+
 
 
 chart= {
