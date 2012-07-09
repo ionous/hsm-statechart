@@ -593,17 +593,17 @@ struct action_event_rec
 };
 
 
-HSM_STATE( Building, HsmTopState, BuildingIdle );
-    HSM_STATE( BuildingIdle, Building, 0 );
-    HSM_STATE_ENTER( BuildingState, Building, BuildingBody );
-        HSM_STATE( BuildingBody, BuildingState, 0 );
-        HSM_STATE_ENTER( BuildingHandler, BuildingState, 0 );
+HSM_STATE( HsmBuilding, HsmTopState, HsmBuildingIdle );
+    HSM_STATE( HsmBuildingIdle, HsmBuilding, 0 );
+    HSM_STATE_ENTER( HsmBuildingState, HsmBuilding, HsmBuildingBody );
+        HSM_STATE( HsmBuildingBody, HsmBuildingState, 0 );
+        HSM_STATE_ENTER( HsmBuildingHandler, HsmBuildingState, 0 );
 
 
 //---------------------------------------------------------------------------
 // Build:
 //---------------------------------------------------------------------------
-static hsm_state BuildingEvent( hsm_status status )
+hsm_state HsmBuildingEvent( hsm_status status )
 {
     hsm_state ret= HsmStateError(); // at the top level, by default, everythings an error.
     builder_t * builder= ((builder_t*)status->ctx);
@@ -613,7 +613,7 @@ static hsm_state BuildingEvent( hsm_status status )
             StateEvent*event=(StateEvent*)status->evt;
             hash_entry_t* entry= Hash_FindEntry( &builder->hash, event->id );
             if (Entry_ReadyToBuild( entry )) {
-                ret= BuildingState();
+                ret= HsmBuildingState();
             }
             else {
                 if (!entry) {
@@ -639,7 +639,7 @@ static hsm_state BuildingEvent( hsm_status status )
 //---------------------------------------------------------------------------
 // Idle:
 //---------------------------------------------------------------------------
-static hsm_state BuildingIdleEvent( hsm_status status )
+hsm_state HsmBuildingIdleEvent( hsm_status status )
 {
     return NULL;  
 }
@@ -647,13 +647,13 @@ static hsm_state BuildingIdleEvent( hsm_status status )
 //---------------------------------------------------------------------------
 // State:
 //---------------------------------------------------------------------------
-static hsm_state BuildingBodyEvent(hsm_status status )
+hsm_state HsmBuildingBodyEvent(hsm_status status )
 {   
     return NULL;
 }
 
 //---------------------------------------------------------------------------
-static hsm_context BuildingStateEnter( hsm_status status )
+hsm_context HsmBuildingStateEnter( hsm_status status )
 {
     builder_t * builder= ((builder_t*)status->ctx);
     BeginEvent * evt= (BeginEvent*)(status->evt);
@@ -694,7 +694,7 @@ static hsm_context BuildingStateEnter( hsm_status status )
  * note: transitioning to BuildingBody() pulls the user out of BuildingHandler if that's where they are
  * without disrupting the fact we are still building a states; it correctly ends the event handler build.
  */
-static hsm_state BuildingStateEvent( hsm_status status )
+hsm_state HsmBuildingStateEvent( hsm_status status )
 {
     hsm_state ret= NULL;
     builder_t * builder= ((builder_t*)status->ctx);
@@ -707,7 +707,7 @@ static hsm_state BuildingStateEvent( hsm_status status )
                 current->desc.enter= RunGenericEnter;
                 current->enter= event->enter;
                 current->enter_ud= event->enter_data;
-                ret= BuildingBody();
+                ret= HsmBuildingBody();
             }
             else {
                 Builder_Error( builder, current->desc.enter ? "enter already specified." : "enter is null." );
@@ -719,7 +719,7 @@ static hsm_state BuildingStateEvent( hsm_status status )
             const RawEnterEvent* event= (const RawEnterEvent*)status->evt;
             if (!current->desc.enter && event->enter) {
                 current->desc.enter= event->enter;
-                ret= BuildingBody();
+                ret= HsmBuildingBody();
             }
             else {
                 Builder_Error( builder, current->desc.enter ? "enter already specified." : "enter is null." );
@@ -731,7 +731,7 @@ static hsm_state BuildingStateEvent( hsm_status status )
             const RawActionEvent* event= (const RawActionEvent*)status->evt;
             if (!current->desc.exit && event->action) {
                 current->desc.exit= event->action;
-                ret= BuildingBody();
+                ret= HsmBuildingBody();
             }
             else {
                 Builder_Error( builder, current->desc.exit ? "exit already specified." : "exit is null." );
@@ -745,7 +745,7 @@ static hsm_state BuildingStateEvent( hsm_status status )
                 current->desc.exit= RunGenericExit;
                 current->exit= event->action;
                 current->exit_ud= event->action_data;
-                ret= BuildingBody();
+                ret= HsmBuildingBody();
             }
             else {
                 Builder_Error( builder, current->desc.exit ? "exit already specified." : "exit is null." );
@@ -757,7 +757,7 @@ static hsm_state BuildingStateEvent( hsm_status status )
             const RawProcessEvent* event= (const RawProcessEvent*)status->evt;
             if (event->process) {
                 NewProcessRaw( current, event->process );
-                ret= BuildingBody();
+                ret= HsmBuildingBody();
             }
             else {
                 Builder_Error( builder, "process is null." );
@@ -769,7 +769,7 @@ static hsm_state BuildingStateEvent( hsm_status status )
             const ProcessEventUd* event= (const ProcessEventUd*)status->evt;
             if (event->process) {
                 NewProcessUD( current, event->process, event->process_data );
-                ret= BuildingBody();
+                ret= HsmBuildingBody();
             }
             else {
                 Builder_Error( builder, "process is null." );
@@ -781,7 +781,7 @@ static hsm_state BuildingStateEvent( hsm_status status )
         case _hsm_guard_raw: 
         case _hsm_guard_ud: 
         {
-            ret= BuildingHandler();
+            ret= HsmBuildingHandler();
         }
         break;
         case _hsm_end: {
@@ -792,11 +792,11 @@ static hsm_state BuildingStateEvent( hsm_status status )
             // ( we dont use !current, b/c of potential containment in external states )
             if (--builder->count==0) {
                 builder->current= 0;
-                ret= Building();
+                ret= HsmBuilding();
             }
             else {
                 builder->current= (state_t*) current->desc.parent;                    
-                ret= BuildingBody();
+                ret= HsmBuildingBody();
             }
         }            
         break;
@@ -808,7 +808,7 @@ static hsm_state BuildingStateEvent( hsm_status status )
 // If, and And: 
 //---------------------------------------------------------------------------
 
-guard_t* NewGuardFromEvent( hsm_status status, handler_t* handler )
+static guard_t* NewGuardFromEvent( hsm_status status, handler_t* handler )
 {
     guard_t* guard=0;
     if (handler) {
@@ -828,7 +828,7 @@ guard_t* NewGuardFromEvent( hsm_status status, handler_t* handler )
     return guard;
 }
 
-static hsm_context BuildingHandlerEnter( hsm_status status )
+hsm_context HsmBuildingHandlerEnter( hsm_status status )
 {
     builder_t * builder= ((builder_t*)status->ctx);
     state_t* state= Builder_CurrentState( builder );
@@ -841,7 +841,7 @@ static hsm_context BuildingHandlerEnter( hsm_status status )
 }
 
 //---------------------------------------------------------------------------
-static hsm_state BuildingHandlerEvent( hsm_status status )
+hsm_state HsmBuildingHandlerEvent( hsm_status status )
 {
     hsm_state ret=NULL;
     builder_t* builder= ((builder_t*)status->ctx);
@@ -917,7 +917,7 @@ int hsmStartup()
 {
     if (!gStartCount) {
         Hash_InitTable( &gBuilder.hash );
-        HsmStart( HsmMachineWithContext( &gMachine, &(gBuilder.ctx) ), Building() );
+        HsmStart( HsmMachineWithContext( &gMachine, &(gBuilder.ctx) ), HsmBuilding() );
     }
     return ++gStartCount;
 }
@@ -940,7 +940,7 @@ hsm_state hsmResolveId( int id )
     HSM_ASSERT( gStartCount );
     if ( gStartCount && HsmIsRunning(&gMachine.core) ) {
         const hash_entry_t* entry= Hash_FindEntry( &(gBuilder.hash), id );
-        ret= (hsm_state) Entry_FinishedBuilding( entry ) ? entry->clientData :  0;
+        ret= Entry_FinishedBuilding( entry ) ? (hsm_state) entry->clientData : (hsm_state) 0;
     }        
     return ret;
 }
