@@ -2,7 +2,7 @@ package = "hsm_statechart"
 version = "0.5-1"
 
 source = {
-  url = "http://hsm-statechart.googlecode.com/files/hsm_statechart-0.5.tar.gz"
+  url = "http://hsm-statechart.googlecode.com/hg/zips/hsm_statechart-0.5.tar.gz"
 }
 
 description = {
