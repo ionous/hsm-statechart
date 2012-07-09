@@ -23,7 +23,7 @@ description = {
     are all that are need to run the statemachine.
 
     Statemachines can be used for everything from building roboust text parsers, 
-    to managing the control flow for an application, or even writing AI in games.
+    to managing the control flow for applications, or even writing AI in games.
    ]],
    homepage = "http://code.google.com/p/hsm-statechart/",
    license = "New BSD License"
