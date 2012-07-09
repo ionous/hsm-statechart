@@ -13,13 +13,14 @@
 
 #include "test.h"
 #include "samek_plus.h"
-#include <hsm\hsm_machine.h>
-#include <hsm\builder\hsm_builder.h>
-#include <hsm\hula\hula.h>
+#include <hsm/hsm_machine.h>
+#include <hsm/builder/hsm_builder.h>
 
 #include <lua.h>
 #include <lauxlib.h>
 #include <lualib.h>
+
+#include <hsm/hula/hula.h>
 
 //---------------------------------------------------------------------------
 /**
@@ -93,7 +94,7 @@ hsm_bool LuaTest()
   lua_State *L= lua_open();
   luaL_openlibs(L);
   if (L) { // darn you missing c-99 features
-    int x= luaL_loadfile(L, "samek_plus.lua");
+    luaL_loadfile(L, "samek_plus.lua");
     int err= lua_pcall(L, 0, 1, 0);         // call the file, we expect one return
     if (err) {
       printf("error in lua script: %d", err);

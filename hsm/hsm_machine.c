@@ -403,7 +403,6 @@ static hsm_bool HsmTransition( hsm_machine hsm, hsm_state source, hsm_state targ
     // change to help simplify lua rocks
     //hsm_state* path_to_target=(hsm_state*) alloca( target->depth * sizeof(hsm_state) );
     hsm_state path_to_target[ HSM_MAX_DEPTH ];
-    hsm_bool external_transition= 0;
     //ERROR_IF_FALSE( path_to_target, "out of space" );
     ERROR_IF_FALSE( target->depth < HSM_MAX_DEPTH, "transition max depth exceeded" );
  

@@ -11,6 +11,7 @@
 #include <stdio.h>
 
 #ifdef TEST_LUA
+#include <lua.h>
 #include <hsm/hula/hula.h>
 #endif
 

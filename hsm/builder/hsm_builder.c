@@ -658,7 +658,6 @@ hsm_context HsmBuildingStateEnter( hsm_status status )
     builder_t * builder= ((builder_t*)status->ctx);
     BeginEvent * evt= (BeginEvent*)(status->evt);
     state_t* parent= Builder_CurrentState( builder );     // parent of the new state is the current state
-    BeginEvent*event=(BeginEvent*)status->evt;
     hash_entry_t* entry;
     state_t* new_state;
     
@@ -970,7 +969,6 @@ int hsmState( const char * name )
     HSM_ASSERT( gStartCount );
     if ( gStartCount ) {
         hsm_uint32 id= HSM_HASH32( name );
-        state_t *current= Builder_CurrentState(&gBuilder);
         /** 
          * note: i actually tried pre-allocating hsmState objects
          * and storing those in hsmGoto, but if the user code is using string names, 
