@@ -7,13 +7,21 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		8599930615AB98FE0076FC75 /* hash.c in Sources */ = {isa = PBXBuildFile; fileRef = 859992F815AB98FE0076FC75 /* hash.c */; };
+		8599930715AB98FE0076FC75 /* hsm_builder.c in Sources */ = {isa = PBXBuildFile; fileRef = 859992FA15AB98FE0076FC75 /* hsm_builder.c */; };
+		8599930815AB98FE0076FC75 /* lower.c in Sources */ = {isa = PBXBuildFile; fileRef = 859992FC15AB98FE0076FC75 /* lower.c */; };
+		8599930915AB98FE0076FC75 /* hula.c in Sources */ = {isa = PBXBuildFile; fileRef = 8599930115AB98FE0076FC75 /* hula.c */; };
+		8599930A15AB98FE0076FC75 /* hula_lib.c in Sources */ = {isa = PBXBuildFile; fileRef = 8599930315AB98FE0076FC75 /* hula_lib.c */; };
+		8599934615AB9C700076FC75 /* liblua5.1.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8599934315AB9C700076FC75 /* liblua5.1.a */; };
+		8599934715AB9C700076FC75 /* liblua5.1.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 8599934415AB9C700076FC75 /* liblua5.1.dylib */; };
+		8599935315AB9C930076FC75 /* lua_test.c in Sources */ = {isa = PBXBuildFile; fileRef = 8599934A15AB9C930076FC75 /* lua_test.c */; };
+		8599935415AB9C930076FC75 /* samek_plus_builder.c in Sources */ = {isa = PBXBuildFile; fileRef = 8599934B15AB9C930076FC75 /* samek_plus_builder.c */; };
+		8599935515AB9C930076FC75 /* samek_plus_test.c in Sources */ = {isa = PBXBuildFile; fileRef = 8599934C15AB9C930076FC75 /* samek_plus_test.c */; };
+		8599935615AB9C930076FC75 /* samek_plus.c in Sources */ = {isa = PBXBuildFile; fileRef = 8599934D15AB9C930076FC75 /* samek_plus.c */; };
+		8599935715AB9C930076FC75 /* sequence.c in Sources */ = {isa = PBXBuildFile; fileRef = 8599935015AB9C930076FC75 /* sequence.c */; };
+		8599935815AB9C930076FC75 /* test.c in Sources */ = {isa = PBXBuildFile; fileRef = 8599935115AB9C930076FC75 /* test.c */; };
 		859E0A39158862B400B521FD /* hsm_context.c in Sources */ = {isa = PBXBuildFile; fileRef = 859E0A06158862B400B521FD /* hsm_context.c */; };
 		859E0A3A158862B400B521FD /* hsm_machine.c in Sources */ = {isa = PBXBuildFile; fileRef = 859E0A09158862B400B521FD /* hsm_machine.c */; };
-		859E0A3B158862B400B521FD /* main.c in Sources */ = {isa = PBXBuildFile; fileRef = 859E0A17158862B400B521FD /* main.c */; };
-		859E0A3C158862B400B521FD /* darwin_platform.c in Sources */ = {isa = PBXBuildFile; fileRef = 859E0A18158862B400B521FD /* darwin_platform.c */; };
-		859E0A3D158862B400B521FD /* watch.c in Sources */ = {isa = PBXBuildFile; fileRef = 859E0A1C158862B400B521FD /* watch.c */; };
-		859E0A3E158862B400B521FD /* watch1_enum_events.c in Sources */ = {isa = PBXBuildFile; fileRef = 859E0A1E158862B400B521FD /* watch1_enum_events.c */; };
-		859E0A3F158862B400B521FD /* watch1_named_events.c in Sources */ = {isa = PBXBuildFile; fileRef = 859E0A1F158862B400B521FD /* watch1_named_events.c */; };
 		8DD76FB00486AB0100D96B5E /* hsm-statechart.1 in CopyFiles */ = {isa = PBXBuildFile; fileRef = C6A0FF2C0290799A04C91782 /* hsm-statechart.1 */; };
 /* End PBXBuildFile section */
 
@@ -31,6 +39,32 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		859992F815AB98FE0076FC75 /* hash.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = hash.c; sourceTree = "<group>"; };
+		859992F915AB98FE0076FC75 /* hash.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = hash.h; sourceTree = "<group>"; };
+		859992FA15AB98FE0076FC75 /* hsm_builder.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = hsm_builder.c; sourceTree = "<group>"; };
+		859992FB15AB98FE0076FC75 /* hsm_builder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = hsm_builder.h; sourceTree = "<group>"; };
+		859992FC15AB98FE0076FC75 /* lower.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = lower.c; sourceTree = "<group>"; };
+		859992FD15AB98FE0076FC75 /* hsm_state.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = hsm_state.h; path = hsm/hsm_state.h; sourceTree = "<group>"; };
+		859992FE15AB98FE0076FC75 /* hsm_status.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = hsm_status.h; path = hsm/hsm_status.h; sourceTree = "<group>"; };
+		859992FF15AB98FE0076FC75 /* hsm_types.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = hsm_types.h; path = hsm/hsm_types.h; sourceTree = "<group>"; };
+		8599930115AB98FE0076FC75 /* hula.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = hula.c; sourceTree = "<group>"; };
+		8599930215AB98FE0076FC75 /* hula.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = hula.h; sourceTree = "<group>"; };
+		8599930315AB98FE0076FC75 /* hula_lib.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = hula_lib.c; sourceTree = "<group>"; };
+		8599930415AB98FE0076FC75 /* hula_lib.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = hula_lib.h; sourceTree = "<group>"; };
+		8599930515AB98FE0076FC75 /* hula_types.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = hula_types.h; sourceTree = "<group>"; };
+		8599934315AB9C700076FC75 /* liblua5.1.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = liblua5.1.a; path = bin/liblua5.1.a; sourceTree = "<group>"; };
+		8599934415AB9C700076FC75 /* liblua5.1.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = liblua5.1.dylib; path = bin/liblua5.1.dylib; sourceTree = "<group>"; };
+		8599934515AB9C700076FC75 /* liblua5.1.so */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.bundle"; name = liblua5.1.so; path = bin/liblua5.1.so; sourceTree = "<group>"; };
+		8599934A15AB9C930076FC75 /* lua_test.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = lua_test.c; sourceTree = "<group>"; };
+		8599934B15AB9C930076FC75 /* samek_plus_builder.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = samek_plus_builder.c; sourceTree = "<group>"; };
+		8599934C15AB9C930076FC75 /* samek_plus_test.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = samek_plus_test.c; sourceTree = "<group>"; };
+		8599934D15AB9C930076FC75 /* samek_plus.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = samek_plus.c; sourceTree = "<group>"; };
+		8599934E15AB9C930076FC75 /* samek_plus.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = samek_plus.h; sourceTree = "<group>"; };
+		8599934F15AB9C930076FC75 /* samek_plus.lua */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = samek_plus.lua; sourceTree = "<group>"; };
+		8599935015AB9C930076FC75 /* sequence.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = sequence.c; sourceTree = "<group>"; };
+		8599935115AB9C930076FC75 /* test.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = test.c; sourceTree = "<group>"; };
+		8599935215AB9C930076FC75 /* test.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = test.h; sourceTree = "<group>"; };
+		8599939615AB9F950076FC75 /* samek_plus.lua */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = samek_plus.lua; path = test/samek_plus.lua; sourceTree = "<group>"; };
 		859E0A06158862B400B521FD /* hsm_context.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = hsm_context.c; sourceTree = "<group>"; };
 		859E0A07158862B400B521FD /* hsm_context.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = hsm_context.h; sourceTree = "<group>"; };
 		859E0A08158862B400B521FD /* hsm_info.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = hsm_info.h; sourceTree = "<group>"; };
@@ -38,18 +72,10 @@
 		859E0A0A158862B400B521FD /* hsm_machine.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = hsm_machine.h; sourceTree = "<group>"; };
 		859E0A0B158862B400B521FD /* hsm_stack.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = hsm_stack.h; sourceTree = "<group>"; };
 		859E0A0C158862B400B521FD /* hsm_forwards.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = hsm_forwards.h; sourceTree = "<group>"; };
-		859E0A0D158862B400B521FD /* license.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = license.txt; sourceTree = "<group>"; };
 		859E0A0E158862B400B521FD /* hsm-statechart.1 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.man; path = "hsm-statechart.1"; sourceTree = "<group>"; };
 		859E0A16158862B400B521FD /* license.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = license.txt; sourceTree = "<group>"; };
-		859E0A17158862B400B521FD /* main.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = main.c; sourceTree = "<group>"; };
-		859E0A18158862B400B521FD /* darwin_platform.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = darwin_platform.c; sourceTree = "<group>"; };
-		859E0A19158862B400B521FD /* platform.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = platform.h; sourceTree = "<group>"; };
 		859E0A1A158862B400B521FD /* test.vcxproj */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = test.vcxproj; sourceTree = "<group>"; };
 		859E0A1B158862B400B521FD /* test.vcxproj.filters */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = test.vcxproj.filters; sourceTree = "<group>"; };
-		859E0A1C158862B400B521FD /* watch.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = watch.c; sourceTree = "<group>"; };
-		859E0A1D158862B400B521FD /* watch.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = watch.h; sourceTree = "<group>"; };
-		859E0A1E158862B400B521FD /* watch1_enum_events.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = watch1_enum_events.c; sourceTree = "<group>"; };
-		859E0A1F158862B400B521FD /* watch1_named_events.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = watch1_named_events.c; sourceTree = "<group>"; };
 		8DD76FB20486AB0100D96B5E /* hsm-statechart */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "hsm-statechart"; sourceTree = BUILT_PRODUCTS_DIR; };
 		C6A0FF2C0290799A04C91782 /* hsm-statechart.1 */ = {isa = PBXFileReference; lastKnownFileType = text.man; path = "hsm-statechart.1"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -59,6 +85,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8599934615AB9C700076FC75 /* liblua5.1.a in Frameworks */,
+				8599934715AB9C700076FC75 /* liblua5.1.dylib in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -68,6 +96,10 @@
 		08FB7794FE84155DC02AAC07 /* hsm-statechart */ = {
 			isa = PBXGroup;
 			children = (
+				8599939615AB9F950076FC75 /* samek_plus.lua */,
+				8599934315AB9C700076FC75 /* liblua5.1.a */,
+				8599934415AB9C700076FC75 /* liblua5.1.dylib */,
+				8599934515AB9C700076FC75 /* liblua5.1.so */,
 				859E09CC158862B300B521FD /* hsm-statechart */,
 				C6A0FF2B0290797F04C91782 /* Documentation */,
 				1AB674ADFE9D54B511CA2CBB /* Products */,
@@ -83,9 +115,40 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		859992F715AB98FE0076FC75 /* builder */ = {
+			isa = PBXGroup;
+			children = (
+				859992F815AB98FE0076FC75 /* hash.c */,
+				859992F915AB98FE0076FC75 /* hash.h */,
+				859992FA15AB98FE0076FC75 /* hsm_builder.c */,
+				859992FB15AB98FE0076FC75 /* hsm_builder.h */,
+				859992FC15AB98FE0076FC75 /* lower.c */,
+			);
+			name = builder;
+			path = hsm/builder;
+			sourceTree = "<group>";
+		};
+		8599930015AB98FE0076FC75 /* hula */ = {
+			isa = PBXGroup;
+			children = (
+				8599930115AB98FE0076FC75 /* hula.c */,
+				8599930215AB98FE0076FC75 /* hula.h */,
+				8599930315AB98FE0076FC75 /* hula_lib.c */,
+				8599930415AB98FE0076FC75 /* hula_lib.h */,
+				8599930515AB98FE0076FC75 /* hula_types.h */,
+			);
+			name = hula;
+			path = hsm/hula;
+			sourceTree = "<group>";
+		};
 		859E09CC158862B300B521FD /* hsm-statechart */ = {
 			isa = PBXGroup;
 			children = (
+				859992F715AB98FE0076FC75 /* builder */,
+				859992FD15AB98FE0076FC75 /* hsm_state.h */,
+				859992FE15AB98FE0076FC75 /* hsm_status.h */,
+				859992FF15AB98FE0076FC75 /* hsm_types.h */,
+				8599930015AB98FE0076FC75 /* hula */,
 				859E0A05158862B400B521FD /* hsm */,
 				859E0A0E158862B400B521FD /* hsm-statechart.1 */,
 				859E0A15158862B400B521FD /* test */,
@@ -103,7 +166,6 @@
 				859E0A0A158862B400B521FD /* hsm_machine.h */,
 				859E0A0B158862B400B521FD /* hsm_stack.h */,
 				859E0A0C158862B400B521FD /* hsm_forwards.h */,
-				859E0A0D158862B400B521FD /* license.txt */,
 			);
 			path = hsm;
 			sourceTree = "<group>";
@@ -111,16 +173,18 @@
 		859E0A15158862B400B521FD /* test */ = {
 			isa = PBXGroup;
 			children = (
+				8599934A15AB9C930076FC75 /* lua_test.c */,
+				8599934B15AB9C930076FC75 /* samek_plus_builder.c */,
+				8599934C15AB9C930076FC75 /* samek_plus_test.c */,
+				8599934D15AB9C930076FC75 /* samek_plus.c */,
+				8599934E15AB9C930076FC75 /* samek_plus.h */,
+				8599934F15AB9C930076FC75 /* samek_plus.lua */,
+				8599935015AB9C930076FC75 /* sequence.c */,
+				8599935115AB9C930076FC75 /* test.c */,
+				8599935215AB9C930076FC75 /* test.h */,
 				859E0A16158862B400B521FD /* license.txt */,
-				859E0A17158862B400B521FD /* main.c */,
-				859E0A18158862B400B521FD /* darwin_platform.c */,
-				859E0A19158862B400B521FD /* platform.h */,
 				859E0A1A158862B400B521FD /* test.vcxproj */,
 				859E0A1B158862B400B521FD /* test.vcxproj.filters */,
-				859E0A1C158862B400B521FD /* watch.c */,
-				859E0A1D158862B400B521FD /* watch.h */,
-				859E0A1E158862B400B521FD /* watch1_enum_events.c */,
-				859E0A1F158862B400B521FD /* watch1_named_events.c */,
 			);
 			path = test;
 			sourceTree = "<group>";
@@ -185,11 +249,17 @@
 			files = (
 				859E0A39158862B400B521FD /* hsm_context.c in Sources */,
 				859E0A3A158862B400B521FD /* hsm_machine.c in Sources */,
-				859E0A3B158862B400B521FD /* main.c in Sources */,
-				859E0A3C158862B400B521FD /* darwin_platform.c in Sources */,
-				859E0A3D158862B400B521FD /* watch.c in Sources */,
-				859E0A3E158862B400B521FD /* watch1_enum_events.c in Sources */,
-				859E0A3F158862B400B521FD /* watch1_named_events.c in Sources */,
+				8599930615AB98FE0076FC75 /* hash.c in Sources */,
+				8599930715AB98FE0076FC75 /* hsm_builder.c in Sources */,
+				8599930815AB98FE0076FC75 /* lower.c in Sources */,
+				8599930915AB98FE0076FC75 /* hula.c in Sources */,
+				8599930A15AB98FE0076FC75 /* hula_lib.c in Sources */,
+				8599935315AB9C930076FC75 /* lua_test.c in Sources */,
+				8599935415AB9C930076FC75 /* samek_plus_builder.c in Sources */,
+				8599935515AB9C930076FC75 /* samek_plus_test.c in Sources */,
+				8599935615AB9C930076FC75 /* samek_plus.c in Sources */,
+				8599935715AB9C930076FC75 /* sequence.c in Sources */,
+				8599935815AB9C930076FC75 /* test.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -206,6 +276,10 @@
 				GCC_MODEL_TUNING = G5;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				INSTALL_PATH = /usr/local/bin;
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/bin\"",
+				);
 				PRODUCT_NAME = "hsm-statechart";
 			};
 			name = Debug;
@@ -217,6 +291,10 @@
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				GCC_MODEL_TUNING = G5;
 				INSTALL_PATH = /usr/local/bin;
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/bin\"",
+				);
 				PRODUCT_NAME = "hsm-statechart";
 			};
 			name = Release;
@@ -225,10 +303,17 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
+				FRAMEWORK_SEARCH_PATHS = "";
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					DEBUG,
+					TEST_LUA,
+				);
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = "~/Projects/hsm-statechart";
+				LIBRARY_SEARCH_PATHS = ./bin;
 				ONLY_ACTIVE_ARCH = YES;
 				PREBINDING = NO;
 				SDKROOT = macosx10.6;
