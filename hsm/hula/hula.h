@@ -102,6 +102,6 @@ void HulaRegister( lua_State* L, hula_callback_is_event is_user_event );
  * Same as HulaRegister but allows user code to rename "hsm_statechart" to something else.
  * @see HulaRegister
  */
-void HulaNamedRegister( lua_State* L, const char * typename, hula_callback_is_event is_user_event );
+void HulaNamedRegister( lua_State* L, const char * name, hula_callback_is_event is_user_event );
 
 #endif // #ifndef __HSM_LUA_H__

@@ -1000,7 +1000,7 @@ int hsmBegin( const char * name, int len )
             ret= id;
         }
     }        
-    return id;
+    return ret;
 }
 
 //---------------------------------------------------------------------------
