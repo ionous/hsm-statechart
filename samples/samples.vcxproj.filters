@@ -58,5 +58,8 @@
     <None Include="hula\watch.wx.wlua">
       <Filter>lua</Filter>
     </None>
+    <None Include="hula\samek_plus.lua">
+      <Filter>lua</Filter>
+    </None>
   </ItemGroup>
 </Project>

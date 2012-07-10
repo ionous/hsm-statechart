@@ -92,6 +92,7 @@
     <ClCompile Include="watch_lua.c" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="hula\samek_plus.lua" />
     <None Include="hula\watch.lua" />
     <None Include="hula\watch.wx.wlua" />
   </ItemGroup>

@@ -15,7 +15,7 @@
 #define __HSM_LUA_H__
 
 // i dont want to make assumptions about the relative include paths for users in the headers
-// to include hula though you will need these three files
+// to include hula though you will need these files
 //#include <hsm/hsm_machine.h>
 //#include <lua.h>
 
@@ -31,7 +31,7 @@ typedef const char *  hula_error;
  *
  * @see HulaMatchEvent, HulaRegister, HsmSignalEvent
  */
-typedef int (*hula_callback_is_event)( lua_State*L, const char * spec, hsm_event event );
+typedef hsm_bool (*hula_callback_is_event)( lua_State*L, const char * spec, hsm_event event );
 
 /**
  * Match an event specification to a triggered event.
