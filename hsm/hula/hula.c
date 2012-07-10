@@ -298,7 +298,7 @@ static hsm_context HulaEnterUD( hsm_status status, void * user_data )
       // provide a "shortcut" so the lua entry handler doesnt have to remember to return the parent ctx:
       // if they return nil, then we just replace it for them.
       if (lua_isnil(L,-1) && parent_ctx) {
-        lua_pop(L,-1);
+        lua_pop(L,1);
         lua_rawgeti( L, LUA_REGISTRYINDEX, parent_ctx->lua_ref );
       }
     }

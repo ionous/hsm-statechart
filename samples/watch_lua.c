@@ -9,11 +9,11 @@
  */
 #include <hsm/hsm_machine.h> // the state machine
 #include <hsm\builder\hsm_builder.h>
-#include <hsm\hula\hula.h>
 
 #include <lua.h>
 #include <lauxlib.h>
 #include <lualib.h>
+#include <hsm\hula\hula.h>
 
 #include "platform.h"       // console input/output
 

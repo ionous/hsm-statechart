@@ -94,8 +94,8 @@ hsm_bool LuaTest()
   lua_State *L= lua_open();
   luaL_openlibs(L);
   if (L) { // darn you missing c-99 features
-    luaL_loadfile(L, "samek_plus.lua");
-    int err= lua_pcall(L, 0, 1, 0);         // call the file, we expect one return
+    int err= luaL_loadfile(L, "samek_plus.lua");
+    err= lua_pcall(L, 0, 1, 0);         // call the file, we expect one return
     if (err) {
       printf("error in lua script: %d", err);
     }
