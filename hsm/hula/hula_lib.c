@@ -275,7 +275,7 @@ static int hula_tostring(lua_State *L)
 //---------------------------------------------------------------------------
 // Registration
 //---------------------------------------------------------------------------
-void HulaNamedRegister( lua_State* L, const char * type, hula_callback_is_event is_event )
+static void _HulaNamedRegister( lua_State* L, const char * type, hula_callback_is_event is_event )
 {
   static luaL_Reg hula_class_fun[]= {
     { "new", hula_new },
@@ -310,14 +310,20 @@ void HulaNamedRegister( lua_State* L, const char * type, hula_callback_is_event 
 }
 
 //---------------------------------------------------------------------------
+void HulaNamedRegister( lua_State* L, const char * type, hula_callback_is_event is_event )
+{
+  _HulaNamedRegister( L, type, is_event );
+}
+
+//---------------------------------------------------------------------------
 void HulaRegister( lua_State* L, hula_callback_is_event is_event  )
 {
-  HulaNamedRegister( L, HULA_LIB, is_event );
+  _HulaNamedRegister( L, HULA_LIB, is_event );
 }
 
 //---------------------------------------------------------------------------
 // for luarocks
-void luaopen_hsm_statechart( lua_State* L )
+int luaopen_hsm_statechart( lua_State* L )
 {
   // this leaks 
   // it might be interesting to determine:
@@ -325,5 +331,6 @@ void luaopen_hsm_statechart( lua_State* L )
   if (!hsmStartup()) {
     luaL_error(L, "luaopen_hsm_statechart: unknown error" );
   }
-  HulaRegister(L,NULL);
+  _HulaNamedRegister(L,HULA_LIB, NULL);
+  return 0;
 }
