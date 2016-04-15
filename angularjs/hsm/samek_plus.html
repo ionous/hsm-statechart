@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html lang="en" ng-app="demo" class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html lang="en" ng-app="demo" class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html lang="en" ng-app="demo" class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!-->
+
+<html lang="en"
+  class="no-js">
+<!--<![endif]-->
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible"
+    content="IE=edge">
+  <script src="/script/angular/angular.js"></script>
+  <script src="hsm.js"></script>
+  <script src="state.js"></script>
+  <!-- -->
+  <script src="samek_plus.js"></script>
+  <style TYPE="text/css">
+  hsm-state {
+    margin-left: 1em;
+    display: block;
+  }
+  </style>
+</head>
+
+<body ng-app="hsm">
+  <div ng-controller="SamekPlus">
+    <form action="">
+      <input ng-repeat="evt in ['a','b','c','d','e','f','g','h']"
+        type="button"
+        ng-value="evt"
+        ng-click="clicked(evt)">
+      <input type="button"
+        value="test"
+        ng-click="test()">
+        from default settings f, h sets value.
+    </form>
+    value: {{ data.value }}
+    <hsm-machine id="samek-plus"
+      hsm-enter="enter($state)"
+      hsm-exit="exit($state)"
+      hsm-init="init($state)">
+      <hsm-state id="s0"
+        on-e="'s211'"
+        on-i="'s12'">
+        {{$ctrl.name}} {{$ctrl.active}}
+        <hsm-state id="s1"
+          on-a="'s1'"
+          on-b="'s11'"
+          on-c="'s2'"
+          on-d="'s0'"
+          on-f="'s211'">
+          {{$ctrl.name}} {{$ctrl.active}}
+          <!-- default state is s11 -->
+          <hsm-state id="s11"
+            on-g="'s211'"
+            on-h="clearValue()">
+            {{$ctrl.name}} {{$ctrl.active}}
+          </hsm-state>
+          <hsm-state id="s12">
+            {{$ctrl.name}} {{$ctrl.active}}
+          </hsm-state>
+        </hsm-state>
+        <hsm-state id="s2"
+          on-c="'s1'"
+          on-f="'s11'">
+          {{$ctrl.name}} {{$ctrl.active}}
+          <hsm-state id="s21"
+            on-b="'s211'"
+            on-h="setValue('s21')">
+            {{$ctrl.name}} {{$ctrl.active}}
+            <hsm-state id="s211"
+              on-d="'s21'"
+              on-g="'s0'">
+              {{$ctrl.name}} {{$ctrl.active}}
+            </hsm-state>
+          </hsm-state>
+        </hsm-state>
+      </hsm-state>
+    </hsm-machine>
+  </div>
+</body>
+</html>
