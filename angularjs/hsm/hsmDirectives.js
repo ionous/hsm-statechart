@@ -7,6 +7,7 @@ function parse($parse, scope, attrs) {
     "hsmExit": "onExit",
     "hsmInit": "onInit",
     "hsmError": "onError",
+    "hsmTransition": "onTransition",
     "hsmExternal": "isExternal"
   };
   var keys = Object.keys(map);
@@ -20,11 +21,12 @@ function parse($parse, scope, attrs) {
     var p = parsed[index];
     if (p) {
       var out = map[el];
-      opt[out] = function(state, cause) {
-        // better would be 
+      opt[out] = function(state, cause, target) {
         var extra = {
           "$state": state,
-          "$cause": cause
+          "$source": state,
+          "$cause": cause,
+          "$target": target,
         };
         return p(scope, extra);
       };
@@ -58,7 +60,7 @@ angular.module('hsm')
         transcludeFn(newScope, function(clone) {
           element.append(clone);
         });
-        machine.start(rt.children[0]);
+        machine.start(rt);
       }
     };
   })
@@ -89,6 +91,7 @@ angular.module('hsm')
           }
         }
         var name = attrs['id'];
+        var parallel= attrs['hsmParallel'];
         // would rather use real angular components
         // havent figured out how to do that with transclusion.
         var ctrl = newScope.$ctrl = {
@@ -109,7 +112,7 @@ angular.module('hsm')
               if (dest) {
                 var next = angular.isString(dest) ?
                   hsm.findState(dest) : dest;
-                machine.transition(myState, next, evt);
+                machine.changeStates(myState, next, evt);
               }
             });
           });
@@ -121,7 +124,11 @@ angular.module('hsm')
           });
         };
 
-        myState = parent.newState(name, enter, exit);
+        myState = parent.newState(name, {
+          onEnter: enter,
+          onExit: exit,
+          parallel: parallel
+        });
         newScope.hsm = {
           machine: machine,
           state: myState,

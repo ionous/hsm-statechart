@@ -22,22 +22,26 @@
     margin-left: 1em;
     display: block;
   }
+  
+  .highlight {
+    color: red;
+  }
   </style>
 </head>
 
 <body ng-app="hsm">
   <div ng-controller="SamekPlus">
     <form action="">
-      <input ng-repeat="evt in ['a','b','c','d','e','f','g','h','i']"
+      <input ng-repeat="evt in ['a','b','c','d','e','f','g','h','i','x','y']"
         type="button"
         ng-value="evt"
         ng-click="clicked(evt)">
-      <input type="button"
-        value="test"
-        ng-click="test()">
       <ul>
         <li>from default settings 'f' then 'h' sets value.</li>
         <li>'c' and 'f' toggle between s1 and s2 with different default states.</li>
+        <li>'h' toggles between sx1 and sx2.</li>
+        <li>'x' self transitions sx.</li>
+        <li>'y' transitions from sx into an s1 or s2 substate.</li>
       </ul>
     </form>
     value: {{ data.value }}
@@ -49,36 +53,62 @@
       <hsm-state id="s0"
         on-e="'s211'"
         on-i="'s12'">
-        {{$ctrl.name}} {{$ctrl.active}}
+        {{$ctrl.name}}
+        <span highlighter="$ctrl.active">{{$ctrl.active}}</span>
         <hsm-state id="s1"
           on-a="'s1'"
           on-b="'s11'"
           on-c="'s2'"
           on-d="'s0'"
           on-f="'s211'">
-          {{$ctrl.name}} {{$ctrl.active}}
+          {{$ctrl.name}}
+          <span highlighter="$ctrl.active">{{$ctrl.active}}</span>
           <!-- default state is s11 -->
           <hsm-state id="s11"
             on-g="'s211'"
+            on-y="'sx2'"
             on-h="clearValue()">
-            {{$ctrl.name}} {{$ctrl.active}}
+            {{$ctrl.name}}
+            <span highlighter="$ctrl.active">{{$ctrl.active}}</span>
           </hsm-state>
-          <hsm-state id="s12">
-            {{$ctrl.name}} {{$ctrl.active}}
+          <hsm-state id="s12"
+            on-y="'sx'">
+            {{$ctrl.name}}
+            <span highlighter="$ctrl.active">{{$ctrl.active}}</span>
           </hsm-state>
         </hsm-state>
         <hsm-state id="s2"
+          hsm-parallel="true"
           on-c="'s1'"
           on-f="'s11'">
-          {{$ctrl.name}} {{$ctrl.active}}
+          {{$ctrl.name}} {{$ctrl.active ? 'parallel' : 'false' }}
           <hsm-state id="s21"
             on-b="'s211'"
             on-h="setValue('s21')">
-            {{$ctrl.name}} {{$ctrl.active}}
+            {{$ctrl.name}}
+            <span highlighter="$ctrl.active">{{$ctrl.active}}</span>
             <hsm-state id="s211"
               on-d="'s21'"
               on-g="'s0'">
-              {{$ctrl.name}} {{$ctrl.active}}
+              {{$ctrl.name}}
+              <span highlighter="$ctrl.active">{{$ctrl.active}}</span>
+            </hsm-state>
+          </hsm-state>
+          <hsm-state id="sx"
+            on-x="'sx'">
+            {{$ctrl.name}}
+            <span highlighter="$ctrl.active">{{$ctrl.active}}</span>
+            <hsm-state id="sx1"
+              on-y="'s11'"
+              on-h="'sx2'">
+              {{$ctrl.name}}
+              <span highlighter="$ctrl.active">{{$ctrl.active}}</span>
+            </hsm-state>
+            <hsm-state id="sx2"
+              on-y="'s0'"
+              on-h="'sx1'">
+              {{$ctrl.name}}
+              <span highlighter="$ctrl.active">{{$ctrl.active}}</span>
             </hsm-state>
           </hsm-state>
         </hsm-state>

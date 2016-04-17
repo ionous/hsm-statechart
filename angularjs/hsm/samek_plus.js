@@ -4,63 +4,97 @@
  
  */
 angular.module('hsm')
+  .directive('highlighter', function($interval) {
+    return {
+      restrict: 'A',
+      scope: {
+        model: '=highlighter'
+      },
+      link: function(scope, element) {
+        var ready, promise;
+
+        scope.$watch('model', function(nv) {
+          // apply class
+          ready = false;
+          if (!promise) {
+            element.addClass('highlight');
+            promise = $interval(function() {
+              if (!ready) {
+                ready = true;
+              } else {
+                element.removeClass('highlight');
+                $interval.cancel(promise);
+                promise = false;
+              }
+            }, 600);
+          }
+        });
+      }
+    };
+  })
   .controller('SamekPlus',
     function(hsm, $log, $scope) {
-      var test; // set at end.
-      var data= $scope.data = {
+      var tests; // set at end.
+      var data = $scope.data = {
         value: 0
       };
-      var rec;
+      var Test = function(src) {
+        var seq = src.slice();
+        this.next = function(l) {
+          var c = seq.shift();
+          if (c != l) {
+            var err = "test failed";
+            $log.error(err, "expected", c, "got", l);
+            throw new Error(err);
+          }
+        };
+        this.run = function(evt) {
+          $scope.$broadcast(evt);
+          if (seq.length) {
+            var err = "test incomplete.";
+            $log.error(err, evt, "remaining", seq);
+            throw new Error(err);
+          }
+        };
+      };
+      var test;
+      $scope.trans = function(source, target) {
+        $log.warn("transitioning", source.name, "->", target.name);
+      };
       $scope.enter = function(state) {
         var l = state.name + "-ENTRY";
-        if (rec) {
-          rec.push(l);
-        } else {
-          $log.info(l);
-        }
+        if (test) {
+          test.next(l);
+        } //else {
+        $log.info(l);
+        // }
       }
       $scope.exit = function(state) {
         var l = state.name + "-EXIT";
-        if (rec) {
-          rec.push(l);
-        } else {
-          $log.info(l);
-        }
+        if (test) {
+          test.next(l);
+        } // else {
+        $log.info(l);
+        // }
       }
       $scope.init = function(state) {
         var l = state.name + "-INIT";
-        if (rec) {
-          rec.push(l);
-        } else {
-          $log.info(l);
-        }
+        if (test) {
+          test.next(l);
+        } //else {
+        $log.info(l);
+        // }
       }
       $scope.test = function(state) {
         $log.info("testing...");
-        test.forEach(function(t, index) {
-          $log.info("test", index, t.evt, t.seq || "unhandled event");
-          rec = [];
+        tests.forEach(function(t, index) {
+          $log.warn("test", index, t.evt, t.seq || "unhandled event");
           var evt = t.evt;
-          var seq = t.seq || [];
           var val = t.val;
-          $scope.$broadcast(evt);
-          var mismatched;
-          if (rec.length != seq.length) {
-            var msg = "test " + index + " failed.";
-            $log.error(msg, evt, "recorded:", rec);
-            throw new Error(msg);
-          } else {
-            for (var i = 0; i < rec.length; ++i) {
-              if (seq[i] !== rec[i]) {
-                var msg = "test " + index + " failed.";
-                $log.error(msg, evt, "recorded:", rec);
-                throw new Error(msg);
-              }
-            }
-          }
+          test = new Test(t.seq || []);
+          test = test.run(evt);
         });
-        $log.info("test succeeded!");
-        rec = null;
+        $log.info("tests succeeded!");
       }
       $scope.clearValue = function(next) {
         if (data.value) {
@@ -79,7 +113,10 @@ angular.module('hsm')
         $scope.$broadcast(evt);
       };
 
-      test = [
+      // expected startup sequence:
+      // currently, not part of the test:
+      //  "s0-ENTRY","s0-INIT","s1-ENTRY","s1-INIT","s11-ENTRY",
+      tests = [
         /* test 0 */
         {
           evt: "a",
