@@ -50,7 +50,7 @@ angular.module('hsm')
   return service;
 })
 
-.directive('hsmMachine', function(hsm, hsmParse, $log) {
+.directive('hsmMachine', function(hsm, hsmParse, $log, $timeout) {
   var pcount = 0;
 
   var hsmMachine = function() {
@@ -182,12 +182,37 @@ angular.module('hsm')
       var hsmMachine = controller;
       hsmMachine.init(name, opt);
       //
+      var includes = 0;
       transcludeFn(scope, function(clone) {
+        var offErrored = scope.$on("$includeContentError", function() {
+          //
+        });
+        var offRequested = scope.$on("$includeContentRequested", function() {
+          includes += 1;
+          $log.info("content requested", includes);
+        });
+        var offLoaded = scope.$on("$includeContentLoaded", function() {
+          $log.info("content loaded", includes);
+          includes -= 1;
+          if (!includes) {
+            hsmMachine.start();
+            offErrored();
+            offRequested();
+            offLoaded();
+          }
+        });
+        //
         element.append(clone);
+        // this is insanity guys.
+        $timeout(function() {
+          if (!includes) {
+            hsmMachine.start();
+            offErrored();
+            offRequested();
+            offLoaded();
+          }
+        });
       });
-      // tried using controller lifecycle function $postLink,
-      // but it never gets called.
-      hsmMachine.start();
     }
   };
 })
