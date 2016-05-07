@@ -1,18 +1,9 @@
 <!DOCTYPE html>
-<!--[if lt IE 7]>      <html lang="en" ng-app="demo" class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
-<!--[if IE 7]>         <html lang="en" ng-app="demo" class="no-js lt-ie9 lt-ie8"> <![endif]-->
-<!--[if IE 8]>         <html lang="en" ng-app="demo" class="no-js lt-ie9"> <![endif]-->
-<!--[if gt IE 8]><!-->
-
-<html lang="en"
-  class="no-js">
-<!--<![endif]-->
+<html lang="en">
 
 <head>
   <meta charset="utf-8">
-  <meta http-equiv="X-UA-Compatible"
-    content="IE=edge">
-  <script src="/script/angular/angular.js"></script>
+  <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.5.0/angular.min.js"></script>
   <script src="hsmService.js"></script>
   <script src="hsmDirectives.js"></script>
   <!-- -->
@@ -30,90 +21,85 @@
 </head>
 
 <body ng-app="hsm">
-  <div ng-controller="SamekPlus">
-    <form action="">
-      <input ng-repeat="evt in ['a','b','c','d','e','f','g','h','i','x','y']"
-        type="button"
-        ng-value="evt"
-        ng-click="clicked(evt)">
-      <ul>
-        <li>from default settings 'f' then 'h' sets value.</li>
-        <li>'c' and 'f' toggle between s1 and s2 with different default states.</li>
-        <li>'h' toggles between sx1 and sx2.</li>
-        <li>'x' self transitions sx.</li>
-        <li>'y' transitions from sx into an s1 or s2 substate.</li>
-      </ul>
-    </form>
-    value: {{ data.value }}
-    <hsm-machine id="samek-plus"
-      hsm-transition="trans($source,$target)"
-      hsm-enter="enter($state)"
-      hsm-exit="exit($state)"
-      hsm-init="init($state)">
-      <hsm-state id="s0"
-        on-e="'s211'"
-        on-i="'s12'">
-        {{$ctrl.name}}
-        <span highlighter="$ctrl.active">{{$ctrl.active}}</span>
-        <hsm-state id="s1"
-          on-a="'s1'"
-          on-b="'s11'"
-          on-c="'s2'"
-          on-d="'s0'"
-          on-f="'s211'">
-          {{$ctrl.name}}
-          <span highlighter="$ctrl.active">{{$ctrl.active}}</span>
-          <!-- default state is s11 -->
-          <hsm-state id="s11"
-            on-g="'s211'"
-            on-y="'sx2'"
-            on-h="clearValue()">
-            {{$ctrl.name}}
-            <span highlighter="$ctrl.active">{{$ctrl.active}}</span>
-          </hsm-state>
-          <hsm-state id="s12"
-            on-y="'sx'">
-            {{$ctrl.name}}
-            <span highlighter="$ctrl.active">{{$ctrl.active}}</span>
-          </hsm-state>
-        </hsm-state>
-        <hsm-state id="s2"
-          hsm-parallel="true"
-          on-c="'s1'"
-          on-f="'s11'">
-          {{$ctrl.name}} {{$ctrl.active ? 'parallel' : 'false' }}
-          <hsm-state id="s21"
-            on-b="'s211'"
-            on-h="setValue('s21')">
-            {{$ctrl.name}}
-            <span highlighter="$ctrl.active">{{$ctrl.active}}</span>
-            <hsm-state id="s211"
-              on-d="'s21'"
-              on-g="'s0'">
-              {{$ctrl.name}}
-              <span highlighter="$ctrl.active">{{$ctrl.active}}</span>
+  <div ng-controller="HsmLogger as logger">
+    <hsm-machine name="samek-para" hsm-transition="trans($source,$target)" hsm-enter="enter($state)" hsm-exit="exit($state)" hsm-init="init($state)">
+      <div ng-controller="SamekPlus as plus">
+        <form action="">
+          <input ng-repeat="evt in ['a','b','c','d','e','f','g','h','i','x','y']" type="button" ng-value="evt" ng-click="plus.clicked(evt)">
+          <ul>
+            <li>from default settings 'f' then 'h' sets value.</li>
+            <li>'c' and 'f' toggle between s1 and s2 with different default states.</li>
+            <li>'h' toggles between sx1 and sx2.</li>
+            <li>'x' self transitions sx.</li>
+            <li>'y' transitions from sx into an s1 or s2 substate.</li>
+          </ul>
+        </form>
+        value: {{ plus.value }}
+        <hsm-state name="s0">
+          <hsm-event on="e" run="'s211'"></hsm-event>
+          <hsm-event on="i" run="'s12'"></hsm-event>
+          {{hsmState.name}}
+          <span highlighter="hsmState.active">{{hsmState.active}}</span>
+          <hsm-state name="s1">
+            <hsm-event on="a" run="'s1'"></hsm-event>
+            <hsm-event on="b" run="'s11'"></hsm-event>
+            <hsm-event on="c" run="'s2'"></hsm-event>
+            <hsm-event on="d" run="'s0'"></hsm-event>
+            <hsm-event on="f" run="'s211'"></hsm-event>
+            {{hsmState.name}}
+            <span highlighter="hsmState.active">{{hsmState.active}}</span>
+            <!-- default state is s11 -->
+            <hsm-state name="s11">
+              <hsm-event on="g" run="'s211'"></hsm-event>
+              <hsm-event on="y" run="'sx2'"></hsm-event>
+              <hsm-event on="h" run="plus.clearValue()"></hsm-event>
+              {{hsmState.name}}
+              <span highlighter="hsmState.active">{{hsmState.active}}</span>
+            </hsm-state>
+            <hsm-state name="s12">
+              <hsm-event on="y" run="'sx'"></hsm-event>
+              {{hsmState.name}}
+              <span highlighter="hsmState.active">{{hsmState.active}}</span>
             </hsm-state>
           </hsm-state>
-          <hsm-state id="sx"
-            on-x="'sx'">
-            {{$ctrl.name}}
-            <span highlighter="$ctrl.active">{{$ctrl.active}}</span>
-            <hsm-state id="sx1"
-              on-y="'s11'"
-              on-h="'sx2'">
-              {{$ctrl.name}}
-              <span highlighter="$ctrl.active">{{$ctrl.active}}</span>
+          <hsm-state name="s2" parallel="true">
+            <hsm-event on="c" run="'s1'"></hsm-event>
+            <hsm-event on="f" run="'s11'"></hsm-event>
+            {{hsmState.name}} {{hsmState.active ? 'parallel' : 'false' }}
+            <hsm-state name="s21">
+              <hsm-event on="b" run="'s211'"></hsm-event>
+              <hsm-event on="h" run="plus.setValue('s21')"></hsm-event>
+              {{hsmState.name}}
+              <span highlighter="hsmState.active">{{hsmState.active}}</span>
+              <hsm-state name="s211">
+                <hsm-event on="d" run="'s21'"></hsm-event>
+                <hsm-event on="g" run="'s0'"></hsm-event>
+                {{hsmState.name}}
+                <span highlighter="hsmState.active">{{hsmState.active}}</span>
+              </hsm-state>
             </hsm-state>
-            <hsm-state id="sx2"
-              on-y="'s0'"
-              on-h="'sx1'">
-              {{$ctrl.name}}
-              <span highlighter="$ctrl.active">{{$ctrl.active}}</span>
+            <hsm-state name="sx">
+              <hsm-event on="x" run="'sx'"></hsm-event>
+              {{hsmState.name}}
+              <span highlighter="hsmState.active">{{hsmState.active}}</span>
+              <hsm-state name="sx1">
+                <hsm-event on="y" run="'s11'"></hsm-event>
+                <hsm-event on="h" run="'sx2'"></hsm-event>
+                {{hsmState.name}}
+                <span highlighter="hsmState.active">{{hsmState.active}}</span>
+              </hsm-state>
+              <hsm-state name="sx2">
+                <hsm-event on="y" run="'s0'"></hsm-event>
+                <hsm-event on="h" run="'sx1'"></hsm-event>
+                {{hsmState.name}}
+                <span highlighter="hsmState.active">{{hsmState.active}}</span>
+              </hsm-state>
             </hsm-state>
           </hsm-state>
         </hsm-state>
-      </hsm-state>
+      </div>
     </hsm-machine>
   </div>
 </body>
+
 </html>
