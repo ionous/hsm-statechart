@@ -5,38 +5,65 @@
  * fix: consider removing angular dependency in favor of something like requirejs...
  */
 angular.module('hsm', [])
-  .controller('HsmLogger',
-    function(hsm, $log, $scope) {
-      var logger = this;
-      var log = function(l) {
-        if (logger.test) {
-          logger.test.next(l);
+
+.service("hsmParse", function($interpolate, $parse) {
+  var service = {
+    getString: function(key, scope, attrs) {
+      var n = attrs[key];
+      return n && $interpolate(n)(scope.$parent);
+    },
+    getEvalFunction: function(key, attrs) {
+      var v = attrs[key];
+      return v && $parse(v);
+    },
+    // turn html attributes into helper functions
+    getOptions: function(scope, attrs, base) {
+      var map = {
+        "hsmEnter": "onEnter",
+        "hsmExit": "onExit",
+        "hsmInit": "onInit",
+        "hsmError": "onError",
+        "hsmTransition": "onTransition",
+        "hsmExternal": "isExternal"
+      };
+      var keys = Object.keys(map);
+      // this helps with capturing the right closure.
+      var parsed = keys.map(function(el) {
+        var attr = attrs[el];
+        return attr && $parse(attr);
+      });
+      var opt = base || {};
+      keys.forEach(function(el, index) {
+        var p = parsed[index];
+        if (p) {
+          var out = map[el];
+          opt[out] = function(state, cause, target) {
+            var extra = {
+              "$state": state,
+              "$source": state,
+              "$evt": cause,
+              "$target": target,
+            };
+            return p(scope, extra);
+          };
         }
-        $log.info("hsm:", l);
-      };
-      logger.trans = function(source, target) {
-        $log.warn("transitioning", source.name, "->", target.name);
-      };
-      logger.enter = function(state) {
-        log(state.name + "-ENTRY");
-      };
-      logger.exit = function(state) {
-        log(state.name + "-EXIT");
-      };
-      logger.init = function(state) {
-        log(state.name + "-INIT");
-      };
-    })
+      });
+      return opt;
+    }
+  };
+  return service;
+})
+
 
 .factory('hsm', function($log) {
   // helper: to avoid if function testing.
   var doNothing = function() {};
 
   // regions hold child states
-  var regionCounter= 0;
+  var regionCounter = 0;
   var Region = function(name, initialize, isConcurrent) {
-    var that= this;
-    this.regionId= ++regionCounter;
+    var that = this;
+    this.regionId = ++regionCounter;
     //
     var kids = this.children = [];
     this.addChild = function(el) {

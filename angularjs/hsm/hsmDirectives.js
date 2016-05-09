@@ -2,52 +2,43 @@
 
 angular.module('hsm')
 
-.service("hsmParse", function($interpolate, $parse) {
-  var service = {
-    getString: function(key, scope, attrs) {
-      var n = attrs[key];
-      return n && $interpolate(n)(scope.$parent);
-    },
-    getEvalFunction: function(key, attrs) {
-      var v = attrs[key];
-      return v && $parse(v);
-    },
-    // turn html attributes into helper functions
-    getOptions: function(scope, attrs) {
-      var map = {
-        "hsmEnter": "onEnter",
-        "hsmExit": "onExit",
-        "hsmInit": "onInit",
-        "hsmError": "onError",
-        "hsmTransition": "onTransition",
-        "hsmExternal": "isExternal"
-      };
-      var keys = Object.keys(map);
-      // this helps with capturing the right closure.
-      var parsed = keys.map(function(el) {
-        var attr = attrs[el];
-        return attr && $parse(attr);
-      });
-      var opt = {};
-      keys.forEach(function(el, index) {
-        var p = parsed[index];
-        if (p) {
-          var out = map[el];
-          opt[out] = function(state, cause, target) {
-            var extra = {
-              "$state": state,
-              "$source": state,
-              "$cause": cause,
-              "$target": target,
-            };
-            return p(scope, extra);
-          };
-        }
-      });
-      return opt;
+.directive("hsmLog", function($log) {
+  var log = function(logger, msg) {
+    if (logger.test) {
+      logger.test.next(msg);
     }
+    $log.info("hsm:", msg);
   };
-  return service;
+
+  var hsmLog = function() {};
+  hsmLog.prototype.enter = function(state) {
+    log(this, state.name + "-ENTRY");
+  };
+  hsmLog.prototype.exit = function(state) {
+    log(this, state.name + "-EXIT");
+  };
+  hsmLog.prototype.init = function(state) {
+    log(this, state.name + "-INIT");
+  };
+  hsmLog.prototype.error = function(msg) {
+    $log.error.apply($log, arguments);
+    throw new Error(msg);
+  };
+  hsmLog.prototype.warn = function(msg) {
+    $log.warn.apply($log, arguments);
+  };
+  hsmLog.prototype.info = function(msg) {
+    $log.info.apply($log, arguments);
+  };
+  return {
+    controller: hsmLog,
+    require: ["hsmLog"],
+    link: function(scope, element, attrs, controllers) {
+      var ctrl = controllers[0];
+      var name = attrs["hsmLog"];
+      scope[name] = ctrl;
+    },
+  };
 })
 
 .directive('hsmMachine', function(hsm, hsmParse, $log, $timeout) {
@@ -80,7 +71,7 @@ angular.module('hsm')
   };
   hsmMachine.prototype.start = function() {
     if (this.stage != "registration") {
-      var msg = "invalid registration";
+      var msg = "hsmMachine starting, invalid stage:";
       $log.error(msg, this.stage);
       throw new Error(msg);
     };
@@ -121,7 +112,7 @@ angular.module('hsm')
             var next = states[key];
             if (!next) {
               var msg = "missing state";
-              $log.error(msg, dest);
+              $log.error(msg, dest, states);
               throw new Error(msg);
             }
             var e = machine.changeStates(hsmState.state, next.state, evt, data);
@@ -143,7 +134,8 @@ angular.module('hsm')
       throw new Error(msg);
     };
     var name = hsmState.name;
-    if (this.states[name]) {
+    var key = name.toLowerCase();
+    if (this.states[key]) {
       var msg = "duplicate state";
       $log.error(msg, name);
       throw new Error(msg);
@@ -152,21 +144,14 @@ angular.module('hsm')
       var msg = "parent not initialized";
       $log.error(msg, hsmParent.name);
     }
-    this.states[name] = hsmState;
+    this.states[key] = hsmState;
     var state = hsmParent.state.newState(name, opts);
     return state;
   };
   //
   hsmMachine.prototype.findState = function(name) {
-    return this.states[name];
-  };
-  //
-  // parallel regions are not meant to be addressable.
-  // their containing state can be though
-  hsmMachine.prototype.newParallelName = function() {
-    var name = "parallel-" + pcount;
-    pcount += 1;
-    return name;
+    var key = name.toLowerCase();
+    return this.states[key];
   };
   //
   return {
@@ -183,35 +168,35 @@ angular.module('hsm')
       hsmMachine.init(name, opt);
       //
       var includes = 0;
+      // *sigh* we have to wait for the digest to take place to get the include requested events. instead of relying side-effects ( as it so often seems to ), it would be better if angular had an actual api to manage content -- if that api were based on promises even better still.
+      var tryStartUp = function() {
+        if (!includes) {
+          $timeout(function() {
+            if (!includes) {
+              includes = -1;
+              hsmMachine.start();
+            }
+          });
+        }
+      };
       transcludeFn(scope, function(clone) {
-        var offErrored = scope.$on("$includeContentError", function() {
+        scope.$on("$includeContentError", function() {
           //
         });
-        var offRequested = scope.$on("$includeContentRequested", function() {
-          includes += 1;
-          $log.info("content requested", includes);
+        scope.$on("$includeContentRequested", function() {
+          if (includes >= 0) {
+            includes += 1;
+          }
         });
-        var offLoaded = scope.$on("$includeContentLoaded", function() {
-          $log.info("content loaded", includes);
-          includes -= 1;
-          if (!includes) {
-            hsmMachine.start();
-            offErrored();
-            offRequested();
-            offLoaded();
+        scope.$on("$includeContentLoaded", function() {
+          if (includes > 0) {
+            includes -= 1;
+            tryStartUp();
           }
         });
         //
         element.append(clone);
-        // this is insanity guys.
-        $timeout(function() {
-          if (!includes) {
-            hsmMachine.start();
-            offErrored();
-            offRequested();
-            offLoaded();
-          }
-        });
+        tryStartUp();
       });
     }
   };
@@ -304,7 +289,8 @@ angular.module('hsm')
       },
       onInit: function(status) {
         return self.onInit(status);
-      }
+      },
+      parallel: opt.parallel
     });
   };
   hsmState.prototype.onEnter = function(status) {
@@ -312,28 +298,22 @@ angular.module('hsm')
     if (!this.state.region.exists()) {
       // FIX: should separate the dynamic tree and the region desc.
       // the machine, or tree, not the controller api should handle this.
-      this.hsmMachine.activateLeaf(name, this);
+      this.hsmMachine.activateLeaf(this.name, this);
     }
     if (this.userEnter) {
-      this.userEnter(this.scope, {
-        "$evt": status.reason()
-      });
+      this.userEnter(this.state, status.reason());
     }
   };
   hsmState.prototype.onExit = function(status) {
     this.active = false;
-    this.hsmMachine.activateLeaf(name, false);
+    this.hsmMachine.activateLeaf(this.name, false);
     if (this.userExit) {
-      this.userExit(this.scope, {
-        "$evt": status.reason()
-      });
+      this.userExit(this.state, status.reason());
     }
   };
   hsmState.prototype.onInit = function(status) {
     if (this.userInit) {
-      var next = this.userInit(this.scope, {
-        "$evt": status.reason()
-      });
+      var next = this.userInit(this.state, status.reason());
       if (next) {
         // FIX: we shouldnt be looking this up -- the machine should be.
         var nextState = this.hsmMachine.findState(next);
@@ -378,6 +358,8 @@ angular.module('hsm')
     return dest;
   };
 
+  var stateCount = 0;
+
   return {
     controller: hsmState,
     restrict: 'E',
@@ -387,18 +369,16 @@ angular.module('hsm')
     controllerAs: "hsmState",
     require: ["^^hsmMachine", "?^^hsmState", "hsmState"],
     link: function(scope, element, attrs, controllers, transcludeFn) {
+      stateCount += 1;
       var hsmMachine = controllers[0];
       var hsmParent = controllers[1] || hsmMachine;
       var hsmState = controllers[2];
       var name = hsmParse.getString("name", scope, attrs);
       var parallel = hsmParse.getEvalFunction("parallel", attrs);
-      parallel = parallel && parallel(scope);
-      if (!name) {
-        var msg = "invalid state name";
-        $log.error(msg, name);
-        throw new Error(msg);
-      }
-      var opt = hsmParse.getOptions(scope, attrs);
+      name = name || ("unnamed" + stateCount);
+      var opt = hsmParse.getOptions(scope, attrs, {
+        parallel: parallel && parallel(scope)
+      });
       hsmState.init(hsmMachine, hsmParent, name, opt);
       //
       transcludeFn(scope, function(clone) {
