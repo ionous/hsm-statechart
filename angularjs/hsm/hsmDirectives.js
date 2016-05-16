@@ -56,6 +56,7 @@ angular.module('hsm')
     this.stage = "default";
   };
   hsmMachine.prototype.$onDestroy = function() {
+    $log.info("destroying", this.name);
     this.machine = null;
     this.leafs = null;
     this.states = null;
@@ -68,6 +69,16 @@ angular.module('hsm')
     this.machine = hsm.newMachine(name, opt);
     // FIX: we shouldnt need a root state
     this.state = hsm.newState(name);
+
+    // that which we expose to the scope:
+    var machineScope = function(machine) {
+      this.name = name;
+      this.emit = function(evt, data) {
+        // $log.info(name, "emit", evt,data);
+        machine.emit(evt, data);
+      };
+    };
+    return new machineScope(this);
   };
   hsmMachine.prototype.start = function() {
     if (this.stage != "registration") {
@@ -90,7 +101,6 @@ angular.module('hsm')
   // send events to leafs
   hsmMachine.prototype.emit = function(name, data) {
     var evt = name.toLowerCase();
-    //$log.info("hsm: emitting", evt, data);
     var change = [];
     var handlers = [];
     // copy handlers from the active leaf nodes
@@ -156,16 +166,18 @@ angular.module('hsm')
   //
   return {
     controller: hsmMachine,
-    restrict: 'E',
     transclude: true,
     template: '',
     scope: true,
     controllerAs: "hsmMachine",
-    link: function(scope, element, attrs, controller, transcludeFn) {
-      var name = hsmParse.getString("name", scope, attrs) || "root";
+    require: ["hsmMachine"],
+    link: function(scope, element, attrs, controllers, transcludeFn) {
+      var ctrl = controllers[0];
+      var srcExp = attrs['hsmMachine'] || attrs['name'];
+      var name = hsmParse.getString(srcExp, scope) || "hsmMachine";
       var opt = hsmParse.getOptions(scope, attrs);
-      var hsmMachine = controller;
-      hsmMachine.init(name, opt);
+      var hsmMachine = ctrl;
+      scope[name] = hsmMachine.init(name, opt);
       //
       var includes = 0;
       // *sigh* we have to wait for the digest to take place to get the include requested events. instead of relying side-effects ( as it so often seems to ), it would be better if angular had an actual api to manage content -- if that api were based on promises even better still.
@@ -362,7 +374,6 @@ angular.module('hsm')
 
   return {
     controller: hsmState,
-    restrict: 'E',
     transclude: true,
     template: '',
     scope: true,
@@ -373,9 +384,9 @@ angular.module('hsm')
       var hsmMachine = controllers[0];
       var hsmParent = controllers[1] || hsmMachine;
       var hsmState = controllers[2];
-      var name = hsmParse.getString("name", scope, attrs);
+      var srcExp = attrs['hsmState'] || attrs['name'];
+      var name = hsmParse.getString(srcExp, scope) || ("hsmState" + stateCount);
       var parallel = hsmParse.getEvalFunction("parallel", attrs);
-      name = name || ("unnamed" + stateCount);
       var opt = hsmParse.getOptions(scope, attrs, {
         parallel: parallel && parallel(scope)
       });

@@ -9,7 +9,7 @@ angular.module('hsm', [])
 .service("hsmParse", function($interpolate, $parse) {
   var service = {
     getString: function(key, scope, attrs) {
-      var n = attrs[key];
+      var n = attrs ? attrs[key] : key;
       return n && $interpolate(n)(scope.$parent);
     },
     getEvalFunction: function(key, attrs) {
