@@ -41,6 +41,194 @@ angular.module('hsm')
   };
 })
 
+
+
+.directive('hsmEvent', function(hsm, hsmParse, $log) {
+  return {
+    controller: function() {
+      this.init = function(hsmState, name, when, handler) {
+        hsmState.addEventHandler(name, handler, when);
+      };
+    },
+    // undocumented, but wif you use the name of the directive as the controller,
+    // and use a function for the controller spec, 
+    // you can gain access to the controller *and* have a require
+    // using a named controller and requiring it *does not* work.
+    // https://github.com/angular/angular.js/issues/5893#issuecomment-65968829
+    restrict: 'E',
+    require: ["^^hsmState", "hsmEvent"],
+    controllerAs: "hsmEvent",
+    link: function(scope, element, attrs, controllers) {
+      var hsmState = controllers[0];
+      var hsmEvent = controllers[1];
+      //
+      var on = hsmParse.getString("on", scope, attrs);
+      var goTo = hsmParse.getString("goto", scope, attrs);
+      var run = hsmParse.getEvalFunction("run", attrs);
+      var when = hsmParse.getEvalFunction("when", attrs);
+      if (goTo) {
+        if (run) {
+          var msg = "only either 'run' or 'goto' may be specified.";
+          $log.error(msg, run, goTo);
+          throw new Error(msg)
+        }
+        run = function() {
+          return goTo;
+        }
+      }
+      //
+      hsmEvent.init(hsmState, on, when, run);
+    }
+  }
+})
+
+.directive('hsmState', function(hsm, hsmParse, $log) {
+  var GuardedFunction = function(src, cb, guard) {
+    this.invoke = function(scope, args) {
+      if (!guard || guard(scope, args)) {
+        $log.info(src.name);
+        return cb(scope, args);
+      }
+    };
+  };
+
+  var hsmState = function($scope) {
+    this.name;
+    this.active;
+    this.state;
+    this.hsmParent;
+    this.events = {};
+    this.scope = $scope;
+  };
+  //
+  hsmState.prototype.$onDestroy = function() {
+    this.hsmMachine = null;
+    this.hsmParent = null;
+    this.state = null;
+    this.events = null;
+    this.userEnter = null;
+    this.userExit = null;
+    this.userInit = null;
+    this.scope = null;
+  };
+  // record the real hsm state
+  hsmState.prototype.init = function(hsmMachine, hsmParent, name, opt) {
+    this.name = name;
+    this.active = false;
+    this.hsmMachine = hsmMachine;
+    this.hsmParent = hsmParent;
+    this.userEnter = opt.onEnter;
+    this.userExit = opt.onExit;
+    this.userInit = opt.onInit;
+    //
+    var self = this;
+    this.state = hsmMachine.addState(this, hsmParent, {
+      onEnter: function(status) {
+        return self.onEnter(status);
+      },
+      onExit: function(status) {
+        return self.onExit(status);
+      },
+      onInit: function(status) {
+        return self.onInit(status);
+      },
+      parallel: opt.parallel
+    });
+  };
+  hsmState.prototype.onEnter = function(status) {
+    this.active = true;
+    if (!this.state.region.exists()) {
+      // FIX: should separate the dynamic tree and the region desc.
+      // the machine, or tree, not the controller api should handle this.
+      this.hsmMachine.activateLeaf(this.name, this);
+    }
+    if (this.userEnter) {
+      this.userEnter(this.state, status.reason());
+    }
+  };
+  hsmState.prototype.onExit = function(status) {
+    this.active = false;
+    this.hsmMachine.activateLeaf(this.name, false);
+    if (this.userExit) {
+      this.userExit(this.state, status.reason());
+    }
+  };
+  hsmState.prototype.onInit = function(status) {
+    if (this.userInit) {
+      var next = this.userInit(this.state, status.reason());
+      if (next) {
+        // FIX: we shouldnt be looking this up -- the machine should be.
+        var nextState = this.hsmMachine.findState(next);
+        if (!nextState) {
+          var msg = "state not found";
+          $log.error(msg, next);
+          throw new Error(msg);
+        } else {
+          return nextState.state;
+        }
+      }
+    }
+  };
+  // ctrl api: add a new event handler
+  hsmState.prototype.addEventHandler = function(name, cb, guard) {
+    var key = name.toLowerCase();
+    var prev = this.events[key];
+    var fn = new GuardedFunction(this, cb, guard);
+    if (prev) {
+      prev.push(fn);
+    } else {
+      this.events[key] = [fn];
+    }
+  };
+  // handler for event callbacks.
+  hsmState.prototype.onEvent = function(evt, data) {
+    var dest;
+    if (this.active) {
+      var fns = this.events[evt];
+      if (fns) {
+        for (var i = 0; i < fns.length; i++) {
+          var fn = fns[i];
+          dest = fn.invoke(this.scope, {
+            "$evt": data || evt
+          });
+          if (!angular.isUndefined(dest)) {
+            break;
+          }
+        } // for
+      }
+    }
+    return dest;
+  };
+
+  var stateCount = 0;
+
+  return {
+    controller: hsmState,
+    transclude: true,
+    template: '',
+    scope: true,
+    controllerAs: "hsmState",
+    require: ["^^hsmMachine", "?^^hsmState", "hsmState"],
+    link: function(scope, element, attrs, controllers, transcludeFn) {
+      stateCount += 1;
+      var hsmMachine = controllers[0];
+      var hsmParent = controllers[1] || hsmMachine;
+      var hsmState = controllers[2];
+      var srcExp = attrs['hsmState'] || attrs['name'];
+      var name = hsmParse.getString(srcExp, scope) || ("hsmState" + stateCount);
+      var parallel = hsmParse.getEvalFunction("parallel", attrs);
+      var opt = hsmParse.getOptions(scope, attrs, {
+        parallel: parallel && parallel(scope)
+      });
+      hsmState.init(hsmMachine, hsmParent, name, opt);
+      //
+      transcludeFn(scope, function(clone) {
+        element.append(clone);
+      });
+    }, //link
+  }
+})
+
 .directive('hsmMachine', function(hsm, hsmParse, $log, $timeout) {
   var pcount = 0;
 
@@ -66,6 +254,7 @@ angular.module('hsm')
   hsmMachine.prototype.init = function(name, opt) {
     this.name = name;
     this.stage = "registration";
+    this.onEmit = opt.onEmit;
     this.machine = hsm.newMachine(name, opt);
     // FIX: we shouldnt need a root state
     this.state = hsm.newState(name);
@@ -74,7 +263,6 @@ angular.module('hsm')
     var machineScope = function(machine) {
       this.name = name;
       this.emit = function(evt, data) {
-        // $log.info(name, "emit", evt,data);
         machine.emit(evt, data);
       };
     };
@@ -103,10 +291,18 @@ angular.module('hsm')
     var evt = name.toLowerCase();
     var change = [];
     var handlers = [];
+    if (this.onEmit) {
+      //function(state, cause, target)
+      this.onEmit(null, {
+        name: name,
+        data: data
+      }, null);
+    }
     // copy handlers from the active leaf nodes
     for (var k in this.leafs) {
       handlers.push(this.leafs[k]);
     }
+
     var enters = [];
     var states = this.states;
     var machine = this.machine;
@@ -212,189 +408,4 @@ angular.module('hsm')
       });
     }
   };
-})
-
-.directive('hsmEvent', function(hsm, hsmParse, $log) {
-  return {
-    controller: function() {
-      this.init = function(hsmState, name, when, handler) {
-        hsmState.addEventHandler(name, handler, when);
-      };
-    },
-    // undocumented, but wif you use the name of the directive as the controller,
-    // and use a function for the controller spec, 
-    // you can gain access to the controller *and* have a require
-    // using a named controller and requiring it *does not* work.
-    // https://github.com/angular/angular.js/issues/5893#issuecomment-65968829
-    restrict: 'E',
-    require: ["^^hsmState", "hsmEvent"],
-    controllerAs: "hsmEvent",
-    link: function(scope, element, attrs, controllers) {
-      var hsmState = controllers[0];
-      var hsmEvent = controllers[1];
-      //
-      var on = hsmParse.getString("on", scope, attrs);
-      var goTo = hsmParse.getString("goto", scope, attrs);
-      var run = hsmParse.getEvalFunction("run", attrs);
-      var when = hsmParse.getEvalFunction("when", attrs);
-      if (goTo) {
-        if (run) {
-          var msg = "only either 'run' or 'goto' may be specified.";
-          $log.error(msg, run, goTo);
-          throw new Error(msg)
-        }
-        run = function() {
-          return goTo;
-        }
-      }
-      //
-      hsmEvent.init(hsmState, on, when, run);
-    }
-  }
-})
-
-.directive('hsmState', function(hsm, hsmParse, $log) {
-  var GuardedFunction = function(cb, guard) {
-    this.invoke = function(scope, args) {
-      if (!guard || guard(scope, args)) {
-        return cb(scope, args);
-      }
-    };
-  };
-
-  var hsmState = function($scope) {
-    this.name;
-    this.active;
-    this.state;
-    this.hsmParent;
-    this.events = {};
-    this.scope = $scope;
-  };
-  //
-  hsmState.prototype.$onDestroy = function() {
-    this.hsmMachine = null;
-    this.hsmParent = null;
-    this.state = null;
-    this.events = null;
-    this.userEnter = null;
-    this.userExit = null;
-    this.userInit = null;
-    this.scope = null;
-  };
-  // record the real hsm state
-  hsmState.prototype.init = function(hsmMachine, hsmParent, name, opt) {
-    this.name = name;
-    this.active = false;
-    this.hsmMachine = hsmMachine;
-    this.hsmParent = hsmParent;
-    this.userEnter = opt.onEnter;
-    this.userExit = opt.onExit;
-    this.userInit = opt.onInit;
-    //
-    var self = this;
-    this.state = hsmMachine.addState(this, hsmParent, {
-      onEnter: function(status) {
-        return self.onEnter(status);
-      },
-      onExit: function(status) {
-        return self.onExit(status);
-      },
-      onInit: function(status) {
-        return self.onInit(status);
-      },
-      parallel: opt.parallel
-    });
-  };
-  hsmState.prototype.onEnter = function(status) {
-    this.active = true;
-    if (!this.state.region.exists()) {
-      // FIX: should separate the dynamic tree and the region desc.
-      // the machine, or tree, not the controller api should handle this.
-      this.hsmMachine.activateLeaf(this.name, this);
-    }
-    if (this.userEnter) {
-      this.userEnter(this.state, status.reason());
-    }
-  };
-  hsmState.prototype.onExit = function(status) {
-    this.active = false;
-    this.hsmMachine.activateLeaf(this.name, false);
-    if (this.userExit) {
-      this.userExit(this.state, status.reason());
-    }
-  };
-  hsmState.prototype.onInit = function(status) {
-    if (this.userInit) {
-      var next = this.userInit(this.state, status.reason());
-      if (next) {
-        // FIX: we shouldnt be looking this up -- the machine should be.
-        var nextState = this.hsmMachine.findState(next);
-        if (!nextState) {
-          var msg = "state not found";
-          $log.error(msg, next);
-          throw new Error(msg);
-        } else {
-          return nextState.state;
-        }
-      }
-    }
-  };
-  // ctrl api: add a new event handler
-  hsmState.prototype.addEventHandler = function(name, cb, guard) {
-    var key = name.toLowerCase();
-    var prev = this.events[key];
-    var fn = new GuardedFunction(cb, guard);
-    if (prev) {
-      prev.push(fn);
-    } else {
-      this.events[key] = [fn];
-    }
-  };
-  // handler for event callbacks.
-  hsmState.prototype.onEvent = function(evt, data) {
-    var dest;
-    if (this.active) {
-      var fns = this.events[evt];
-      if (fns) {
-        for (var i = 0; i < fns.length; i++) {
-          var fn = fns[i];
-          dest = fn.invoke(this.scope, {
-            "$evt": data || evt
-          });
-          if (!angular.isUndefined(dest)) {
-            break;
-          }
-        } // for
-      }
-    }
-    return dest;
-  };
-
-  var stateCount = 0;
-
-  return {
-    controller: hsmState,
-    transclude: true,
-    template: '',
-    scope: true,
-    controllerAs: "hsmState",
-    require: ["^^hsmMachine", "?^^hsmState", "hsmState"],
-    link: function(scope, element, attrs, controllers, transcludeFn) {
-      stateCount += 1;
-      var hsmMachine = controllers[0];
-      var hsmParent = controllers[1] || hsmMachine;
-      var hsmState = controllers[2];
-      var srcExp = attrs['hsmState'] || attrs['name'];
-      var name = hsmParse.getString(srcExp, scope) || ("hsmState" + stateCount);
-      var parallel = hsmParse.getEvalFunction("parallel", attrs);
-      var opt = hsmParse.getOptions(scope, attrs, {
-        parallel: parallel && parallel(scope)
-      });
-      hsmState.init(hsmMachine, hsmParent, name, opt);
-      //
-      transcludeFn(scope, function(clone) {
-        element.append(clone);
-      });
-    }, //link
-  }
-})
+});

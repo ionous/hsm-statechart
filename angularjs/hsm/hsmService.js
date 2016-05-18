@@ -23,6 +23,7 @@ angular.module('hsm', [])
         "hsmExit": "onExit",
         "hsmInit": "onInit",
         "hsmError": "onError",
+        "hsmEmit": "onEmit",
         "hsmTransition": "onTransition",
         "hsmExternal": "isExternal"
       };
