@@ -41,8 +41,6 @@ angular.module('hsm')
   };
 })
 
-
-
 .directive('hsmEvent', function(hsm, hsmParse, $log) {
   return {
     controller: function() {
@@ -50,11 +48,6 @@ angular.module('hsm')
         hsmState.addEventHandler(name, handler, when);
       };
     },
-    // undocumented, but wif you use the name of the directive as the controller,
-    // and use a function for the controller spec, 
-    // you can gain access to the controller *and* have a require
-    // using a named controller and requiring it *does not* work.
-    // https://github.com/angular/angular.js/issues/5893#issuecomment-65968829
     restrict: 'E',
     require: ["^^hsmState", "hsmEvent"],
     controllerAs: "hsmEvent",
@@ -83,10 +76,9 @@ angular.module('hsm')
 })
 
 .directive('hsmState', function(hsm, hsmParse, $log) {
-  var GuardedFunction = function(src, cb, guard) {
+  var GuardedFunction = function(cb, guard) {
     this.invoke = function(scope, args) {
       if (!guard || guard(scope, args)) {
-        $log.info(src.name);
         return cb(scope, args);
       }
     };
@@ -137,18 +129,12 @@ angular.module('hsm')
   };
   hsmState.prototype.onEnter = function(status) {
     this.active = true;
-    if (!this.state.region.exists()) {
-      // FIX: should separate the dynamic tree and the region desc.
-      // the machine, or tree, not the controller api should handle this.
-      this.hsmMachine.activateLeaf(this.name, this);
-    }
     if (this.userEnter) {
       this.userEnter(this.state, status.reason());
     }
   };
   hsmState.prototype.onExit = function(status) {
     this.active = false;
-    this.hsmMachine.activateLeaf(this.name, false);
     if (this.userExit) {
       this.userExit(this.state, status.reason());
     }
@@ -173,7 +159,7 @@ angular.module('hsm')
   hsmState.prototype.addEventHandler = function(name, cb, guard) {
     var key = name.toLowerCase();
     var prev = this.events[key];
-    var fn = new GuardedFunction(this, cb, guard);
+    var fn = new GuardedFunction(cb, guard);
     if (prev) {
       prev.push(fn);
     } else {
@@ -231,22 +217,36 @@ angular.module('hsm')
 
 .directive('hsmMachine', function(hsm, hsmParse, $log, $timeout) {
   var pcount = 0;
+  // FIX: should separate the dynamic tree and the region desc.
+  // the machine, or tree, not the controller api should handle this.
+  var Node = function(name, region) {
+    this.name = name;
+    this.region = region;
+    this.kids = [];
+  };
+  // i want to kill the current implementation with fire
+  // wrap things to build this dynamically, containing only active nodes.
+  Node.prototype.build = function(state) {
+    var node = this;
+    state.region.children.forEach(function(child) {
+      var parent = node;
+      if (child.region.concurrent()) {
+        var next = parent = new Node(child.name, child.region);
+        node.kids.push(next);
+      }
+      parent.build(child);
+    });
+  };
 
   var hsmMachine = function() {
-    // leafs is kind of a hack 
-    // its original intention was to keep a short list of event targets for bubbling
-    // its not clear how useful this is: when we transition we still need to find our source,
-    // if we were capturing: we'd already know that source location.
     this.name;
     this.states = {};
-    this.leafs = {};
     this.machine;
     this.stage = "default";
   };
   hsmMachine.prototype.$onDestroy = function() {
     $log.info("destroying", this.name);
     this.machine = null;
-    this.leafs = null;
     this.states = null;
     this.stage = "dead";
   };
@@ -254,11 +254,14 @@ angular.module('hsm')
   hsmMachine.prototype.init = function(name, opt) {
     this.name = name;
     this.stage = "registration";
+    // FIX: this should be onEvent -- and there should be an onEvent core handler and sniffer for hsmState as well.
     this.onEmit = opt.onEmit;
     this.machine = hsm.newMachine(name, opt);
     // FIX: we shouldnt need a root state
     this.state = hsm.newState(name);
-
+    this.state.wantittowork = {
+      onEvent: function() {}
+    };
     // that which we expose to the scope:
     var machineScope = function(machine) {
       this.name = name;
@@ -275,22 +278,14 @@ angular.module('hsm')
       throw new Error(msg);
     };
     this.stage = "initialized";
+
+    this.regionTree = new Node(this.state.name);
+    this.regionTree.build(this.state);
+
     this.machine.start(this.state);
     this.stage = "started";
   };
-  // enable the event handler for the passed
-  hsmMachine.prototype.activateLeaf = function(name, hsmState) {
-    if (hsmState) {
-      this.leafs[name] = hsmState;
-    } else {
-      delete this.leafs[name];
-    }
-  };
-  // send events to leafs
   hsmMachine.prototype.emit = function(name, data) {
-    var evt = name.toLowerCase();
-    var change = [];
-    var handlers = [];
     if (this.onEmit) {
       //function(state, cause, target)
       this.onEmit(null, {
@@ -298,39 +293,95 @@ angular.module('hsm')
         data: data
       }, null);
     }
-    // copy handlers from the active leaf nodes
-    for (var k in this.leafs) {
-      handlers.push(this.leafs[k]);
-    }
-
-    var enters = [];
-    var states = this.states;
+    // ive never found a good description of how propogation should occur
+    // under parallel states.
     var machine = this.machine;
-    handlers.forEach(function(hsmState) {
-      while (hsmState && hsmState.onEvent) {
-        var dest = hsmState.onEvent(evt, data);
-        if (angular.isUndefined(dest)) {
-          hsmState = hsmState.hsmParent;
-          continue;
-        } else {
-          if (dest) {
-            var key = dest.toLowerCase();
-            var next = states[key];
-            if (!next) {
-              var msg = "missing state";
-              $log.error(msg, dest, states);
-              throw new Error(msg);
-            }
-            var e = machine.changeStates(hsmState.state, next.state, evt, data);
-            enters.push(e);
-          }
-          break;
+    var evt = name.toLowerCase();
+
+    var tryit = function(state, depth) {
+      //$log.debug(evt, "*".repeat(depth), state.name);
+      var dest = state.wantittowork.onEvent(evt, data);
+      if (!angular.isUndefined(dest)) {
+        return {
+          src: state,
+          dest: dest,
         }
-      } // while
-    }); // handlers
-    enters.forEach(function(e) {
-      e();
-    });
+      }
+    };
+    // return a single change from a state tree.
+    var handleTree = function(state, depth) {
+      var handled;
+      var region = state.region;
+      if (!region.concurrent()) {
+        var states = region.children;
+        for (var i = 0; i < states.length; i += 1) {
+          var c = states[i];
+          if (machine.isActive(c.name)) {
+            handled = handleTree(c, depth + 1);
+            break;
+          }
+        }
+      }
+      return handled || tryit(state, depth);
+    };
+    // accumulate changes from regions
+    var handleRegions = function(node, depth) {
+      var resp;
+      if (machine.isActive(node.name)) {
+        // try deepest active region first
+        for (var i = 0; i < node.kids.length; i += 1) {
+          var kid = node.kids[i];
+          resp = handleRegions(kid, depth + 1);
+          if (resp) {
+            break;
+          }
+        }
+        // still not handled ( ex. no subregion, we are deepest )
+        // we have to exclude the hacky root node which is a non-concurrent region.
+        if (!resp && node.region) {
+          //$log.debug(evt, "-".repeat(depth), node.name);
+          // broadcast to every state tree in our region
+          node.region.children.forEach(function(state) {
+            var h = handleTree(state, depth);
+            if (h) {
+              resp = resp || [];
+              resp.push(h);
+            }
+          });
+        }
+      }
+      return resp;
+    };
+    var resp = handleRegions(this.regionTree, 1);
+    if (!resp) {
+      // we can pass zero for depth, the hacky root never has a handler
+      var h = handleTree(this.state, 0);
+      if (h) {
+        resp = [h];
+      }
+    }
+    if (resp) {
+      var states = this.states;
+      var enters = resp.map(function(h) {
+        var dest = h.dest;
+        if (angular.isString(dest)) {
+          var key = dest.toLowerCase();
+          var next = states[key];
+          if (!next) {
+            var msg = "missing state";
+            $log.error(msg, dest, states);
+            throw new Error(msg);
+          }
+          return machine.changeStates(h.src, next.state, evt, data);
+        }
+      });
+
+      enters.forEach(function(e) {
+        if (e) {
+          e();
+        }
+      });
+    }
   }; // emit
   // ctrl api: add a sub state
   hsmMachine.prototype.addState = function(hsmState, hsmParent, opts) {
@@ -352,6 +403,10 @@ angular.module('hsm')
     }
     this.states[key] = hsmState;
     var state = hsmParent.state.newState(name, opts);
+    // FIX: like i said, burn this implementation with fire.
+    // the events are on the directive side of things, not the service.
+    // but we only have the service nodes at emit time.
+    state.wantittowork = hsmState;
     return state;
   };
   //

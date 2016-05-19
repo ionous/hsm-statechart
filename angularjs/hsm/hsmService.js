@@ -65,6 +65,9 @@ angular.module('hsm', [])
   var Region = function(name, initialize, isConcurrent) {
     var that = this;
     this.regionId = ++regionCounter;
+    this.concurrent= function() {
+      return isConcurrent;
+    };
     //
     var kids = this.children = [];
     this.addChild = function(el) {

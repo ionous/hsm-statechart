@@ -21,7 +21,7 @@
 </head>
 
 <body ng-app="hsm">
-  <div ng-controller="HsmLogger as logger">
+  <div hsm-log="logger">
     <hsm-machine name="samek-para" hsm-transition="trans($source,$target)" hsm-enter="enter($state)" hsm-exit="exit($state)" hsm-init="init($state)">
       <div ng-controller="SamekPlus as plus">
         <form action="">

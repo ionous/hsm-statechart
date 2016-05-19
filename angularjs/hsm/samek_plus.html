@@ -16,60 +16,55 @@
   </style>
 </head>
 
-<body ng-app="hsm">
-  <div ng-controller="HsmLogger as logger">
-    <hsm-machine name="samek-plus" hsm-transition="logger.trans($source,$target)" hsm-enter="logger.enter($state)" hsm-exit="logger.exit($state)" hsm-init="logger.init($state)">
-      <div ng-controller="SamekPlus as plus">
-        <form action="">
-          <input ng-repeat="evt in ['a','b','c','d','e','f','g','h','i']" type="button" ng-value="evt" ng-click="plus.clicked(evt)">
-          <input type="button" value="test" ng-click="plus.test()">
-          <ul>
-            <li>from default settings 'f' then 'h' sets value.</li>
-            <li>'c' and 'f' toggle between s1 and s2 with different default states.</li>
-          </ul>
-        </form>
-        value: {{ plus.value }}
-        <hsm-state name="s0" ng-controller="TestController as test"
-        hsm-enter="test.bloop()">
-          <hsm-event on="e" run="'s211'"></hsm-event>
-          <hsm-event on="i" run="'s12'"></hsm-event>
+<body ng-app="hsm" hsm-log="logger" hsm-machine="samek-plus" hsm-transition="logger.trans($source,$target)" hsm-enter="logger.enter($state)" hsm-exit="logger.exit($state)" hsm-init="logger.init($state)">
+  <div ng-controller="SamekPlus as plus">
+    <form action="">
+      <input ng-repeat="evt in ['a','b','c','d','e','f','g','h','i']" type="button" ng-value="evt" ng-click="plus.clicked(evt)">
+      <input type="button" value="test" ng-click="plus.test()">
+      <ul>
+        <li>from default settings 'f' then 'h' sets value.</li>
+        <li>'c' and 'f' toggle between s1 and s2 with different default states.</li>
+      </ul>
+    </form>
+    value: {{ plus.value }}
+    <hsm-state name="s0" ng-controller="TestController as test" hsm-enter="test.bloop()">
+      <hsm-event on="e" run="'s211'"></hsm-event>
+      <hsm-event on="i" run="'s12'"></hsm-event>
+      {{hsmState.name}} {{hsmState.active}}
+      <hsm-state name="s1">
+        <hsm-event on="a" run="'s1'"></hsm-event>
+        <hsm-event on="b" run="'s11'"></hsm-event>
+        <hsm-event on="c" run="'s2'"></hsm-event>
+        <hsm-event on="d" run="'s0'"></hsm-event>
+        <hsm-event on="f" run="'s211'"></hsm-event>
+        {{hsmState.name}} {{hsmState.active}}
+        <!-- default state is s11 -->
+        <hsm-state name="s11">
+          <hsm-event on="g" run="'s211'"></hsm-event>
+          <hsm-event on="h" run="plus.clearValue()"></hsm-event>
           {{hsmState.name}} {{hsmState.active}}
-          <hsm-state name="s1">
-            <hsm-event on="a" run="'s1'"></hsm-event>
-            <hsm-event on="b" run="'s11'"></hsm-event>
-            <hsm-event on="c" run="'s2'"></hsm-event>
-            <hsm-event on="d" run="'s0'"></hsm-event>
-            <hsm-event on="f" run="'s211'"></hsm-event>
+        </hsm-state>
+        <hsm-state name="s12">
+          {{hsmState.name}} {{hsmState.active}}
+        </hsm-state>
+      </hsm-state>
+      <hsm-state name="s2">
+        <hsm-event on="c" run="'s1'"></hsm-event>
+        <hsm-event on="f" run="'s11'"></hsm-event>
+        {{hsmState.name}} {{hsmState.active}}
+        <br>
+        <hsm-state name="s21">
+          <hsm-event on="b" run="'s211'"></hsm-event>
+          <hsm-event on="h" run="plus.setValue('s21')"></hsm-event>
+          {{hsmState.name}} {{hsmState.active}}
+          <hsm-state name="s211">
+            <hsm-event on="d" run="'s21'"></hsm-event>
+            <hsm-event on="g" run="'s0'"></hsm-event>
             {{hsmState.name}} {{hsmState.active}}
-            <!-- default state is s11 -->
-            <hsm-state name="s11">
-              <hsm-event on="g" run="'s211'"></hsm-event>
-              <hsm-event on="h" run="plus.clearValue()"></hsm-event>
-              {{hsmState.name}} {{hsmState.active}}
-            </hsm-state>
-            <hsm-state name="s12">
-              {{hsmState.name}} {{hsmState.active}}
-            </hsm-state>
-          </hsm-state>
-          <hsm-state name="s2">
-            <hsm-event on="c" run="'s1'"></hsm-event>
-            <hsm-event on="f" run="'s11'"></hsm-event>
-            {{hsmState.name}} {{hsmState.active}}
-            <br>
-            <hsm-state name="s21">
-              <hsm-event on="b" run="'s211'"></hsm-event>
-              <hsm-event on="h" run="plus.setValue('s21')"></hsm-event>
-              {{hsmState.name}} {{hsmState.active}}
-              <hsm-state name="s211">
-                <hsm-event on="d" run="'s21'"></hsm-event>
-                <hsm-event on="g" run="'s0'"></hsm-event>
-                {{hsmState.name}} {{hsmState.active}}
-              </hsm-state>
-            </hsm-state>
           </hsm-state>
         </hsm-state>
-      </div>
-    </hsm-machine>
+      </hsm-state>
+    </hsm-state>
   </div>
 </body>
 
