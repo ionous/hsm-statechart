@@ -25,17 +25,27 @@ thoughts towards a better implementation:
 	* state names should always be unique, to reuse states parents can parameterize -- possibly, via ng-init with ng-include, or possibly a custom hsm-include. it's probably not possible to test uniqueness until startup time. relative path addressing is possible -- but need a lot of thought to see how they could go wrong.
 
 angular specifics:
+
+	* hsm-enter should be allowed a return value: a function that is called on exit.
  	* we should be able to have an onEvent generic hook for machines and states
  	* consider hsm-enter, hsm-exit tags to mimic the hsm-event tag.
+ 	* might be nice to have multiple actions in hsm-enter; could use "; syntax", and split the string before sending to angular parse?
 	* need real tests
+	* allow scope for region events? raise on regions vs. raise on machine (broadcast vs .emit)
+	* find a way to catch  errors thrown by controls and log the html/line of the event,state.
 
+a few state patterns so far:
 
+  "flow chart" -- ex. initialization, enter runs an action, which we wait for in the state, to goto the next action: initialization data gets passed along via events, floated via services, or traded with a parent control. granularity of the stages should depend on whether a stage has a meanigful user interface distinction: ex. erroring out, progress bar, loading screen changes, etc.
+  
+  "follow chart" - ex. map load, processing, somebody somewhere runs an action we change our state -- summarily -- based on that suddenly appearing event.
 
+  "presentation chart" -- ex. console, somebody somewhere runs an action expecting a particular response. it raises an event which has packed up those action parameters. the machine goes to a state -- often parallel -- enter and init, using the data from that event, customizes the presentation.
 
+  event delegates -- dont really know what these would look like in angular, but basically, a way to custom the behavior of specific event hooks within the state machine ( ie. customizing on-event via on-enter ). this would enable "plugins" for behavior of the current room, etc. without having to add specific states for each room: rather just rooms generically.
 
-
-
-
-
-
-
+	actions should generally perform some task, and in doing so raise an event.
+	one good exception to the rule: user input. we'd rather handle the behavior in the machine -- and only raise the event.
+   
+	scoped events: start/stop for asynchronous behavior.
+          

@@ -59,10 +59,10 @@ angular.module('hsm')
       var goTo = hsmParse.getString("goto", scope, attrs);
       var run = hsmParse.getEvalFunction("run", attrs);
       var when = hsmParse.getEvalFunction("when", attrs);
-      if (goTo) {
+      if (angular.isDefined(goTo)) {
         if (run) {
           var msg = "only either 'run' or 'goto' may be specified.";
-          $log.error(msg, run, goTo);
+          $log.error(hsmState.name, msg, run, goTo);
           throw new Error(msg)
         }
         run = function() {
@@ -77,6 +77,9 @@ angular.module('hsm')
 
 .directive('hsmState', function(hsm, hsmParse, $log) {
   var GuardedFunction = function(cb, guard) {
+    if (!angular.isFunction(cb)) {
+      throw new Error("cb is not a function");
+    }
     this.invoke = function(scope, args) {
       if (!guard || guard(scope, args)) {
         return cb(scope, args);
@@ -285,7 +288,12 @@ angular.module('hsm')
     this.machine.start(this.state);
     this.stage = "started";
   };
-  hsmMachine.prototype.emit = function(name, data) {
+  // scope is optional
+  hsmMachine.prototype.emit = function(_scope, _name, _data) {
+    var scoped = !angular.isUndefined(_data);
+    var name = scoped ? [_scope, _name].join("-") : _scope;
+    var data = scoped ? _data : _name;
+
     if (this.onEmit) {
       //function(state, cause, target)
       this.onEmit(null, {
@@ -299,7 +307,7 @@ angular.module('hsm')
     var evt = name.toLowerCase();
 
     var tryit = function(state, depth) {
-      //$log.debug(evt, "*".repeat(depth), state.name);
+      //  $log.debug(evt, "*".repeat(depth), state.name);
       var dest = state.wantittowork.onEvent(evt, data);
       if (!angular.isUndefined(dest)) {
         return {
@@ -364,7 +372,7 @@ angular.module('hsm')
       var states = this.states;
       var enters = resp.map(function(h) {
         var dest = h.dest;
-        if (angular.isString(dest)) {
+        if (angular.isString(dest) && dest) {
           var key = dest.toLowerCase();
           var next = states[key];
           if (!next) {
