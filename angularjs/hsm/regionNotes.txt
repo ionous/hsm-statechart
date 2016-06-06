@@ -1,3 +1,6 @@
+to do:
+	. handle conflicting enter paths from different transitions
+
 .......
 general alg: exit up to lca of *source* and target.
 	
@@ -10,7 +13,8 @@ general alg: exit up to lca of *source* and target.
 			note: we dont exit the state that is matched.
 	5. enter path
 
-region complicated alg:
+.......
+region alg:
 	
 	0a. for every region, go to deepest depth;
 	0b. on the way back up, emit (inside each region ) til some source yields a target.
@@ -63,35 +67,6 @@ Machine:
 			children: State[]
 
 ........
-	its interesting to note: if we do hold off transition actions till the end, then this rising exit algorithm works really well: we dont get unexpected actions if a higher layer decides to transition.
+its interesting to note: if we do hold off transition actions till the end, then this rising exit algorithm works really well: we dont get unexpected actions if a higher layer decides to transition.
 
-	at any point, we either have one transition for the top most region, or a list of transits from some leaf set -- the transition from the top most region --
-	might that be the 
-
-...........
-in terms of event handling, if the event occured somwhere in 4,1---y, no one else in 2,1  would get the event.
-but: 2,2 & 2,3 would
-
-the reason for 2,1 is that its gone.
-
-so if we transmit down....
-	and we rolll up on handled exiting out of the region loop at each transmit,
-	stopping at the lca of the transition.
-	remembering the request to goto a new state -- the request which is a path of future entry.
-
-	then we keep ongoing with the other in the parallel region, indicating that we are transimitting on the upswing -- but noting, we dont stop transmitting just because we transitioned -- only that transitioning chops out bits to transition within.
-
-
-...
-to split or not split the transition
-	i could exit at the spot -- the problem is --- if you exit past the head state ( a parent.parallel is true ) -- then youre supposed to exit the children too.
-	you cant do that well in the leaf section.
-
-
-	but if we stop at a terminal, then some magic has to happen.
-
-...........
-regarding stability -- 
-is there any chance that enter/exit could be forbidden from raising events? i think thats a really good idea unless we see otherwise -- log it. and move on
-
-another possibility is that enter and exit actions are queued until the machine is transitioned.
+and, at any point, we either have one transition for the top most region, or a list of transits from some leaf set.

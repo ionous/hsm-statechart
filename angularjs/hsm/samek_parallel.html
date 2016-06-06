@@ -22,7 +22,7 @@
 
 <body ng-app="hsm">
   <div hsm-log="logger">
-    <hsm-machine name="samek-para" hsm-transition="trans($source,$target)" hsm-enter="enter($state)" hsm-exit="exit($state)" hsm-init="init($state)">
+    <hsm-machine name="machine" hsm-transition="trans($source,$target)" hsm-enter="enter($state)" hsm-exit="exit($state)" hsm-init="init($state)">
       <div ng-controller="SamekPlus as plus">
         <form action="">
           <input ng-repeat="evt in ['a','b','c','d','e','f','g','h','i','x','y']" type="button" ng-value="evt" ng-click="plus.clicked(evt)">
@@ -36,61 +36,61 @@
         </form>
         value: {{ plus.value }}
         <hsm-state name="s0">
-          <hsm-event on="e" run="'s211'"></hsm-event>
-          <hsm-event on="i" run="'s12'"></hsm-event>
+          <hsm-event on="e" goto="s211"></hsm-event>
+          <hsm-event on="i" goto="s12"></hsm-event>
           {{hsmState.name}}
           <span highlighter="hsmState.active">{{hsmState.active}}</span>
           <hsm-state name="s1">
-            <hsm-event on="a" run="'s1'"></hsm-event>
-            <hsm-event on="b" run="'s11'"></hsm-event>
-            <hsm-event on="c" run="'s2'"></hsm-event>
-            <hsm-event on="d" run="'s0'"></hsm-event>
-            <hsm-event on="f" run="'s211'"></hsm-event>
+            <hsm-event on="a" goto="s1"></hsm-event>
+            <hsm-event on="b" goto="s11"></hsm-event>
+            <hsm-event on="c" goto="s2"></hsm-event>
+            <hsm-event on="d" goto="s0"></hsm-event>
+            <hsm-event on="f" goto="s211"></hsm-event>
             {{hsmState.name}}
             <span highlighter="hsmState.active">{{hsmState.active}}</span>
             <!-- default state is s11 -->
             <hsm-state name="s11">
-              <hsm-event on="g" run="'s211'"></hsm-event>
-              <hsm-event on="y" run="'sx2'"></hsm-event>
-              <hsm-event on="h" run="plus.clearValue()"></hsm-event>
+              <hsm-event on="g" goto="s211"></hsm-event>
+              <hsm-event on="y" goto="sx2"></hsm-event>
+              <hsm-event on="h" when="plus.value" run="plus.set(0)"></hsm-event>
               {{hsmState.name}}
               <span highlighter="hsmState.active">{{hsmState.active}}</span>
             </hsm-state>
             <hsm-state name="s12">
-              <hsm-event on="y" run="'sx'"></hsm-event>
+              <hsm-event on="y" goto="sx"></hsm-event>
               {{hsmState.name}}
               <span highlighter="hsmState.active">{{hsmState.active}}</span>
             </hsm-state>
           </hsm-state>
           <hsm-state name="s2" parallel="true">
-            <hsm-event on="c" run="'s1'"></hsm-event>
-            <hsm-event on="f" run="'s11'"></hsm-event>
+            <hsm-event on="c" goto="s1"></hsm-event>
+            <hsm-event on="f" goto="s11"></hsm-event>
             {{hsmState.name}} {{hsmState.active ? 'parallel' : 'false' }}
             <hsm-state name="s21">
-              <hsm-event on="b" run="'s211'"></hsm-event>
-              <hsm-event on="h" run="plus.setValue('s21')"></hsm-event>
+              <hsm-event on="b" goto="s211"></hsm-event>
+              <hsm-event on="h" when="!plus.value" run="plus.set(1)"></hsm-event>
               {{hsmState.name}}
               <span highlighter="hsmState.active">{{hsmState.active}}</span>
               <hsm-state name="s211">
-                <hsm-event on="d" run="'s21'"></hsm-event>
-                <hsm-event on="g" run="'s0'"></hsm-event>
+                <hsm-event on="d" goto="s21"></hsm-event>
+                <hsm-event on="g" goto="s0"></hsm-event>
                 {{hsmState.name}}
                 <span highlighter="hsmState.active">{{hsmState.active}}</span>
               </hsm-state>
             </hsm-state>
             <hsm-state name="sx">
-              <hsm-event on="x" run="'sx'"></hsm-event>
+              <hsm-event on="x" goto="sx"></hsm-event>
               {{hsmState.name}}
               <span highlighter="hsmState.active">{{hsmState.active}}</span>
               <hsm-state name="sx1">
-                <hsm-event on="y" run="'s11'"></hsm-event>
-                <hsm-event on="h" run="'sx2'"></hsm-event>
+                <hsm-event on="y" goto="s11"></hsm-event>
+                <hsm-event on="h" goto="sx2"></hsm-event>
                 {{hsmState.name}}
                 <span highlighter="hsmState.active">{{hsmState.active}}</span>
               </hsm-state>
               <hsm-state name="sx2">
-                <hsm-event on="y" run="'s0'"></hsm-event>
-                <hsm-event on="h" run="'sx1'"></hsm-event>
+                <hsm-event on="y" goto="s0"></hsm-event>
+                <hsm-event on="h" goto="sx1"></hsm-event>
                 {{hsmState.name}}
                 <span highlighter="hsmState.active">{{hsmState.active}}</span>
               </hsm-state>

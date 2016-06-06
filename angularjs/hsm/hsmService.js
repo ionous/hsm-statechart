@@ -33,9 +33,8 @@ angular.module('hsm', [])
   // onEvent helper for designating state transitions and transition actions.
   var EventSink = function() {
     var tgt, acts;
-    this.newHandler = function(cause) {
+    this.newHandler = function() {
       return {
-        evt: cause,
         goto: function(target) {
           tgt = target;
           return {
@@ -95,7 +94,7 @@ angular.module('hsm', [])
   };
   // returns null or TargetActions
   State.prototype.signal = function(cause) {
-    this.onEvent(eventSink.newHandler(cause));
+    this.onEvent(this, cause, eventSink.newHandler());
     return eventSink.targetActions(this);
   };
   // returns parent state (could be null)
@@ -492,6 +491,8 @@ angular.module('hsm', [])
           // unhandled event:
           this.callbacks.onEvent(null, cause);
         } else {
+          // FIX: catch competing re-entries
+          // (ex. a state tree A/B,C where one transition says enter B the other, C.
           transitions.forEach(function(e) {
             var region = e.region;
             var xf = e.xf;
@@ -514,6 +515,9 @@ angular.module('hsm', [])
     this.state = function() {
       return parent;
     };
+    // FIX? better would be if finalize walked builder tree
+    // it would be nice, for instance, instead of passing opt:
+    // to build opt via functions.
     this.finalize = function() {
       var m = machine;
       machine = null;
@@ -522,7 +526,7 @@ angular.module('hsm', [])
     this.start = function(state) {
       var m = machine;
       machine = null;
-      m.start(state);
+      m.start(state || children[0]);
       return m;
     }
   };

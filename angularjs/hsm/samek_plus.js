@@ -4,12 +4,6 @@
  
  */
 angular.module('hsm')
-  .controller('TestController', function($log) {
-    $log.info("created test controller");
-    this.bloop = function() {
-      $log.info("bloop");
-    };
-  })
   .directive('highlighter', function($interval) {
     return {
       restrict: 'A',
@@ -40,7 +34,7 @@ angular.module('hsm')
   })
 
 .controller('SamekPlus',
-  function(hsm, $log, $scope) {
+  function($log, $scope) {
     var plus = this;
     var tests; // set at end.
     plus.value = 0;
@@ -55,7 +49,7 @@ angular.module('hsm')
         }
       };
       this.run = function(evt) {
-        $scope.hsmMachine.emit(evt);
+        $scope.machine.emit(evt);
         if (seq.length) {
           var err = "test incomplete.";
           $log.error(err, evt, "remaining", seq);
@@ -67,7 +61,7 @@ angular.module('hsm')
     plus.test = function(state) {
       $log.info("testing...");
       tests.forEach(function(t, index) {
-        $log.warn("test", index, t.evt, t.seq || "unhandled event");
+        $log.warn("test", index + 1, t.evt, t.seq || "unhandled event");
         var evt = t.evt;
         var val = t.val;
         var test = $scope.logger.test = new Test(t.seq || []);
@@ -76,31 +70,24 @@ angular.module('hsm')
       });
       $log.info("tests succeeded!");
     }
-    plus.clearValue = function(next) {
-      $log.warn("clearing value", plus.value);
-      if (plus.value) {
-        $log.warn("clearing value");
-        plus.value = 0;
-        return next;
+    plus.set = function(v) {
+      if (plus.value != v) {
+        $log.warn("changing value", v);
+        plus.value = v;
       }
-    };
-    plus.setValue = function(next) {
-      $log.warn("setting value", plus.value);
-      if (!plus.value) {
-        plus.value = 1;
-        return next;
-      }
+      return v;
+
     };
     plus.clicked = function(evt) {
       $log.info("clicked", evt);
-      $scope.hsmMachine.emit(evt);
+      $scope.machine.emit(evt);
     };
 
     // expected startup sequence:
     // currently, not part of the test:
     //  "s0-ENTRY","s0-INIT","s1-ENTRY","s1-INIT","s11-ENTRY",
     tests = [
-      /* test 0 */
+      /* test 1 */
       {
         evt: "a",
         seq: ["s11-EXIT", "s1-EXIT",
@@ -108,7 +95,7 @@ angular.module('hsm')
         ],
         val: 0
       },
-      /* test 1: * s0 handles 'e' and directs entry down to s211 */
+      /* test 2: * s0 handles 'e' and directs entry down to s211 */
       {
         evt: "e",
         seq: ["s11-EXIT", "s1-EXIT",
@@ -117,7 +104,7 @@ angular.module('hsm')
         ],
         val: 0
       },
-      /* test 2: s0 handles 'e' and directs entry down to s211 again */
+      /* test 3: s0 handles 'e' and directs entry down to s211 again */
       {
         evt: "e",
         seq: ["s211-EXIT", "s21-EXIT", "s2-EXIT",
@@ -127,13 +114,13 @@ angular.module('hsm')
         ],
         val: 0
       },
-      /* test3: unhandled */
+      /* test 4: unhandled */
       {
         evt: "a",
         // seq: ["EVT-a"],
         val: 0
       },
-      /* test 4: s21 handles 'h', f==0, guard passes, sets foo, self-transition to s21, inits down to s211 */
+      /* test 5: s21 handles 'h', f==0, guard passes, sets foo, self-transition to s21, inits down to s211 */
       {
         evt: "h",
         seq: ["s211-EXIT", "s21-EXIT",
@@ -141,13 +128,13 @@ angular.module('hsm')
         ],
         val: 1
       },
-      /* test 5: s1 hears 'h', foo==1, guard filters, 'h' is unhandled */
+      /* test 6: s1 hears 'h', foo==1, guard filters, 'h' is unhandled */
       {
         evt: "h",
         // seq: ["EVT-h"],
         val: 1
       },
-      /* test 6: s211 handles 'g', directs to 's0', inits down to s11. */
+      /* test 7: s211 handles 'g', directs to 's0', inits down to s11. */
       {
         evt: "g",
         seq: ["s211-EXIT", "s21-EXIT", "s2-EXIT",
@@ -160,22 +147,24 @@ angular.module('hsm')
         val: 1
       },
 
-      /* test 7: s11 handles 'h', clears foo */
+      /* test 8: s11 handles 'h', clears foo */
       {
         evt: "h",
         // seq: ["EVT-h"],
+        seq: ['s11-EXIT', 's11-ENTRY'],
         val: 0
       },
-      /* test 8: s0 handles 'i', directs down to 's12' */
+      /* test 9: s0 handles 'i', directs down to 's12' */
       {
         evt: "i",
-        seq: ["s11-EXIT", "s1-EXIT",
+        seq: [
+          "s11-EXIT", "s1-EXIT",
           /*"s0-EXIT",
                       "s0-ENTRY",*/
           "s1-ENTRY", "s12-ENTRY"
         ],
       },
-      /* test 9: x isn't handled anywhere */
+      /* test 10: x isn't handled anywhere */
       {
         evt: "x",
         // seq: ["EVT-x"],

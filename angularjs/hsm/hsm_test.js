@@ -21,8 +21,17 @@ describe("hsmService", function() {
     });
   });
 
-  it("should build hierarchy", function() {
-    testName = "should build hierarchy";
+  var flatten = function(p) {
+    var n = [p.name + (p.parallel ? "!" : "")];
+    p.children.forEach(function(c) {
+      n = n.concat(flatten(c));
+    });
+    return n;
+  };
+
+  var hierarchyTest = "should build hierarchy";
+  it(hierarchyTest, function() {
+    testName = hierarchyTest;
     var m = hsmService.newMachine("test", {});
     var s0 = m.newState("s0", {});
     var s1 = s0.newState("s1");
@@ -30,24 +39,44 @@ describe("hsmService", function() {
     var s12 = s1.newState("s12");
     var s2 = s0.newState("s2");
     var s21 = s2.newState("s21");
-    var s211 = s2.newState("s211");
+    var s211 = s21.newState("s211");
     var machine = m.finalize();
 
-    var flatten = function(p) {
-      var n = [p.name];
-      p.children.forEach(function(c) {
-        n = n.concat(flatten(c));
-      });
-      return n;
-    };
     var list = flatten(machine);
     expect(list).toEqual([
       "test", "s0", "s1", "s11", "s12", "s2", "s21", "s211"
     ]);
-
   });
-  it("should handle samek tests", function() {
-    testName = "should evental";
+
+  var Sequence = function() {
+    var s = [];
+    var add = function(name, reason) {
+      var text = [name, reason].join("-");
+      s.push(text);
+    };
+    this.enter = function(state, cause) {
+      add(state.name, "ENTRY");
+    };
+    this.init = function(state, cause) {
+      add(state.name, "INIT");
+    };
+    this.exit = function(state, cause) {
+      add(state.name, "EXIT");
+    };
+    this.unhandled = function(cause) {
+      add("EVT", cause);
+    };
+    this.result = function(num) {
+      var res = s.slice();
+      res.push(num);
+      return res;
+    };
+  };
+
+  var samekTest = "should handle samek tests";
+  it(samekTest, function() {
+    testName = samekTest;
+
     var Value = function() {
       this.value = 0;
     };
@@ -58,31 +87,6 @@ describe("hsmService", function() {
       this.value = 0;
     };
     var plus = new Value();
-
-    var Sequence = function() {
-      var s = [];
-      var add = function(name, reason) {
-        var text = [name, reason].join("-");
-        s.push(text);
-      };
-      this.enter = function(state, cause) {
-        add(state.name, "ENTRY");
-      };
-      this.init = function(state, cause) {
-        add(state.name, "INIT");
-      };
-      this.exit = function(state, cause) {
-        add(state.name, "EXIT");
-      };
-      this.unhandled = function(cause) {
-        add("EVT", cause);
-      };
-      this.result = function(num) {
-        var res = s.slice();
-        res.push(num);
-        return res;
-      };
-    };
     var seq = new Sequence();
 
     var m = hsmService.newMachine("test", {
@@ -102,48 +106,48 @@ describe("hsmService", function() {
       },
     });
     var s0 = m.newState("s0", {
-      onEvent: function(h) {
-        switch (h.evt) {
+      onEvent: function(state, cause, then) {
+        switch (cause) {
           case "e":
-            h.goto(s211.state());
+            then.goto(s211.state());
             break;
           case "i":
-            h.goto(s12.state());
+            then.goto(s12.state());
             break;
         };
       }, //onEvent
     });
     var s1 = s0.newState("s1", {
-      onEvent: function(h) {
-        switch (h.evt) {
+      onEvent: function(state, cause, then) {
+        switch (cause) {
           case "a":
-            h.goto(s1.state());
+            then.goto(s1.state());
             break;
           case "b":
-            h.goto(s11.state());
+            then.goto(s11.state());
             break;
           case "c":
-            h.goto(s2.state());
+            then.goto(s2.state());
             break;
           case "d":
-            h.goto(s0.state());
+            then.goto(s0.state());
             break;
           case "f":
-            h.goto(s211.state());
+            then.goto(s211.state());
             break;
         };
       },
     });
     var s11 = s1.newState("s11", {
-      onEvent: function(h) {
-        switch (h.evt) {
+      onEvent: function(state, cause, then) {
+        switch (cause) {
           case "g":
-            h.goto(s211.state());
+            then.goto(s211.state());
             break;
           case "h":
             // so the original test by samek actually runs a self transition.
             if (plus.value) {
-              h.goto(s11.state()).run(function() {
+              then.goto(s11.state()).run(function() {
                 plus.clearValue();
               });
             }
@@ -153,26 +157,26 @@ describe("hsmService", function() {
     });
     var s12 = s1.newState("s12");
     var s2 = s0.newState("s2", {
-      onEvent: function(h) {
-        switch (h.evt) {
+      onEvent: function(state, cause, then) {
+        switch (cause) {
           case "c":
-            h.goto(s1.state());
+            then.goto(s1.state());
             break;
           case "f":
-            h.goto(s11.state());
+            then.goto(s11.state());
             break;
         };
       }, // onEvent
     });
     var s21 = s2.newState("s21", {
-      onEvent: function(h) {
-        switch (h.evt) {
+      onEvent: function(state, cause, then) {
+        switch (cause) {
           case "b":
-            h.goto(s211.state());
+            then.goto(s211.state());
             break;
           case "h":
             if (!plus.value) {
-              h.goto(s21.state()).run(function() {
+              then.goto(s21.state()).run(function() {
                 plus.setValue();
               });
             }
@@ -181,19 +185,19 @@ describe("hsmService", function() {
       }, //onEvent
     });
     var s211 = s21.newState("s211", {
-      onEvent: function(h) {
-        switch (h.evt) {
+      onEvent: function(state, cause, then) {
+        switch (cause) {
           case "d":
-            h.goto(s21.state());
+            then.goto(s21.state());
             break;
           case "g":
-            h.goto(s0.state());
+            then.goto(s0.state());
             break;
         };
       }, //onEvent
     });
 
-     // testing 1,2,3 
+    // testing 1,2,3 
     var send = function(e) {
       seq = new Sequence();
       machine.emit(e);
@@ -225,7 +229,7 @@ describe("hsmService", function() {
       "s2-ENTRY", "s21-ENTRY", "s211-ENTRY",
       0,
     ]);
-    
+
     // s0 handles 'e' and directs entry down to s211 again 
     var test3 = send("e");
     expect(test3).toEqual([
@@ -240,7 +244,7 @@ describe("hsmService", function() {
       "EVT-a",
       0,
     ]);
-    
+
     // s21 handles 'h', f==0, guard passes, sets foo, self-transition to s21, inits down to s211 
     var test5 = send("h");
     expect(test5).toEqual([
@@ -248,7 +252,7 @@ describe("hsmService", function() {
       "s21-ENTRY", "s21-INIT", "s211-ENTRY",
       1,
     ]);
-    
+
     // s1 hears 'h', foo==1, guard filters, 'h' is unhandled 
     var test6 = send("h");
     expect(test6).toEqual([
@@ -266,7 +270,7 @@ describe("hsmService", function() {
       "s0-INIT", "s1-ENTRY", "s1-INIT", "s11-ENTRY",
       1,
     ]);
-    
+
     // s11 handles 'h', clears foo 
     var test8 = send("h");
     expect(test8).toEqual([
@@ -274,7 +278,7 @@ describe("hsmService", function() {
       's11-EXIT', 's11-ENTRY',
       0,
     ]);
-    
+
     // s0 handles 'i', directs down to 's12' 
     var test9 = send("i");
     expect(test9).toEqual([
@@ -291,5 +295,39 @@ describe("hsmService", function() {
       0,
     ]);
     return;
+  });
+
+  var parallelTreeTest = "should build parallel trees";
+  it(parallelTreeTest, function() {
+    testName = parallelTreeTest;
+    // [h-[A|2,1(i---B)|3,1(l-y)
+    //      |2,2(j-w)  |3,2(m-z)    
+    //      |2,3(k-x)   
+    var m = hsmService.newMachine("test", {});
+    var sh = m.newState("h");
+    var sA = sh.newState("A", {
+      parallel: true
+    });
+    var si = sA.newState("i");
+    var sB = si.newState("B", {
+      parallel: true
+    });
+    //
+    var sj = sA.newState("j");
+    var sk = sA.newState("k");
+    //
+    var sl = sB.newState("l");
+    var sm = sB.newState("m");
+    //
+    var sw = sj.newState("w");
+    var sx = sk.newState("x");
+    var sy = sl.newState("y");
+    var sz = sm.newState("z");
+    //
+    var machine = m.finalize();
+    var list = flatten(machine);
+    expect(list).toEqual([
+      "test", "h", "A!", "i", "B!", "l", "y", "m", "z", "j", "w", "k", "x"
+    ]);
   });
 });
