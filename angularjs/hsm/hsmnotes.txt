@@ -24,8 +24,10 @@ thoughts towards a better implementation:
 
 	* state names should always be unique, to reuse states parents can parameterize -- possibly, via ng-init with ng-include, or possibly a custom hsm-include. it's probably not possible to test uniqueness until startup time. relative path addressing is possible -- but need a lot of thought to see how they could go wrong.
 
+..........
 angular specifics:
 
+	* ng-include disrupts the order of states, why? yes, it's asynchronous -- but the states get appended rather than injected.....
 	* hsm-enter should be allowed a return value: a function that is called on exit.
  	* we should be able to have an onEvent generic hook for machines and states
  	* consider hsm-enter, hsm-exit tags to mimic the hsm-event tag.
@@ -34,6 +36,18 @@ angular specifics:
 	* allow scope for region events? raise on regions vs. raise on machine (broadcast vs .emit)
 	* find a way to catch  errors thrown by controls and log the html/line of the event,state.
 
+....
+
+some advantages of directiveAs: 
+
+	unifies directive, controller, service.
+  you can configure -- best example is log.
+  you can reuse hierarchically -- ex. log.
+  you can start and stop -- ex. action service, game. -- which means you can host multiple in the same app even if you wanted.
+  services still good for true singletons: ex. console access ( but not log ), screen access (but not viewport ), http access ( but not endpoint ).
+  you can shim old services with some work.
+
+..........
 a few state patterns so far:
 
   "flow chart" -- ex. initialization, enter runs an action, which we wait for in the state, to goto the next action: initialization data gets passed along via events, floated via services, or traded with a parent control. granularity of the stages should depend on whether a stage has a meanigful user interface distinction: ex. erroring out, progress bar, loading screen changes, etc.
@@ -48,4 +62,4 @@ a few state patterns so far:
 	one good exception to the rule: user input. we'd rather handle the behavior in the machine -- and only raise the event.
    
 	scoped events: start/stop for asynchronous behavior.
-          
+

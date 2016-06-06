@@ -1,0 +1,97 @@
+.......
+general alg: exit up to lca of *source* and target.
+	
+	0. go to deepest depth, emit on the way back up, until some source state yields a target.
+	1. exit from *current* to source if need be.
+	2x. check for self transition -- the source and target are the same.
+	3a. (edge deeper) either: exit from current/source up to target depth;
+	3b. (target deeper) or: track from target up to current/source depth.
+	4. (depth matches) exit current/target till matched
+			note: we dont exit the state that is matched.
+	5. enter path
+
+region complicated alg:
+	
+	0a. for every region, go to deepest depth;
+	0b. on the way back up, emit (inside each region ) til some source yields a target.
+  *. a target means transition is desired.
+
+	1. exit from current edge up to source ( unless our edge was the source ), 
+				the edge starts at the leaf, if we exit the leaf, exit the leaf's set first.
+
+	2x. check for self transition ( we are still in this region. )
+				we dont need a path or anyhing, just enter/init -- but do so down to the fingertips -- just as we did on start.
+				actually leaves edge higher than tgt!
+
+	3b. (target deeper)  roll up target up until edge depth -- this doesnt have to worry about regions: they dont exist on this side of the fence.
+
+	3a. (edge deeper) exit edge up until target depth, or until we've poped out of this region; ( returning "target" might be enough; )
+			if we've popped out of the region: we will probably be exiting all siblings too, unless the leaf on the parent region is the target, but hold off till we see what happens with -- if we do exit that leaf -- we have to stop emitting to its siblings.
+
+
+	4. (matched depth; possibly unmatched states)
+		exit state, if we exit fully exit a leaf - exit all leaf sub-regions.
+		roll up target.
+
+	5. enter from here on down following the path
+
+	the roll up /reenter list is unique to each 0b effort. 
+
+/////////////
+[h|1--[A|2,1(i-.--B)|3,1(l-.-C)|(4,1(n-v-y)
+		 	  |2,2(j-,-w) |3,2(m)    |(4,2(o---z)
+		    |2,3(k--x)   
+
+
+container states: A-C; these are marked parallel
+head states: h-o
+leaf states: A, B, w, x, C, m, y, z
+region sets: 2, 3, 4
+regions: h, 2.1, 2.2, 2.3; 3.1, 3.2: 4.1, 4.2
+
+Machine:
+	-region: Region
+
+		-leafSet: RegionSet
+			parent: Region
+			container: State
+			regions: Region[]
+
+
+		-leafState: State
+			parent: State
+			children: State[]
+
+........
+	its interesting to note: if we do hold off transition actions till the end, then this rising exit algorithm works really well: we dont get unexpected actions if a higher layer decides to transition.
+
+	at any point, we either have one transition for the top most region, or a list of transits from some leaf set -- the transition from the top most region --
+	might that be the 
+
+...........
+in terms of event handling, if the event occured somwhere in 4,1---y, no one else in 2,1  would get the event.
+but: 2,2 & 2,3 would
+
+the reason for 2,1 is that its gone.
+
+so if we transmit down....
+	and we rolll up on handled exiting out of the region loop at each transmit,
+	stopping at the lca of the transition.
+	remembering the request to goto a new state -- the request which is a path of future entry.
+
+	then we keep ongoing with the other in the parallel region, indicating that we are transimitting on the upswing -- but noting, we dont stop transmitting just because we transitioned -- only that transitioning chops out bits to transition within.
+
+
+...
+to split or not split the transition
+	i could exit at the spot -- the problem is --- if you exit past the head state ( a parent.parallel is true ) -- then youre supposed to exit the children too.
+	you cant do that well in the leaf section.
+
+
+	but if we stop at a terminal, then some magic has to happen.
+
+...........
+regarding stability -- 
+is there any chance that enter/exit could be forbidden from raising events? i think thats a really good idea unless we see otherwise -- log it. and move on
+
+another possibility is that enter and exit actions are queued until the machine is transitioned.
