@@ -1,3 +1,7 @@
+to do:
+	. handle conflicting enter paths from different transitions
+	. possibly clean up builder to record state names, and hold off state creation until some .finalize() to make state records truly read-only.
+
 ..........
 angular specifics:
 
@@ -38,3 +42,72 @@ a few state patterns so far:
    
 	scoped events: start/stop for asynchronous behavior.
 
+
+.......
+general alg: exit up to lca of *source* and target.
+	
+	0. go to deepest depth, emit on the way back up, until some source state yields a target.
+	1. exit from *current* to source if need be.
+	2x. check for self transition -- the source and target are the same.
+	3a. (edge deeper) either: exit from current/source up to target depth;
+	3b. (target deeper) or: track from target up to current/source depth.
+	4. (depth matches) exit current/target till matched
+			note: we dont exit the state that is matched.
+	5. enter path
+
+.......
+region alg:
+	
+	0a. for every region, go to deepest depth;
+	0b. on the way back up, emit (inside each region ) til some source yields a target.
+  *. a target means transition is desired.
+
+	1. exit from current edge up to source ( unless our edge was the source ), 
+				the edge starts at the leaf, if we exit the leaf, exit the leaf's set first.
+
+	2x. check for self transition ( we are still in this region. )
+				we dont need a path or anyhing, just enter/init -- but do so down to the fingertips -- just as we did on start.
+				actually leaves edge higher than tgt!
+
+	3b. (target deeper)  roll up target up until edge depth -- this doesnt have to worry about regions: they dont exist on this side of the fence.
+
+	3a. (edge deeper) exit edge up until target depth, or until we've poped out of this region; ( returning "target" might be enough; )
+			if we've popped out of the region: we will probably be exiting all siblings too, unless the leaf on the parent region is the target, but hold off till we see what happens with -- if we do exit that leaf -- we have to stop emitting to its siblings.
+
+
+	4. (matched depth; possibly unmatched states)
+		exit state, if we exit fully exit a leaf - exit all leaf sub-regions.
+		roll up target.
+
+	5. enter from here on down following the path
+
+	the roll up /reenter list is unique to each #0b effort. 
+
+....
+its interesting to note: by holding transition actions till the end, then this rising exit algorithm works really well: we dont get unexpected actions if a higher layer decides to transition. at any point, we either have one transition for the top most region, or a list of inner transitions from leaf sets.
+
+/////////////
+// (0,h+--1,A)...| A/1 (2,j---3,w)
+//               | A/2 (2,i+--3,x) 
+//               |     (2,i+--3,B)...| B/1 (4,l--5,y)
+//               |                   |     (4,l--5,t)
+//               |                   | B/2 (4,m--5,z)
+
+
+( named as: depth,state; a slash means parallel. )
+container states: A,B; these are marked parallel
+head states: h, j, i, l, m
+leaf states: A, w, x, B, y, t, z
+regions: h-A, j-w, i-x, i-B, l-y, l-t, m-z
+region sets: A(1, 2), B(1, 2)
+
+Machine:
+	children: State[]
+	-region: Region, for the active state chain.
+		
+		-leafSet: RegionSet
+			 regions: Region[], for event capturing.
+		
+		-leafState: State
+			parent: State, for event bubbling and walking to lca.
+			children: State[], for default init and region activation.
