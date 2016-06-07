@@ -1,29 +1,3 @@
-event handling in the presence of parallel states is not well described in the literature, what ive chosen to do amounts to capturing down a region tree, and -- while bubbling up -- capture and bubble up each state tree.
-
-thoughts towards a better implementation:
-
-	* the state descriptions should be read-only: this is not particularly useful in angular, but would be useful in other implementations where we could store the states to data.
-
-	* a tree of active regions should be built dynamically: this would need to happen on start(), enter/init() from lca, an active region stack can be built during the various calls for use in finding region lca.
-
-	* region depth and state depth should be tracked separately.
-
-	* the active region record should contain the (single) leaf state, we can walk up to find the full active tree; basically: the region code should devolve into the simple case with no extra overhead.  
-
-	* events within each state tree should emit, rather than capture and bubble.
-
-	* it would be awesome if exit transitions could be partially handled during region bubbling -- we dont bother to emit into the state trees of regions we have already exited.
-
-	* its possible that a state machine object is just the top active region record.
-
-	* the lca alg -- and enter, exit in general -- should happen in two tiers: region and state. for any given transition, first seek the common region, exit, enter the lca passing separated bunches of state paths
-
-	* regarding a state that has parallel children -- we need to know that, so when we activate the state we can create the active region node.
-
-		 i think that precludes this: the root of every state description should be a region description ( or null for root, if needed ) and the parent of each region description should be a region region: regions may -- in their entirety -- be a run time concept.
-
-	* state names should always be unique, to reuse states parents can parameterize -- possibly, via ng-init with ng-include, or possibly a custom hsm-include. it's probably not possible to test uniqueness until startup time. relative path addressing is possible -- but need a lot of thought to see how they could go wrong.
-
 ..........
 angular specifics:
 
@@ -36,8 +10,9 @@ angular specifics:
 	* allow scope for region events? raise on regions vs. raise on machine (broadcast vs .emit)
 	* find a way to catch  errors thrown by controls and log the html/line of the event,state.
 
-....
+	* state names should always be unique, to reuse states parents can parameterize -- possibly, via ng-init with ng-include, or possibly a custom hsm-include. it's probably not possible to test uniqueness until startup time. relative path addressing is possible -- but need a lot of thought to see how they could go wrong.
 
+....
 some advantages of directiveAs: 
 
 	unifies directive, controller, service.
