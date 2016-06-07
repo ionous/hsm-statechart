@@ -63,6 +63,17 @@ angular.module('hsm')
 
 // parse angular html attributes
 .service("hsmParse", function($interpolate, $parse) {
+  var makeCallback = function(p, scope) {
+    return function(state, cause, target) {
+      var extra = {
+        "$state": state,
+        "$source": state,
+        "$evt": cause, // .name, .data
+        "$target": target,
+      };
+      return p(scope, extra);
+    };
+  };
   var service = {
     getString: function(key, scope, attrs) {
       var n = attrs ? attrs[key] : key;
@@ -72,40 +83,10 @@ angular.module('hsm')
       var v = attrs[key];
       return v && $parse(v);
     },
-    // turn html attributes into helper functions
-    getOptions: function(scope, attrs, base) {
-      var map = {
-        "hsmEnter": "onEnter",
-        "hsmExit": "onExit",
-        "hsmInit": "onInit",
-        "hsmEvent": "onEvent",
-        // "hsmError": "onError",
-        //"hsmTransition": "onTransition"
-      };
-      var keys = Object.keys(map);
-      // this helps with capturing the right closure.
-      var parsed = keys.map(function(el) {
-        var attr = attrs[el];
-        return attr && $parse(attr);
-      });
-      var opt = base || {};
-      keys.forEach(function(el, index) {
-        var p = parsed[index];
-        if (p) {
-          var out = map[el];
-          opt[out] = function(state, cause, target) {
-            var extra = {
-              "$state": state,
-              "$source": state,
-              "$evt": cause, // .name, .data
-              "$target": target,
-            };
-            return p(scope, extra);
-          };
-        }
-      });
-      return opt;
-    }
+    getOption: function(key, scope, attrs) {
+      var p = service.getEvalFunction(key, attrs);
+      return p && makeCallback(p, scope);
+    },
   };
   return service;
 })
@@ -154,9 +135,9 @@ angular.module('hsm')
       this.name = name;
       this.active = false;
       //
-      var userEnter = opt.onEnter;
-      var userInit = opt.onInit;
-      var userExit = opt.onExit;
+      var userEnter = opt.userEnter;
+      var userInit = opt.userInit;
+      var userExit = opt.userExit;
       //
       // create our state
       var self = this;
@@ -165,13 +146,13 @@ angular.module('hsm')
         onEnter: function(state, cause) {
           self.active = true;
           if (userEnter) {
-            userEnter(state, cause.reason());
+            userEnter(state, cause && cause.reason());
           }
         },
         onInit: function(state, cause) {
           var ret;
           if (userInit) {
-            var name = userInit(state, cause.reason());
+            var name = userInit(state, cause && cause.reason());
             if (name) {
               ret = hsmMachine.getState(name);
             }
@@ -236,11 +217,16 @@ angular.module('hsm')
       var hsmParent = controllers[1] || hsmMachine;
       var hsmState = controllers[2];
       var srcExp = attrs['hsmState'] || attrs['name'];
+      // one-time bindings
       var name = hsmParse.getString(srcExp, scope) || ("hsmState" + stateCount);
       var parallel = hsmParse.getEvalFunction("parallel", attrs);
-      var opt = hsmParse.getOptions(scope, attrs, {
+      //
+      var opt = {
+        userEnter: hsmParse.getOption("hsmEnter", scope, attrs),
+        userInit: hsmParse.getOption("hsmInit", scope, attrs),
+        userExit: hsmParse.getOption("hsmExit", scope, attrs),
         parallel: parallel && parallel(scope)
-      });
+      };
       hsmState.init(hsmMachine, hsmParent, name, opt);
       //
       transcludeFn(scope, function(clone) {
@@ -260,6 +246,7 @@ angular.module('hsm')
       emitting: "emitting",
       dead: "dead",
     };
+
     var hsmMachine = function() {
       this.name = "";
       this.machine = null;
@@ -275,10 +262,11 @@ angular.module('hsm')
       this.name = name;
       this.stage = stage.registration;
 
-      var userEnter = opt.onEnter;
-      var userInit = opt.onInit;
-      var userEvent = opt.onEvent;
-      var userExit = opt.onExit;
+      var userEnter = opt.userEnter;
+      var userInit = opt.userInit;
+      var userEvent = opt.userEvent;
+      var userExit = opt.userExit;
+      var userTransition = opt.userTransition;
 
       this.machine = hsmService.newMachine(name, {
         onEnter: function(state, cause) {
@@ -293,6 +281,9 @@ angular.module('hsm')
         },
         onExit: function(state, cause) {
           return userExit && userExit(state, cause);
+        },
+        onTransition: function(state, cause, target) {
+          return userTransition && userTransition(state, cause, target);
         },
       });
 
@@ -373,13 +364,21 @@ angular.module('hsm')
         var ctrl = controllers[0];
         var srcExp = attrs['hsmMachine'] || attrs['name'];
         var name = hsmParse.getString(srcExp, scope) || "hsmMachine";
-        var opt = hsmParse.getOptions(scope, attrs);
         var hsmMachine = ctrl;
+        // fix? add hsmEmit again?
+        var opt = {
+          userEnter: hsmParse.getOption("hsmEnter", scope, attrs),
+          userInit: hsmParse.getOption("hsmInit", scope, attrs),
+          userEvent: hsmParse.getOption("hsmEvent", scope, attrs),
+          userExit: hsmParse.getOption("hsmExit", scope, attrs),
+          userTransition: hsmParse.getOption("hsmTransition", scope, attrs),
+        };
         //
         scope[name] = hsmMachine.init(name, opt);
+
         //
         var includes = 0;
-        // *sigh* we have to wait for the digest to take place to get the include requested events. instead of relying side-effects ( as it so often seems to ), it would be better if angular had an actual api to manage content -- if that api were based on promises even better still.
+        // we have to wait for the digest to take place to get the include requested events. instead of relying side-effects ( as it so often seems to ), it would be better if angular had an actual api to manage content -- if that api were based on promises even better still.
         var tryStartUp = function() {
           if (!includes) {
             $timeout(function() {

@@ -92,14 +92,15 @@ its interesting to note: by holding transition actions till the end, then this r
 //               |     (2,i+--3,B)...| B/1 (4,l--5,y)
 //               |                   |     (4,l--5,t)
 //               |                   | B/2 (4,m--5,z)
-
+//               | A/3 (2,k)
+// 0,(h+--1,q)
 
 ( named as: depth,state; a slash means parallel. )
 container states: A,B; these are marked parallel
-head states: h, j, i, l, m
-leaf states: A, w, x, B, y, t, z
-regions: h-A, j-w, i-x, i-B, l-y, l-t, m-z
-region sets: A(1, 2), B(1, 2)
+head states: h, j, i, l, m, k
+leaf states: A, w, x, B, y, t, z, q, k
+regions: h-A, j-w, i-x, i-B, l-y, l-t, m-z, h-q, k
+region sets: A/, B/
 
 Machine:
 	children: State[]

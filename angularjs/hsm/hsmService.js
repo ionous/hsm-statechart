@@ -23,21 +23,28 @@ angular.module('hsm', [])
 
   //-----------------------------------------------
   // pairs target state and transition actions.
-  var TargetActions = function(src, tgt, actions) {
+  // external transitions are only partially supported right now.
+  // ( they work for self transitions )
+  var TargetActions = function(src, tgt, actions, external) {
     this.src = src;
     this.tgt = tgt;
     this.actions = actions;
+    this.external = external;
   };
   TargetActions.prototype.isSelfTransition = function() {
-    return this.src == this.tgt;
+    return this.src === this.tgt;
   };
 
   //-----------------------------------------------
   // onEvent helper for designating state transitions and transition actions.
   var EventSink = function() {
-    var tgt, acts;
+    var tgt, acts, internalSelf;
     this.newHandler = function() {
       return {
+        run: function(actions) {
+          acts = actions;
+          internalSelf = true;
+        },
         goto: function(target) {
           tgt = target;
           return {
@@ -50,10 +57,14 @@ angular.module('hsm', [])
     };
     this.targetActions = function(src) {
       var ret;
+      tgt = tgt || (internalSelf && src);
       if (tgt) {
-        ret = new TargetActions(src, tgt, acts);
-        tgt = acts = null;
+        var external = (src === tgt) && !internalSelf;
+        ret = new TargetActions(src, tgt, acts, external);
       }
+      // reset state:
+      tgt = acts = null;
+      internalSelf = false;
       return ret;
     };
   };
@@ -61,11 +72,15 @@ angular.module('hsm', [])
   var eventSink = new EventSink();
 
   //-----------------------------------------------
-  var copyCallbacks = function(f, opt) {
+  var copyCallbacks = function(f, opt, extra) {
     f.onEnter = opt.onEnter || doNothing;
-    f.onInit = opt.onInit || doNothing;
     f.onEvent = opt.onEvent || doNothing;
+    f.onInit = opt.onInit || doNothing;
     f.onExit = opt.onExit || doNothing;
+    
+    if (extra) {
+      f.onTransition = opt.onTransition || doNothing;
+    }
   };
 
   //-----------------------------------------------
@@ -217,22 +232,32 @@ angular.module('hsm', [])
     return this.finishExit(region)
   };
   // self-transition within the passed region. altering the region.
-  Xfer.prototype.selfTransition = function() {
+  Xfer.prototype.selfTransition = function(internal) {
     var ctx = this.ctx;
-    // save the self-exit for later re-entry.
-    this.lca = this._addToPath(this.src);
-    // on selfTransion, exit the src state; ie. up to its parent.
-    var parent = this.src.parent;
-    // but: if the src is a local root, we need to pass a parent of null. 
-    var exitUntil = (parent && !parent.terminal()) ? parent : null;
+    var region = this.region;
+    var exitUntil;
+    if (internal) {
+      exitUntil = this.src;
+      // see note in innerExit; maybe we could share code
+      if (region.leafSet) {
+        region.leafSet.exitSet(ctx);
+        region.leafSet = null;
+      }
+    } else {
+      // save the self-exit for later re-entry.
+      this.lca = this._addToPath(this.src);
+      // on selfTransion, exit the src state; ie. up to its parent.
+      var parent = this.src.parent;
+      // but: if the src is a local root, we need to pass a parent of null. 
+      exitUntil = (parent && !parent.terminal()) ? parent : null;
+    }
     // should always succeed
-    if (!this.region.exitUntil(ctx, exitUntil)) {
+    if (!region.exitUntil(ctx, exitUntil)) {
       throw new Error("self transition failed");
     }
     // since we arent calling finish exit, update the status ourselves
     return this.finished = true;
   };
-
   // move the target edge up to the depth of src, 
   // recording the re-entry path as we go.
   Xfer.prototype._rollUp = function(src) {
@@ -290,7 +315,6 @@ angular.module('hsm', [])
   var Context = function(calls, cause) {
     this.calls = calls;
     this.cause = cause;
-
   };
   Context.prototype.enterState = function(state) {
     checkState(state);
@@ -379,7 +403,7 @@ angular.module('hsm', [])
         // we are transitioning; this overrides all child transitions. 
         xf = new Xfer(ctx, region, sig);
         if (sig.isSelfTransition()) {
-          xf.selfTransition();
+          xf.selfTransition(!sig.external);
         } else {
           xf.innerExit();
         }
@@ -493,6 +517,7 @@ angular.module('hsm', [])
           do {
             var xf = transitions.pop();
             xf.next = null; // help gc, cause why not.
+            this.callbacks.onTransition(xf.src, cause, xf.tgt);
 
             var act = xf.actions; // catch and throw with more info?
             if (act) {

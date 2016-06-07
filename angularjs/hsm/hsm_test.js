@@ -296,13 +296,13 @@ describe("hsmService", function() {
     return;
   });
 
-  // 0,h+--1,A...| A/1 (2,j---3,w)
-  //             | A/2 (2,i+--3,x) 
-  //             |     (2,i+--3,B)...| B/1 (4,l--5,y)
-  //             |                   |     (4,l--5,t)
-  //             |                   | B/2 (4,m--5,z)
-  //             | A/2 (2,k)
-  // 0,h+--1,q
+  // (0,h+--1,A)...| A/1 (2,j---3,w)
+  //               | A/2 (2,i+--3,x) 
+  //               |     (2,i+--3,B)...| B/1 (4,l--5,y)
+  //               |                   |     (4,l--5,t)
+  //               |                   | B/2 (4,m--5,z)
+  //               | A/3 (2,k)
+  // 0,(h+--1,q)
   var makeParallel = function(first) {
     var m = hsmService.newMachine("test", {});
     var Counter = function() {
@@ -319,17 +319,27 @@ describe("hsmService", function() {
         var counter = counts[kind];
         return counter[state] = get(state, kind) + v;
       };
-
     };
     var counter = new Counter();
     var active = {}; // or enter > exit
     var states = {};
     var recentActions = []; // reset on send
 
-    var recordAction = function(name) {
-      recentActions.push(name);
+    var handle = function(then, srcname, tgtname) {
+      var action = function() {
+        recentActions.push(srcname + tgtname);
+      };
+      if (tgtname == "-") {
+        then.run(action);
+      } else {
+        var tgt = states[tgtname];
+        if (!tgt) {
+          throw new Error("invalid state " + tgt);
+        } else {
+          then.goto(tgt).run(action);
+        }
+      }
     };
-
     var common = {
       onEnter: function(state) {
         active[state.name] = true;
@@ -344,14 +354,8 @@ describe("hsmService", function() {
           var srcname = cause[i];
           if (srcname == state.name) {
             var tgtname = cause[i + 1];
-            var tgt = states[tgtname];
-            if (tgt) {
-              //console.log("onEvent", srcname, tgtname);
-              then.goto(tgt).run(function() {
-                recordAction(srcname + tgtname);
-              });
-              break;
-            }
+            handle(then, srcname, tgtname);
+            break;
           }
         }
       },
@@ -457,7 +461,6 @@ describe("hsmService", function() {
       enterExit: function(expected) {
         var p = this.actual;
         var fails = [];
-
         var check = function(state, kind, wanted) {
           var expects = wanted[kind];
           if (!angular.isUndefined(expects)) {
@@ -519,6 +522,23 @@ describe("hsmService", function() {
       },
     });
   });
+  it("should start into a leaf state", function() {
+    var p = makeParallel("q");
+    expect(p).active("h", "q");
+    expect(p).actions("");
+    expect(p).enterExit({
+      "h": {
+        enter: 1,
+        exit: 0,
+        init: 0,
+      },
+      "q": {
+        enter: 1,
+        exit: 0,
+        init: 0,
+      },
+    });
+  });
   it("should start into a parallel region", function() {
     var p = makeParallel("j");
     expect(p).active("h", "A", "j", "w", "k", "i", "x");
@@ -535,8 +555,52 @@ describe("hsmService", function() {
     var p = makeParallel("y");
     expect(p).active("h", "A", "i", "B", "l", "y", "m", "z", "j", "w", "k");
   });
+  it("should handle the self transition of a leaf region", function() {
+    var p = makeParallel(); 
+    p.send("jj");
+    expect(p).active("h", "A", "i", "x", "j", "k", "w");
+    expect(p).enterExit({
+      "A": {
+        init: 0, // all children are automatically activated, so zero inits.
+        exit: 0, // not leaving A
+        enter: 1,
+      },
+      "j": {
+        exit: 1, // self transitions default to external
+        enter: 2, // self 
+        init: 2, // no specific child selected
+      },
+      "w": {
+        exit: 1,
+        enter: 2,
+        init: 0, // no children
+      },
+    });
+  });
+  it("should handle the internal self transition of a leaf region", function() {
+    var p = makeParallel(); 
+    p.send("j-");
+    expect(p).active("h", "A", "i", "x", "j", "k", "w");
+    expect(p).enterExit({
+      "A": {
+        init: 0, // all children are automatically activated, so zero inits.
+        exit: 0, // not leaving A
+        enter: 1,
+      },
+      "j": {
+        exit: 0, // self transition internally
+        enter: 1, // no exit so only 1 enter
+        init: 2, // 2 inits -- as if we exited, but we did so only internally,
+      },
+      "w": {
+        exit: 1, // the child counts should match the same as the external case
+        enter: 2,
+        init: 0, // no children
+      },
+    });
+  });
   it("should handle the self transition of a parallel region", function() {
-    var p = makeParallel(); // start is 
+    var p = makeParallel(); 
     p.send("AA");
     expect(p).active("h", "A", "i", "x", "j", "k", "w");
     expect(p).enterExit({
@@ -549,6 +613,23 @@ describe("hsmService", function() {
         init: 2,
         enter: 2,
         exit: 1,
+      },
+    });
+  });
+  it("should handle the internal transition of a parallel region", function() {
+    var p = makeParallel(); 
+    p.send("A-");
+    expect(p).active("h", "A", "i", "x", "j", "k", "w");
+    expect(p).enterExit({
+      "A": {
+        init: 0, // all children are automatically activated, so zero inits.
+        exit: 0, // internal-self transition, so it shouldnt exit self
+        enter: 1,
+      },
+      "i": {
+        exit: 1, // but A does exit its contents
+        enter: 2,
+        init: 2, // shouldnt exit region either
       },
     });
   });
@@ -750,7 +831,6 @@ describe("hsmService", function() {
       },
     });
   });
-  //
   it("should allow a parent region transition to override a child region's transition", function() {
     var p = makeParallel();
     p.send("xi", "hq");
@@ -763,5 +843,5 @@ describe("hsmService", function() {
       }
     });
   });
-  
+
 });
