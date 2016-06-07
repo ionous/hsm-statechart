@@ -26,7 +26,10 @@ angular.module('hsm', [])
   var TargetActions = function(src, tgt, actions) {
     this.src = src;
     this.tgt = tgt;
-    this.actions = actions || doNothing;
+    this.actions = actions;
+  };
+  TargetActions.prototype.isSelfTransition = function() {
+    return this.src == this.tgt;
   };
 
   //-----------------------------------------------
@@ -112,36 +115,37 @@ angular.module('hsm', [])
   };
   // exit all states withing this region; after:
   // our region's leafState and leafSet will be null.
-  Region.prototype.exitRegion = function(ctx) {
-    return this.matchedExit(ctx, function(leaf) {
+  Region.prototype.exitRegion = function(killer) {
+    return this.evalExit(killer, function(leaf) {
       return leaf == null;
     });
   };
   // exits until the region's leaf state matches the passed state
   // ( doesn't exit the passed state )
-  Region.prototype.exitUntil = function(ctx, state) {
-    return this.matchedExit(ctx, function(leaf) {
+  Region.prototype.exitUntil = function(killer, state) {
+    return this.evalExit(killer, function(leaf) {
       return leaf === state;
     });
   };
   // exit within this region only, stopping when the match function returns true.
   // match receives the current leaf state; which can be null.
-  Region.prototype.matchedExit = function(ctx, match) {
+  // killer implements the "interface" exitState
+  Region.prototype.evalExit = function(killer, match) {
     var matched = false;
     var leaf = this.leafState;
     if (match(leaf)) {
       matched = true;
     } else if (leaf) {
-      //this.exitSet(ctx);
+      // exiting the leaf, so exit all of the child regions
       var set = this.leafSet;
       if (set) {
-        set.exitSet(ctx);
+        killer.exitSet(set);
         this.leafSet = null;
       };
       do {
-        var parent = ctx.exitState(leaf);
+        var parent = killer.exitState(leaf);
         leaf = (parent && !parent.terminal()) ? parent : null;
-        matched = match(leaf);
+        matched = !!match(leaf);
       }
       while (leaf && !matched);
       this.leafState = leaf;
@@ -153,62 +157,87 @@ angular.module('hsm', [])
   // the container state is parallel
   // there is a region for every state in the container state..
   var RegionSet = function() {
-    this.regions;
+    this.regions = null;
   };
   // exit all regions contained by this set.
-  RegionSet.prototype.exitSet = function(ctx) {
+  RegionSet.prototype.exitSet = function(killer) {
     this.regions.forEach(function(region) {
-      region.exitRegion(ctx);
+      region.exitRegion(killer);
     });
     this.regions = null;
   };
 
   //-----------------------------------------------
   // we need to find the lca of source and target
-  var Xfer = function(ctx, sig) {
+  // .lca valid with .finished
+  var Xfer = function(ctx, region, sig) {
     this.ctx = ctx;
-    this.src = sig.src;
-    this.tgt = this.track = sig.tgt;
-    this.actions = sig.actions;
-    this.path = [];
+    this.region = region; // region of source.
+    this.src = sig.src; // source of transition request ( aka. the event handler )
+    this.tgt = this.lca = sig.tgt; // lca changes, tgt doesnt.
+    this.actions = sig.actions; // pending actions
+    this.path = []; // re-entry path, built while finding lca 
+    this.finished = false; // lca is valid when true
+    this.next = null; // linked list of sibling/inner transitions
+  };
+  //-----------------------------------------------
+  // a child's inner exit requires a reentry somewhere in its region.
+  Xfer.prototype.addEnter = function(newFirst) {
+    newFirst.next = this;
+    return newFirst;
   };
   // private helper for tracking re-entry path
   Xfer.prototype._addToPath = function(state) {
     this.path.push(state);
     return state.parent;
   };
-  // transition at or below the passed src ( if we're able ).
-  // alters the passed region.
-  Xfer.prototype.innerExit = function(region, src) {
+  // transition within or below the passed region. altering the region.
+  Xfer.prototype.innerExit = function() {
+    var ctx = this.ctx;
+    var region = this.region;
     var src = this.src;
-    var selfTransition = src === this.tgt;
-    var exitUntil;
-    if (!selfTransition) {
-      // exit to the point of the event listener
-      exitUntil = src;
-      // bring up the our target to the same depth as the listener
-      // ( we will shortly be seeking lowest common ancestor ) 
-      this.track = this._rollUp(src);
-    } else {
-      // on selfTransion, we want to to exit the src state -- so exit until its parent.
-      var parent = src.parent;
-      // but, if the src state is a local root then we need to pass a parent of null. 
-      exitUntil = (parent && !parent.terminal()) ? parent : null;
-      // save the self-exit for later re-entry.
-      this.track = this._addToPath(src);
+    // bring up the pending lca to the same depth as the listener
+    this.lca = this._rollUp(src);
+    // when our target is in a child region below the leaf, then,
+    // due to the rules of inner transition, our leaf wont actually exit. 
+    // without the leaf exit, the leaf set wont exit --
+    // yet, the descendant is still going to get re/entered.
+    // it its active already, it will have two enters and no exits.
+    // a solution is to exit the leaf manually if needed.
+    // this means any signal handled in a region kills its leaf set.
+    if (region.leafSet) {
+      region.leafSet.exitSet(ctx);
+      region.leafSet = null;
     }
-    // exit within this region to reach the desired state:
-    if (!region.exitUntil(this.ctx, exitUntil)) {
-      if (selfTransition) {
-        throw new Error("selfTransition failed");
-      }
+    // exit to the point of the event listener
+    if (!region.exitUntil(ctx, src)) {
+      throw new Error("exit to source failed");
     }
-    return selfTransition || this.finishExit(region);
+    // begin seeking the lowest common ancestor
+    return this.finishExit(region)
   };
-  // move the target up to src, recording the re-entry path as we go.
+  // self-transition within the passed region. altering the region.
+  Xfer.prototype.selfTransition = function() {
+    var ctx = this.ctx;
+    // save the self-exit for later re-entry.
+    this.lca = this._addToPath(this.src);
+    // on selfTransion, exit the src state; ie. up to its parent.
+    var parent = this.src.parent;
+    // but: if the src is a local root, we need to pass a parent of null. 
+    var exitUntil = (parent && !parent.terminal()) ? parent : null;
+    // should always succeed
+    if (!this.region.exitUntil(ctx, exitUntil)) {
+      throw new Error("self transition failed");
+    }
+    // since we arent calling finish exit, update the status ourselves
+    return this.finished = true;
+  };
+
+  // move the target edge up to the depth of src, 
+  // recording the re-entry path as we go.
   Xfer.prototype._rollUp = function(src) {
     var goal = src.depth;
-    var track = this.track;
+    var track = this.lca;
     for (var i = track.depth; i > goal; i -= 1) {
       track = this._addToPath(track);
     }
@@ -218,18 +247,24 @@ angular.module('hsm', [])
   // if the transition couldn't complete ( needs work higher in the tree )
   // returns false ( with region.leaf == null )
   Xfer.prototype.finishExit = function(region) {
-    var ok = this._exitUp(region) && this._matchUp(region);
-    if (!ok && region.leafState != null) {
-      throw new Error("expected fully exited region");
+    if (!this.finished) {
+      var ok = this._exitUp(region) && this._matchUp(region);
+      if (ok) {
+        this.finished = true;
+      } else {
+        if (region.leafState != null) {
+          throw new Error("expected fully finished region");
+        }
+      }
     }
-    return ok;
+    return this.finished;
   };
   // exit the region's edge until it's at target depth ( returns true )
   // or until we've left the region ( returns false, region.leaf becomes null )
   Xfer.prototype._exitUp = function(region) {
     var ctx = this.ctx;
-    var depth = this.track.depth;
-    return region.matchedExit(ctx, function(leaf) {
+    var depth = this.lca.depth;
+    return region.evalExit(ctx, function(leaf) {
       return leaf && (leaf.depth == depth);
     });
   };
@@ -237,52 +272,26 @@ angular.module('hsm', [])
   // move both tracking and edge up until they are the same node.
   Xfer.prototype._matchUp = function(region) {
     var xfer = this; // uses Xfer.exitState
-    return region.matchedExit(xfer, function(leaf) {
-      return leaf === xfer.track;
+    return region.evalExit(xfer, function(leaf) {
+      return leaf === xfer.lca;
     });
   };
-  // duck-type context pair state exits to track exits.
+  // implement the state killer interface to track state exits
   Xfer.prototype.exitState = function(state) {
-    this.track = this._addToPath(this.track);
+    this.lca = this._addToPath(this.lca);
     return this.ctx.exitState(state);
   };
-
-  //-----------------------------------------------
-  var Entry = function(region, xf) {
-    this.region = region;
-    this.xf = xf;
-  };
-
-  //-----------------------------------------------
-  var Reenters = function() {
-    this.transitions = null;
-  };
-
-  //
-  Reenters.prototype.resetEnters = function() {
-    this.transitions = null;
-  };
-  //
-  Reenters.prototype.addEnter = function(region, xf) {
-    var transitions = this.transitions;
-    var reentry = new Entry(region, xf);
-    if (!transitions) {
-      this.transitions = [reentry];
-    } else {
-      transitions.push(reentry);
-    }
-  };
-  Reenters.prototype.finish = function(region, xf) {
-    return xf ? [new Entry(region, xf)] : this.transitions;
+  // reflect set exit back to the context so that we dont track those exits
+  Xfer.prototype.exitSet = function(set) {
+    return this.ctx.exitSet(set);
   };
 
   //-----------------------------------------------
   var Context = function(calls, cause) {
     this.calls = calls;
     this.cause = cause;
-    this.reentry = new Reenters();
+
   };
-  //
   Context.prototype.enterState = function(state) {
     checkState(state);
     var ctx = this;
@@ -290,7 +299,6 @@ angular.module('hsm', [])
     ctx.calls.onEnter(state, cause);
     state.enter(cause);
   };
-  //
   Context.prototype.initState = function(state) {
     checkState(state);
     var ctx = this;
@@ -301,7 +309,6 @@ angular.module('hsm', [])
     }
     return res;
   };
-  //
   Context.prototype.signalState = function(state) {
     checkState(state);
     var ctx = this;
@@ -310,7 +317,6 @@ angular.module('hsm', [])
     ctx.calls.onEvent(state, cause, res);
     return res;
   };
-  //
   Context.prototype.exitState = function(state) {
     checkState(state);
     var ctx = this;
@@ -318,6 +324,10 @@ angular.module('hsm', [])
     var res = state.exit(cause);
     ctx.calls.onExit(state, cause, res);
     return res;
+  };
+  // this ugly thunk helps implement the "killer" interface for evalExit
+  Context.prototype.exitSet = function(set) {
+    return set.exitSet(this);
   };
   //
   Context.prototype.followPath = function(region, path) {
@@ -354,41 +364,32 @@ angular.module('hsm', [])
   };
   // recursive emit into region and its leaves
   Context.prototype.remit = function(region) {
-    var ret, ctx = this;
-    var pendingExit = ctx.emitToLeaves(region.leafState, region.leafSet);
-
-    // try completing the transfer within this region; 
-    // if not, this region gets exited inside finishExit.
-    if (pendingExit && !pendingExit.finishExit(region)) {
-      // since we didnt complete in this region, we don't want to signal this region.
-      ret = pendingExit;
+    var ctx = this;
+    // signal the children: calls back to remit.
+    var xf = ctx.captureLeaves(region.leafState, region.leafSet);
+    // try completing any pending transfer within this region;
+    // if not, we'll try again at a higher level.
+    if (xf && !xf.finished) {
+      xf.finishExit(region);
     } else {
-      // signal the remaining states in the region.
-      // QUESTION:  in cases where target was an ancestor of source, 
-      // the target can still be active (re: internal transitions)
-      // so the target might get to handle this event as well. 
-      // is that reasonable? 
-      var sig = ctx.signalRegion(region);
-      if (!sig && pendingExit) {
-        ctx.reentry.addEnter(region, pendingExit);
-      } else if (sig) {
-        // we are transitioning. 
-        // regardless whether we complete this new transition,
-        // our src is above our previous leaf/set; 
-        // ours transition subsumes and supplants any previous transition.
-        var xf = new Xfer(ctx, sig);
-        if (xf.innerExit(region)) {
-          ctx.reentry.addEnter(region, xf);
+      // since no transition reached us,
+      // attempt to handle the signal within this region.
+      var sig = ctx.bubbleRegion(region);
+      if (sig) {
+        // we are transitioning; this overrides all child transitions. 
+        xf = new Xfer(ctx, region, sig);
+        if (sig.isSelfTransition()) {
+          xf.selfTransition();
         } else {
-          ret = xf;
+          xf.innerExit();
         }
       }
     }
-    return ret;
+    return xf;
   }; // remit
   //
-  Context.prototype.emitToLeaves = function(leaf, leafSet) {
-    var pendingExit, ctx = this;
+  Context.prototype.captureLeaves = function(leaf, leafSet) {
+    var ret, ctx = this;
     if (leafSet) {
       var regions = leafSet.regions;
       for (var i = 0; i < regions.length; i += 1) {
@@ -398,45 +399,38 @@ angular.module('hsm', [])
           // target is as high, or higher than the leaf containing the regions.
           // if the target was deeper, then the lca would deeper than the leaf;
           // the transition would have been handled *inside* in sub-region remit.
-          if (xf.tgt.depth <= leaf.depth) {
+          if (xf.tgt.depth < leaf.depth) {
             throw new Error("expected target at or above leaf");
           }
-          // hsm uses internal transitions except for self-transitions, therefore:
-          // if the target is the container, we shouldn't interrupt the siblings.
-          // note: the leaf itself can't be the *source* of the transit --
-          // that's handled outside of the loop, *after* all its child regions,
-          // ie. this can't be a self-transition.
-          if (xf.tgt === leaf) { // test equality, not just depth.
-            ctx.reentry.addEnter(sub, xf);
+          // hsm uses internal transitions except for self-transitions:
+          // if the target is the container, but the source is below it -- 
+          // we shouldn't interrupt the siblings.
+          if (xf.finished || (xf.tgt === leaf)) {
+            xf.finished = true; // consider it finished.
+            ret = ret ? ret.addEnter(xf) : xf;
           } else {
-            // im not explicitly exiting the leaf set -
-            // theoretically that happens magically inside of remit's finishExit
-            // as a result of "finishExit"
-            ctx.reentry.resetEnters();
-            pendingExit = xf;
+            // abandons sibling transitions, 
+            // we will be exiting this set soon.
+            ret = xf;
             break;
           }
         }
       }
     }
-    return pendingExit;
+    return ret;
   };
   // emit the current event to the region.
-  // returns a request for a new transition which includes
-  // whichever state requested the transition ( the source(src) ); 
-  // and some target(tgt) state anywhere in the tree ( possibly even the source again )
-  Context.prototype.signalRegion = function(region) {
+  // returns a request for a new transition.
+  Context.prototype.bubbleRegion = function(region) {
     var ctx = this;
     var ret, curr = region.leafState;
     if (curr) {
       do {
-        var targetActions = ctx.signalState(curr);
-        // are we asking for a new state?
-        if (targetActions) {
-          ret = targetActions;
+        var sig = ctx.signalState(curr);
+        if (sig) {
+          ret = sig;
           break;
         }
-        // lets keep walking up.
         curr = curr.parent;
       } while (curr && !curr.terminal());
     }
@@ -485,20 +479,30 @@ angular.module('hsm', [])
       //
       while (queue.length) {
         var q = queue.shift();
-        var xf = ctx.remit(region);
-        var transitions = ctx.reentry.finish(region, xf);
-        if (!transitions) {
+        var xs = ctx.remit(region);
+        if (!xs) {
           // unhandled event:
           this.callbacks.onEvent(null, cause);
         } else {
-          // FIX: catch competing re-entries
-          // (ex. a state tree A/B,C where one transition says enter B the other, C.
-          transitions.forEach(function(e) {
-            var region = e.region;
-            var xf = e.xf;
-            xf.actions(); // catch and throw with more info?
-            ctx.followPath(region, xf.path);
-          });
+          // need processing order, but have the reverse.
+          var transitions = []; // could resize based on number of addEnter(s)
+          do {
+            transitions.push(xs);
+            xs = xs.next;
+          } while (xs);
+          do {
+            var xf = transitions.pop();
+            xf.next = null; // help gc, cause why not.
+
+            var act = xf.actions; // catch and throw with more info?
+            if (act) {
+              act();
+            }
+            // FIX: catch competing re-entries
+            // (ex. parallel tree A-B,A-C: one xf wants B; the other, C.
+            // note; path can be empty when the target is a direct ancestor of src.
+            ctx.followPath(xf.region, xf.path);
+          } while (transitions.length);
         }
       }
       this.queuing = null;
