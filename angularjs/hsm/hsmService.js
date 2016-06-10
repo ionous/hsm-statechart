@@ -38,18 +38,16 @@ angular.module('hsm', [])
   //-----------------------------------------------
   // onEvent helper for designating state transitions and transition actions.
   var EventSink = function() {
-    var tgt, acts, internalSelf;
+    var tgt, act, ext;
     this.newHandler = function() {
       return {
-        run: function(actions) {
-          acts = actions;
-          internalSelf = true;
-        },
-        goto: function(target) {
+        // defaults internal transition, except for self transitions
+        goto: function(target, external) {
           tgt = target;
+          ext = external;
           return {
-            run: function(actions) {
-              acts = actions;
+            run: function(action) {
+              act = action;
             }
           };
         }
@@ -57,14 +55,13 @@ angular.module('hsm', [])
     };
     this.targetActions = function(src) {
       var ret;
-      tgt = tgt || (internalSelf && src);
       if (tgt) {
-        var external = (src === tgt) && !internalSelf;
-        ret = new TargetActions(src, tgt, acts, external);
+        var ex = !angular.isUndefined(ext) ? ext : src === tgt;
+        ret = new TargetActions(src, tgt, act, ex);
       }
       // reset state:
-      tgt = acts = null;
-      internalSelf = false;
+      tgt = act = null;
+      ext = undefined;
       return ret;
     };
   };
@@ -77,7 +74,7 @@ angular.module('hsm', [])
     f.onEvent = opt.onEvent || doNothing;
     f.onInit = opt.onInit || doNothing;
     f.onExit = opt.onExit || doNothing;
-    
+
     if (extra) {
       f.onTransition = opt.onTransition || doNothing;
     }
@@ -112,7 +109,8 @@ angular.module('hsm', [])
   };
   // returns null or TargetActions
   State.prototype.signal = function(cause) {
-    this.onEvent(this, cause, eventSink.newHandler());
+    var handler= eventSink.newHandler();
+    this.onEvent(this, cause, handler);
     return eventSink.targetActions(this);
   };
   // returns parent state (could be null)
@@ -467,7 +465,8 @@ angular.module('hsm', [])
     this.name = name;
     this.children = [];
     this.region = null;
-    this.queuing = null;
+    this.emitting = null;
+    this.useQueue = opt.queue;
     var c = this.callbacks = {}
     copyCallbacks(c, opt, true);
   };
@@ -492,45 +491,58 @@ angular.module('hsm', [])
   };
 
   Machine.prototype.emit = function(cause) {
-    if (this.queuing) {
-      this.queuing.push(cause);
-    } else {
-      var queue = this.queuing = [];
-      queue.push(cause);
-      //
-      var ctx = new Context(this.callbacks, cause);
-      var region = this.region;
-      //
-      while (queue.length) {
-        var q = queue.shift();
-        var xs = ctx.remit(region);
-        if (!xs) {
-          // unhandled event:
-          this.callbacks.onEvent(null, cause);
-        } else {
-          // need processing order, but have the reverse.
-          var transitions = []; // could resize based on number of addEnter(s)
-          do {
-            transitions.push(xs);
-            xs = xs.next;
-          } while (xs);
-          do {
-            var xf = transitions.pop();
-            xf.next = null; // help gc, cause why not.
-            this.callbacks.onTransition(xf.src, cause, xf.tgt);
-
-            var act = xf.actions; // catch and throw with more info?
-            if (act) {
-              act();
-            }
-            // FIX: catch competing re-entries
-            // (ex. parallel tree A-B,A-C: one xf wants B; the other, C.
-            // note; path can be empty when the target is a direct ancestor of src.
-            ctx.followPath(xf.region, xf.path);
-          } while (transitions.length);
-        }
+    if (this.emitting) {
+      if (this.useQueue) {
+        this.emitting.push(cause);
+      } else {
+        var msg = "already emitting";
+        $log.error("error!", cause.toString(), "but", msg, this.emitting.toString());
+        throw new Error(msg);
       }
-      this.queuing = null;
+    } else {
+      if (!this.useQueue) {
+        this.emitting = cause;
+        this.emitone(cause);
+      } else {
+        var queue = this.emitting = [];
+        var q = cause;
+        do {
+          this.emitone(q);
+          q = queue.shift();
+        } while (q);
+      }
+      this.emitting = null;
+    }
+  };
+
+  Machine.prototype.emitone = function(cause) {
+    var ctx = new Context(this.callbacks, cause);
+    var xs = ctx.remit(this.region);
+    if (!xs) {
+      // unhandled event:
+      this.callbacks.onEvent(null, cause);
+    } else {
+      // need processing order, but have the reverse.
+      var transitions = []; // could resize based on number of addEnter(s)
+      do {
+        transitions.push(xs);
+        xs = xs.next;
+      } while (xs);
+      // 
+      do {
+        var xf = transitions.pop();
+        xf.next = null; // help gc.
+        this.callbacks.onTransition(xf.src, cause, xf.tgt);
+
+        var act = xf.actions; // catch and throw with more info?
+        if (act) {
+          act();
+        }
+        // FIX: catch competing re-entries
+        // (ex. parallel tree A-B,A-C: one xf wants B; the other, C.
+        // note; path can be empty when the target is a direct ancestor of src.
+        ctx.followPath(xf.region, xf.path);
+      } while (transitions.length);
     }
   };
 

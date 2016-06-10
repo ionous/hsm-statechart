@@ -49,16 +49,27 @@ angular.module('hsm')
   var Cause = function(name, data) {
     this.name = name;
     this.data = data;
-
+  };
+  Cause.prototype.toString = function() {
+    return this.name;
   };
   Cause.prototype.reason = function() {
     return this.name;
   };
-  return {
+  var service = {
+    normalizeName: function(name) {
+      // angular's camelcasing alg
+      var SPECIAL_CHARS_REGEXP = /([\:\-\_]+(.))/g;
+      return name.replace(SPECIAL_CHARS_REGEXP, function(_, separator, letter, offset) {
+        return offset ? letter.toUpperCase() : letter;
+      });
+    },
     newCause: function(name, data) {
-      return new Cause(name, data);
+      var normalizedName = service.normalizeName(name);
+      return new Cause(normalizedName, data);
     },
   };
+  return service;
 })
 
 // parse angular html attributes
@@ -68,7 +79,8 @@ angular.module('hsm')
       var extra = {
         "$state": state,
         "$source": state,
-        "$evt": cause, // .name, .data
+        // see aslo onEvent()
+        "$evt": cause && (cause.data || cause.name),
         "$target": target,
       };
       return p(scope, extra);
@@ -76,12 +88,20 @@ angular.module('hsm')
   };
   var service = {
     getString: function(key, scope, attrs) {
+      var ret;
       var n = attrs ? attrs[key] : key;
-      return n && $interpolate(n)(scope.$parent);
+      if (!angular.isUndefined(n)) {
+        ret = $interpolate(n)(scope.$parent);
+      }
+      return ret;
     },
     getEvalFunction: function(key, attrs) {
+      var ret;
       var v = attrs[key];
-      return v && $parse(v);
+      if (!angular.isUndefined(v)) {
+        ret = $parse(v);
+      }
+      return ret;
     },
     getOption: function(key, scope, attrs) {
       var p = service.getEvalFunction(key, attrs);
@@ -91,7 +111,7 @@ angular.module('hsm')
   return service;
 })
 
-.directive('hsmEvent', function(hsmService, hsmParse, $log) {
+.directive('hsmEvent', function(hsmCause, hsmParse, hsmService, $log) {
   return {
     restrict: 'E',
     require: ["^^hsmState"],
@@ -101,29 +121,45 @@ angular.module('hsm')
       var dest = hsmParse.getString("goto", scope, attrs);
       var run = hsmParse.getEvalFunction("run", attrs);
       var hsmState = controllers[0];
-      if (!dest) {
-        // automatic self-transition
-        dest = hsmState.name;
+      if (angular.isUndefined(dest) && angular.isUndefined(run)) {
+        throw new Error("empty event handler?");
       }
-      hsmState.addEventHandler(on, when, dest, run)
+      var evt = hsmCause.normalizeName(on);
+      hsmState.addEventHandler(evt, when, dest, run);
     }
   }
 })
 
 .directive('hsmState', function(hsmService, hsmParse, $log) {
   var GuardedFunction = function(when, dest, cb) {
-    this.handle = function(hsmMachine, scope, args, then) {
-      var ok = !when || when(scope, args);
-      if (ok) {
-        var state = hsmMachine.getState(dest);
-        var after = then.goto(state);
-        if (cb) {
-          after.run(function() {
-            cb(scope, args);
-          });
+    this.handle = function(hsmMachine, src, scope, args, then) {
+      var finished;
+      if (!when || when(scope, args)) {
+        // no destination specified? 
+        // run the action in place and continue with the event.
+        if (angular.isUndefined(dest)) {
+          cb(scope, args);
+        } else {
+          var tgt, external;
+          if (!dest) {
+            tgt = src; // soft transition on a blank destination ( goto="" )
+            external = false; // internal, no self exit/enter.
+          } else {
+            tgt = hsmMachine.getState(dest);
+            external = undefined; // for default settings: external on self-transition.
+          }
+          var after = then.goto(tgt, external);
+          if (cb) {
+            // the action gets run on the
+            after.run(function() {
+              cb(scope, args);
+            });
+          }
+          // skip the rest of the event handlers on this state if we initiated a change
+          finished = true;
         }
       }
-      return ok;
+      return finished;
     };
   };
 
@@ -132,8 +168,10 @@ angular.module('hsm')
     var events = {};
     //
     this.init = function(hsmMachine, hsmParent, name, opt) {
-      this.name = name;
+      this.name = name || (hsmParent.name + "/" + hsmParent.kidCount);
+      this.autonamed = !name;
       this.active = false;
+      this.kidCount = 0;
       //
       var userEnter = opt.userEnter;
       var userInit = opt.userInit;
@@ -146,13 +184,13 @@ angular.module('hsm')
         onEnter: function(state, cause) {
           self.active = true;
           if (userEnter) {
-            userEnter(state, cause && cause.reason());
+            userEnter(state, cause);
           }
         },
         onInit: function(state, cause) {
           var ret;
           if (userInit) {
-            var name = userInit(state, cause && cause.reason());
+            var name = userInit(state, cause);
             if (name) {
               ret = hsmMachine.getState(name);
             }
@@ -163,11 +201,12 @@ angular.module('hsm')
           var fns = events[cause.name];
           if (fns) {
             var extra = {
-              "$evt": cause.data || cause.name
+              // see also makeCallback
+              "$evt": (cause.data || cause.name)
             };
             for (var i = 0; i < fns.length; i += 1) {
               var fn = fns[i];
-              if (fn.handle(hsmMachine, $scope, extra, then)) {
+              if (fn.handle(hsmMachine, state, $scope, extra, then)) {
                 break;
               }
             }
@@ -176,7 +215,7 @@ angular.module('hsm')
         onExit: function(state, cause) {
           self.active = false;
           if (userExit) {
-            userExit(state, cause.reason());
+            userExit(state, cause);
           }
         }
       });
@@ -185,40 +224,40 @@ angular.module('hsm')
       };
       // make a child state
       this.makeKid = function(name, opts) {
+        this.kidCount++;
         return state.newState(name, opts);
       };
-      //
+      // evt should be a "normalized" (camelCase) name
       this.addEventHandler = function(evt, when, dest, run) {
-        var key = evt.toLowerCase();
-        var prev = events[key];
+        var prev = events[evt];
         var fn = new GuardedFunction(when, dest, run);
         if (prev) {
           prev.push(fn);
         } else {
-          events[key] = [fn];
+          events[evt] = [fn];
         }
       };
     }; // init
   }; // hsmState constructor
 
   // ctrl api: add a new event handler
-  var stateCount = 0;
-
   return {
     controller: hsmState,
     transclude: true,
+    // FIX is there a way to control this based on require etc?
+    // or global configuration?
+    // template: '<div class="hsm-state-label" ng-if="!hsmState.autonamed">{{hsmState.active?hsmState.name:""}}</div>',
     template: '',
     scope: true,
     controllerAs: "hsmState",
     require: ["^^hsmMachine", "?^^hsmState", "hsmState"],
     link: function(scope, element, attrs, controllers, transcludeFn) {
-      stateCount += 1;
       var hsmMachine = controllers[0];
       var hsmParent = controllers[1] || hsmMachine;
       var hsmState = controllers[2];
       var srcExp = attrs['hsmState'] || attrs['name'];
       // one-time bindings
-      var name = hsmParse.getString(srcExp, scope) || ("hsmState" + stateCount);
+      var name = hsmParse.getString(srcExp, scope);
       var parallel = hsmParse.getEvalFunction("parallel", attrs);
       //
       var opt = {
@@ -228,7 +267,7 @@ angular.module('hsm')
         parallel: parallel && parallel(scope)
       };
       hsmState.init(hsmMachine, hsmParent, name, opt);
-      //
+
       transcludeFn(scope, function(clone) {
         element.append(clone);
       });
@@ -252,6 +291,7 @@ angular.module('hsm')
       this.machine = null;
       this.states = {}; // we need a name map for state return lookup
       this.stage = stage.default;
+      this.kidCount = 0;
     };
     hsmMachine.prototype.$onDestroy = function() {
       $log.info("destroying", this.name);
@@ -269,6 +309,7 @@ angular.module('hsm')
       var userTransition = opt.userTransition;
 
       this.machine = hsmService.newMachine(name, {
+        queue: true,
         onEnter: function(state, cause) {
           return userEnter && userEnter(state, cause);
         },
@@ -335,6 +376,7 @@ angular.module('hsm')
       return hsmParent.makeKid(name, opts);
     };
     hsmMachine.prototype.makeKid = function(name, opts) {
+      this.kidCount++;
       return this.machine.newState(name, opts);
     };
     // returns hsmState

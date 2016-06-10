@@ -329,15 +329,16 @@ describe("hsmService", function() {
       var action = function() {
         recentActions.push(srcname + tgtname);
       };
+      var tgt, ext;
       if (tgtname == "-") {
-        then.run(action);
+        tgtname = srcname;
+        ext = false; // explictly an internal transition
+      }
+      var tgt = states[tgtname];
+      if (!tgt) {
+        throw new Error("invalid state " + tgt);
       } else {
-        var tgt = states[tgtname];
-        if (!tgt) {
-          throw new Error("invalid state " + tgt);
-        } else {
-          then.goto(tgt).run(action);
-        }
+        then.goto(tgt, ext).run(action);
       }
     };
     var common = {
@@ -556,7 +557,7 @@ describe("hsmService", function() {
     expect(p).active("h", "A", "i", "B", "l", "y", "m", "z", "j", "w", "k");
   });
   it("should handle the self transition of a leaf region", function() {
-    var p = makeParallel(); 
+    var p = makeParallel();
     p.send("jj");
     expect(p).active("h", "A", "i", "x", "j", "k", "w");
     expect(p).enterExit({
@@ -578,7 +579,7 @@ describe("hsmService", function() {
     });
   });
   it("should handle the internal self transition of a leaf region", function() {
-    var p = makeParallel(); 
+    var p = makeParallel();
     p.send("j-");
     expect(p).active("h", "A", "i", "x", "j", "k", "w");
     expect(p).enterExit({
@@ -600,7 +601,7 @@ describe("hsmService", function() {
     });
   });
   it("should handle the self transition of a parallel region", function() {
-    var p = makeParallel(); 
+    var p = makeParallel();
     p.send("AA");
     expect(p).active("h", "A", "i", "x", "j", "k", "w");
     expect(p).enterExit({
@@ -617,7 +618,7 @@ describe("hsmService", function() {
     });
   });
   it("should handle the internal transition of a parallel region", function() {
-    var p = makeParallel(); 
+    var p = makeParallel();
     p.send("A-");
     expect(p).active("h", "A", "i", "x", "j", "k", "w");
     expect(p).enterExit({
