@@ -1,6 +1,7 @@
 to do:
 	. handle conflicting enter paths from different transitions
 	. possibly clean up builder to record state names, and hold off state creation until some .finalize() to make state records truly read-only.
+	. allow states to be used -- possibly by establishing prefixes via hsmInit that can be used in state declarations and gotos.
 
 ..........
 angular specifics:
@@ -42,6 +43,16 @@ a few state patterns so far:
    
 	scoped events: start/stop for asynchronous behavior.
 
+	
+best practices:
+
+	prefer using "goto" to directly switch states, as opposed to running an action and using the side effects of that action to switch states. the latter practice can be useful for communicating across parallel boundries, for combining multiple occurances of run/goto pairs: run="same action" goto="same state", or for changing the result / destination of an action depending on the statechart's current context. [ rationale: it couples cause and effect, making the statechart easier to understand, except in those cases where cause and effect differ, or where changes need to be communicated more broadly. ]
+
+	events mainly arise from changes to a resource or from progress in during an action; however in some cases -- a parallel statemachine can be used to split or merge events ( 1->various depending on context; or normalizing many disparate events to one event. ) for example: transforming a mouse down event into click, double-click, and drag events.
+
+	events raised by a control should be, as much as possible, events scoped to that control ( "internale events" ) -- actions which trigger events raised by other controls ( "external events" ) should be called from the statechart. ( ex. a save/load window's button listener might raise a button clicked event to the machine, so that the statechart can "delete save game"; the button shouldnt directly run the "delete save game" action. ) [ rationale: this ensures the statechart manages the app's overall behavior, and helps keep controls directed to single purpose tasks; making both chart behavior, and chart controls easier to understand. ]
+
+	is it better to use the smallest possible event set, and context? or a large, very specific event set? ( ex. window opened, versus window #32 opened; close window request does window == me, or my window close request. )
 
 .......
 general alg: exit up to lca of *source* and target.

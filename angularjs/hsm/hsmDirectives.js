@@ -73,8 +73,8 @@ angular.module('hsm')
 })
 
 // parse angular html attributes
-.service("hsmParse", function($interpolate, $parse) {
-  var makeCallback = function(p, scope) {
+.service("hsmParse", function($interpolate, $log, $parse) {
+  var makeCallback = function(name, p, scope) {
     return function(state, cause, target) {
       var extra = {
         "$state": state,
@@ -83,7 +83,13 @@ angular.module('hsm')
         "$evt": cause && (cause.data || cause.name),
         "$target": target,
       };
-      return p(scope, extra);
+      var ret;
+      try {
+        ret = p(scope, extra);
+      } catch (e) {
+        $log.error("hsmParse", name, "caught", e);
+      }
+      return ret;
     };
   };
   var service = {
@@ -105,7 +111,7 @@ angular.module('hsm')
     },
     getOption: function(key, scope, attrs) {
       var p = service.getEvalFunction(key, attrs);
-      return p && makeCallback(p, scope);
+      return p && makeCallback(key, p, scope);
     },
   };
   return service;
@@ -172,6 +178,7 @@ angular.module('hsm')
       this.autonamed = !name;
       this.active = false;
       this.kidCount = 0;
+      this.nameDepth = hsmParent.nameDepth + (this.autonamed ? 0 : 1);
       //
       var userEnter = opt.userEnter;
       var userInit = opt.userInit;
@@ -292,6 +299,7 @@ angular.module('hsm')
       this.states = {}; // we need a name map for state return lookup
       this.stage = stage.default;
       this.kidCount = 0;
+      this.nameDepth = 0;
     };
     hsmMachine.prototype.$onDestroy = function() {
       $log.info("destroying", this.name);

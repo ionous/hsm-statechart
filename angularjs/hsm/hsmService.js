@@ -109,7 +109,7 @@ angular.module('hsm', [])
   };
   // returns null or TargetActions
   State.prototype.signal = function(cause) {
-    var handler= eventSink.newHandler();
+    var handler = eventSink.newHandler();
     this.onEvent(this, cause, handler);
     return eventSink.targetActions(this);
   };
@@ -375,6 +375,9 @@ angular.module('hsm', [])
       }
     } else {
       var set = region.leafSet = new RegionSet();
+      if (!entered.children || !entered.children.length) {
+        $log.warn("creating leaf set", region, path, "but it has no children");
+      }
       set.regions = entered.children.map(function(child) {
         var sub = new Region(child);
         ctx.enterState(child);
@@ -414,27 +417,34 @@ angular.module('hsm', [])
     var ret, ctx = this;
     if (leafSet) {
       var regions = leafSet.regions;
-      for (var i = 0; i < regions.length; i += 1) {
-        var sub = regions[i];
-        var xf = ctx.remit(sub);
-        if (xf) {
-          // target is as high, or higher than the leaf containing the regions.
-          // if the target was deeper, then the lca would deeper than the leaf;
-          // the transition would have been handled *inside* in sub-region remit.
-          if (xf.tgt.depth < leaf.depth) {
-            throw new Error("expected target at or above leaf");
-          }
-          // hsm uses internal transitions except for self-transitions:
-          // if the target is the container, but the source is below it -- 
-          // we shouldn't interrupt the siblings.
-          if (xf.finished || (xf.tgt === leaf)) {
-            xf.finished = true; // consider it finished.
-            ret = ret ? ret.addEnter(xf) : xf;
-          } else {
-            // abandons sibling transitions, 
-            // we will be exiting this set soon.
-            ret = xf;
-            break;
+      // note: we shouldnt be able to have null regions with a leaf set,
+      // it does happen... somehow.... maybe due to thrown errors in creation
+      if (!regions) {
+        $log.warn("avoiding leafSet with null regions", leaf, leafSet);
+        leafSet.regions= [];
+      } else {
+        for (var i = 0; i < regions.length; i += 1) {
+          var sub = regions[i];
+          var xf = ctx.remit(sub);
+          if (xf) {
+            // target is as high, or higher than the leaf containing the regions.
+            // if the target was deeper, then the lca would deeper than the leaf;
+            // the transition would have been handled *inside* in sub-region remit.
+            if (xf.tgt.depth < leaf.depth) {
+              throw new Error("expected target at or above leaf");
+            }
+            // hsm uses internal transitions except for self-transitions:
+            // if the target is the container, but the source is below it -- 
+            // we shouldn't interrupt the siblings.
+            if (xf.finished || (xf.tgt === leaf)) {
+              xf.finished = true; // consider it finished.
+              ret = ret ? ret.addEnter(xf) : xf;
+            } else {
+              // abandons sibling transitions, 
+              // we will be exiting this set soon.
+              ret = xf;
+              break;
+            }
           }
         }
       }
@@ -514,8 +524,14 @@ angular.module('hsm', [])
       this.emitting = null;
     }
   };
-
   Machine.prototype.emitone = function(cause) {
+    try {
+      this.emitoneUnsafe(cause);
+    } catch (e) {
+      $log.error(e);
+    }
+  };
+  Machine.prototype.emitoneUnsafe = function(cause) {
     var ctx = new Context(this.callbacks, cause);
     var xs = ctx.remit(this.region);
     if (!xs) {
