@@ -528,7 +528,7 @@ angular.module('hsm', [])
     try {
       this.emitoneUnsafe(cause);
     } catch (e) {
-      $log.error(e);
+      $log.error("hsmService", this.name, "error during emit", cause.name, e);
     }
   };
   Machine.prototype.emitoneUnsafe = function(cause) {
