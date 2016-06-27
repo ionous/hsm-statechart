@@ -2,7 +2,6 @@
 
 angular.module('hsm')
 
-// 
 .directive("hsmLog", function($log) {
   var log = function(logger, msg) {
     if (logger.test) {
@@ -136,7 +135,12 @@ angular.module('hsm')
   }
 })
 
-.directive('hsmState', function(hsmService, hsmParse, $log) {
+.directive('hsmState', function(hsmService, hsmParse, $injector, $log) {
+  var displayStates;
+  try {
+    displayStates = $injector.get("HSM_HTML");
+  } catch (e) {};
+  //
   var GuardedFunction = function(when, dest, cb) {
     this.handle = function(hsmMachine, src, scope, args, then) {
       var finished;
@@ -170,7 +174,7 @@ angular.module('hsm')
   };
 
   // our controller constructor function
-  var hsmState = function($scope) {
+  var hsmState = function($log, $scope) {
     var events = {};
     //
     this.init = function(hsmMachine, hsmParent, name, opt) {
@@ -199,7 +203,11 @@ angular.module('hsm')
           if (userInit) {
             var name = userInit(state, cause);
             if (name) {
-              ret = hsmMachine.getState(name);
+              try {
+                ret = hsmMachine.getState(name);
+              } catch (e) {
+                // ignore ( already logged ), return null.
+              }
             }
           }
           return ret;
@@ -211,7 +219,7 @@ angular.module('hsm')
               // see also makeCallback
               "$evt": (cause.data || cause.name)
             };
-            for (var i = 0; i < fns.length; i += 1) {
+            for (var i = 0; i < fns.length; i++) {
               var fn = fns[i];
               if (fn.handle(hsmMachine, state, $scope, extra, then)) {
                 break;
@@ -251,10 +259,7 @@ angular.module('hsm')
   return {
     controller: hsmState,
     transclude: true,
-    // FIX is there a way to control this based on require etc?
-    // or global configuration?
-    // template: '<div class="hsm-state-label" ng-if="!hsmState.autonamed">{{hsmState.active?hsmState.name:""}}</div>',
-    template: '',
+    template: displayStates ? '<div class="hsm-state-label" ng-if="!hsmState.autonamed">{{hsmState.active?hsmState.name:""}}</div>' : '',
     scope: true,
     controllerAs: "hsmState",
     require: ["^^hsmMachine", "?^^hsmState", "hsmState"],
@@ -352,8 +357,14 @@ angular.module('hsm')
         throw new Error(msg);
       };
       this.stage = stage.initialized;
-      this.machine = this.machine.start(); // overwrite with actual machine.
-      this.stage = stage.started;
+      var state;
+      try {
+        this.machine = this.machine.start(); // overwrite with actual machine.
+        this.stage = stage.started;
+      } catch (e) {
+        $log.error("error starting machine", e);
+        this.stage = stage.dead;
+      };
     };
     hsmMachine.prototype.emit = function(_namespace, _name, _data) {
       var scoped = !angular.isUndefined(_data);
@@ -361,10 +372,17 @@ angular.module('hsm')
       var data = scoped ? _data : _name;
       var cause = hsmCause.newCause(name, data);
 
-      var stage = this.stage;
-      this.stage = "emitting";
-      this.machine.emit(cause);
-      this.stage = stage;
+      var rest = this.stage;
+      if ((rest == stage.started) || (rest == stage.emitting)) {
+        this.stage = stage.emitting;
+        try {
+          this.machine.emit(cause);
+        } catch (e) {
+          $log.error(e);
+          rest = stag.dead;
+        }
+        this.stage = rest;
+      }
     };
     // add a substate
     hsmMachine.prototype.addState = function(hsmState, hsmParent, opts) {
