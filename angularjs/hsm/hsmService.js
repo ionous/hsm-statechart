@@ -274,6 +274,11 @@ angular.module('hsm', [])
       var ok = this._exitUp(region) && this._matchUp(region);
       if (ok) {
         this.finished = true;
+        // PATCH: 6/28/16: see Fini note as well.
+        // fixed? we want to update the xfer region,
+        // otherwise when we run the entry transition
+        // we will be pointing to some other region.
+        this.region = region;
       } else {
         if (region.leafState != null) {
           throw new Error("expected fully finished region");
@@ -421,7 +426,7 @@ angular.module('hsm', [])
       // it does happen... somehow.... maybe due to thrown errors in creation
       if (!regions) {
         $log.warn("avoiding leafSet with null regions", leaf, leafSet);
-        leafSet.regions= [];
+        leafSet.regions = [];
       } else {
         for (var i = 0; i < regions.length; i += 1) {
           var sub = regions[i];
@@ -430,9 +435,15 @@ angular.module('hsm', [])
             // target is as high, or higher than the leaf containing the regions.
             // if the target was deeper, then the lca would deeper than the leaf;
             // the transition would have been handled *inside* in sub-region remit.
-            if (xf.tgt.depth < leaf.depth) {
-              throw new Error("expected target at or above leaf");
-            }
+            //
+            // PATCH: 6/28/16 - the test seems reversed from the comment --
+            // and there's a set of states in the game which trigger this.
+            // Fini is a middle child of GameStarted(parallel),
+            // its transitioning to a high, direct, non-root, non-leaf state with a nil hsm-init.
+            //
+            // if (xf.tgt.depth < leaf.depth) {
+            //   throw new Error("expected target at or above leaf");
+            // }
             // hsm uses internal transitions except for self-transitions:
             // if the target is the container, but the source is below it -- 
             // we shouldn't interrupt the siblings.

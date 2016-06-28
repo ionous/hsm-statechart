@@ -156,6 +156,9 @@ angular.module('hsm')
             external = false; // internal, no self exit/enter.
           } else {
             tgt = hsmMachine.getState(dest);
+            if (!tgt) {
+              $log.warn("GuardedFunction, no such state", dest);
+            }
             external = undefined; // for default settings: external on self-transition.
           }
           var after = then.goto(tgt, external);
@@ -203,10 +206,9 @@ angular.module('hsm')
           if (userInit) {
             var name = userInit(state, cause);
             if (name) {
-              try {
-                ret = hsmMachine.getState(name);
-              } catch (e) {
-                // ignore ( already logged ), return null.
+              ret = hsmMachine.getState(name);
+              if (!ret) {
+                $log.warn("onInit, no such state", state.name, "->", name);
               }
             }
           }
@@ -234,7 +236,7 @@ angular.module('hsm')
           }
         }
       });
-      this.getState = function() {
+      this.getInstance = function() {
         return state.state();
       };
       // make a child state
@@ -410,15 +412,10 @@ angular.module('hsm')
       var key = name.toLowerCase();
       return this.states[key];
     };
-    // returns hsmState
+    // returns service state
     hsmMachine.prototype.getState = function(name) {
       var ret = this.findState(name);
-      if (!ret) {
-        var msg = "state not found";
-        $log.error(msg, name);
-        throw new Error(msg);
-      }
-      return ret.getState();
+      return ret && ret.getInstance();
     };
     //
     return {
