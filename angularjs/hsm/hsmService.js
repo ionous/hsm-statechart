@@ -1,5 +1,3 @@
-'use strict';
-
 /** 
  * port of https://github.com/ionous/hsm-statechart/blob/master/hsm/hsm_machine.c
  * fix: consider removing angular dependency in favor of something like requirejs...
@@ -7,6 +5,9 @@
 angular.module('hsm', [])
 
 .factory('hsmService', function($log) {
+  'use strict';
+
+
   //-----------------------------------------------
   // empty helper function.
   var doNothing = function() {};
@@ -130,7 +131,7 @@ angular.module('hsm', [])
   // our region's leafState and leafSet will be null.
   Region.prototype.exitRegion = function(killer) {
     return this.evalExit(killer, function(leaf) {
-      return leaf == null;
+      return leaf === null;
     });
   };
   // exits until the region's leaf state matches the passed state
@@ -154,7 +155,7 @@ angular.module('hsm', [])
       if (set) {
         killer.exitSet(set);
         this.leafSet = null;
-      };
+      }
       do {
         var parent = killer.exitState(leaf);
         leaf = (parent && !parent.terminal()) ? parent : null;
@@ -227,7 +228,7 @@ angular.module('hsm', [])
       throw new Error("exit to source failed");
     }
     // begin seeking the lowest common ancestor
-    return this.finishExit(region)
+    return this.finishExit(region);
   };
   // self-transition within the passed region. altering the region.
   Xfer.prototype.selfTransition = function(internal) {
@@ -254,7 +255,7 @@ angular.module('hsm', [])
       throw new Error("self transition failed");
     }
     // since we arent calling finish exit, update the status ourselves
-    return this.finished = true;
+    this.finished = true;
   };
   // move the target edge up to the depth of src, 
   // recording the re-entry path as we go.
@@ -280,7 +281,7 @@ angular.module('hsm', [])
         // we will be pointing to some other region.
         this.region = region;
       } else {
-        if (region.leafState != null) {
+        if (region.leafState !== null) {
           throw new Error("expected fully finished region");
         }
       }
@@ -488,7 +489,7 @@ angular.module('hsm', [])
     this.region = null;
     this.emitting = null;
     this.useQueue = opt.queue;
-    var c = this.callbacks = {}
+    var c = this.callbacks = {};
     copyCallbacks(c, opt, true);
   };
 
@@ -596,7 +597,7 @@ angular.module('hsm', [])
       machine = null;
       m.start(state || children[0]);
       return m;
-    }
+    };
   };
 
   //-----------------------------------------------
