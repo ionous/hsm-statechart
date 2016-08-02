@@ -3,14 +3,12 @@ angular.module('hsm')
 .directive("hsmLog",
   function($log) {
     'use strict';
-    
     var log = function(logger, msg) {
       if (logger.test) {
         logger.test.next(msg);
       }
       $log.info("hsm:", msg);
     };
-
     var hsmLog = function() {};
     hsmLog.prototype.enter = function(state) {
       log(this, state.name + "-ENTRY");
@@ -79,8 +77,6 @@ angular.module('hsm')
 .service("hsmParse",
   function($interpolate, $log, $parse) {
     'use strict';
-
-
     var makeCallback = function(name, p, scope) {
       return function(state, cause, target) {
         var extra = {
@@ -148,11 +144,9 @@ angular.module('hsm')
 .directive('hsmState',
   function(hsmService, hsmParse, $injector, $log) {
     'use strict';
-
-
     var displayStates;
     try {
-      displayStates = $injector.get("HSM_HTML");
+      displayStates = $injector.get("ShowHsm");
     } catch (e) {}
     //
     var GuardedFunction = function(when, dest, cb) {
