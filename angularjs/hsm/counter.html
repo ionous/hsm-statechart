@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.5.0/angular.min.js"></script>
+  <script src="hsmService.js"></script>
+  <script src="hsmDirectives.js"></script>
+  <!-- -->
+  <script src="samek_plus.js"></script>
+  <style TYPE="text/css">
+  hsm-state {
+    margin-left: 1em;
+    display: block;
+  }
+  </style>
+</head>
+
+<body ng-app="hsm" hsm-log="log" hsm-machine="machine" hsm-transition="log.trans($source,$target)" hsm-enter="log.enter($state)" hsm-exit="log.exit($state)" hsm-init="log.init($state)" ng-init="c= {val:1}">
+  <a ng-click="machine.emit('click')" href="">counter {{c.val}}</a>
+  <hsm-state>
+    <hsm-state name="s0" hsm-enter="log.info('s0:',c.val)">
+      <hsm-event on="click" run="c.val= c.val+1"></hsm-event>
+      <hsm-event on="click" when="c.val > 2" goto="s1"></hsm-event>
+      <span ng-if="hsmState.active">increasing</span>
+    </hsm-state>
+    <hsm-state name="s1" hsm-enter="log.info('s1:',c.val)">
+      <hsm-event on="click" run="c.val= c.val-1"></hsm-event>
+      <hsm-event on="click" when="c.val <= 0" goto="s0"></hsm-event>
+      <span ng-if="hsmState.active">decreasing</span>
+    </hsm-state>
+  </hsm-state>
+</body>
+
+</html>
