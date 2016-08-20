@@ -214,9 +214,13 @@ angular.module('hsm')
             if (userInit) {
               var name = userInit(state, cause);
               if (name) {
-                ret = hsmMachine.getState(name);
-                if (!ret) {
+                var next = hsmMachine.getState(name);
+                if (!next) {
                   $log.warn("onInit, no such state", state.name, "->", name);
+                } else if (next.parent !== state) {
+                  $log.error("onInit", next.name, "is not a child of", state.name);
+                } else {
+                  ret = next;
                 }
               }
             }
