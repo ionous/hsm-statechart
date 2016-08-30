@@ -46,7 +46,6 @@ angular.module('hsm')
 .service("hsmCause",
   function() {
     'use strict';
-
     var Cause = function(name, data) {
       this.name = name;
       this.data = data;
@@ -189,15 +188,17 @@ angular.module('hsm')
       var events = {};
       //
       this.init = function(hsmMachine, hsmParent, name, opt) {
-        this.name = name || (hsmParent.name + "/" + hsmParent.kidCount);
+        this.name = (name || (hsmParent.name + "/" + hsmParent.kidCount));
+        this.label = this.name + (opt.parallel ? "(p)" : "");
         this.autonamed = !name;
         this.active = false;
         this.kidCount = 0;
         this.nameDepth = hsmParent.nameDepth + (this.autonamed ? 0 : 1);
+        this.parallel= opt.parallel;
         //
-        var userEnter = opt.userEnter;
+        var userEnters = opt.userEnter ? [opt.userEnter] : [];
+        var userExits = opt.userExit ? [opt.userExit] : [];
         var userInit = opt.userInit;
-        var userExit = opt.userExit;
         //
         // create our state
         var self = this;
@@ -205,9 +206,9 @@ angular.module('hsm')
           parallel: opt.parallel,
           onEnter: function(state, cause) {
             self.active = true;
-            if (userEnter) {
+            userEnters.forEach(function(userEnter) {
               userEnter(state, cause);
-            }
+            });
           },
           onInit: function(state, cause) {
             var ret;
@@ -243,11 +244,17 @@ angular.module('hsm')
           },
           onExit: function(state, cause) {
             self.active = false;
-            if (userExit) {
+            userExits.forEach(function(userExit) {
               userExit(state, cause);
-            }
+            });
           }
         });
+        this.onEnter = function(fn) {
+          userEnters.push(fn);
+        };
+        this.onExit = function(fn) {
+          userExits.push(fn);
+        };
         this.getInstance = function() {
           return state.state();
         };
@@ -273,7 +280,7 @@ angular.module('hsm')
     return {
       controller: hsmState,
       transclude: true,
-      template: displayStates ? '<div class="hsm-state-label" ng-if="!hsmState.autonamed">{{hsmState.active?hsmState.name:""}}</div>' : '',
+      template: displayStates ? '<div class="hsm-state-label">{{hsmState.active && (!hsmState.autonamed || hsmState.parallel) ?hsmState.label:""}}</div>' : '',
       scope: true,
       controllerAs: "hsmState",
       require: ["^^hsmMachine", "?^^hsmState", "hsmState"],
@@ -293,7 +300,6 @@ angular.module('hsm')
           parallel: parallel && parallel(scope)
         };
         hsmState.init(hsmMachine, hsmParent, name, opt);
-
         transcludeFn(scope, function(clone) {
           element.append(clone);
         });
