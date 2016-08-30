@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.5.0/angular.min.js"></script>
+  <script src="hsmService.js"></script>
+  <script src="hsmDirectives.js"></script>
+  <!-- -->
+  <style TYPE="text/css">
+  hsm-state {
+    margin-left: 1em;
+    display: block;
+  }
+  </style>
+</head>
+
+<body ng-app="hsm" hsm-log="log" hsm-machine="machine" hsm-transition="log.trans($source,$target)" hsm-enter="log.enter($state)" hsm-exit="log.exit($state)" hsm-init="log.init($state)">
+  <p>A manual test for checking transitions to a parallel sibling state.</p>
+  <p>Pressing "click", before the bug fix, would cause both A1 and A2 to become active. Only A2 (and B) should have been active.</p>
+  <a ng-click="machine.emit('click')" href="">click</a>
+  <hsm-state name="Root">
+    <span ng-if="hsmState.active">Root*</span>
+    <hsm-state name="Parallel" parallel="true">
+      <span ng-if="hsmState.active">Parallel*</span>
+      <hsm-state name="A">
+        <span ng-if="hsmState.active">A*</span>
+        <hsm-state name="A1">
+          <span ng-if="hsmState.active">A1*</span>
+        </hsm-state>
+        <hsm-state name="A2">
+          <span ng-if="hsmState.active">A2*</span>
+        </hsm-state>
+      </hsm-state>
+      <hsm-state name="B">
+        <span ng-if="hsmState.active">B*</span>
+        <hsm-state name="B1">
+          <span ng-if="hsmState.active">B1*</span>
+          <hsm-event on="click" goto="A2"></hsm-event>
+        </hsm-state>
+      </hsm-state>
+    </hsm-state>
+  </hsm-state>
+</body>
+
+</html>

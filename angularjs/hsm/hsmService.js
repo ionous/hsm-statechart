@@ -121,13 +121,15 @@ angular.module('hsm', [])
   };
 
   //-----------------------------------------------
-  // active region:
-  // the head state is not parallel, but the leaf state may be.
+  // an active region.
+  // there is at least one, but possibly more than one active in a machine.
   var Region = function(state) {
+    // the head state of a region is not parallel, but the leaf state may be.
     this.leafState = state || null;
+    // if the leafState(State) is parallel, then the leafSet(RegionSet) exists.
     this.leafSet = null;
   };
-  // exit all states withing this region; after:
+  // exit all states within this region; after:
   // our region's leafState and leafSet will be null.
   Region.prototype.exitRegion = function(killer) {
     return this.evalExit(killer, function(leaf) {
@@ -169,7 +171,7 @@ angular.module('hsm', [])
 
   //-----------------------------------------------
   // the container state is parallel
-  // there is a region for every state in the container state..
+  // there is a region for every state in the container state.
   var RegionSet = function() {
     this.regions = null;
   };
@@ -205,7 +207,7 @@ angular.module('hsm', [])
     this.path.push(state);
     return state.parent;
   };
-  // transition within or below the passed region. altering the region.
+  // transition within or below the current region. altering the region.
   Xfer.prototype.innerExit = function() {
     var ctx = this.ctx;
     var region = this.region;
@@ -214,7 +216,7 @@ angular.module('hsm', [])
     this.lca = this._rollUp(src);
     // when our target is in a child region below the leaf, then,
     // due to the rules of inner transition, our leaf wont actually exit. 
-    // without the leaf exit, the leaf set wont exit --
+    // without the leaf exit, the set wont exit --
     // yet, the descendant is still going to get re/entered.
     // it its active already, it will have two enters and no exits.
     // a solution is to exit the leaf manually if needed.
@@ -230,7 +232,7 @@ angular.module('hsm', [])
     // begin seeking the lowest common ancestor
     return this.finishExit(region);
   };
-  // self-transition within the passed region. altering the region.
+  // self-transition within the current region. altering the region.
   Xfer.prototype.selfTransition = function(internal) {
     var ctx = this.ctx;
     var region = this.region;
@@ -276,9 +278,16 @@ angular.module('hsm', [])
       if (ok) {
         this.finished = true;
         // PATCH: 6/28/16: see Fini note as well.
-        // fixed? we want to update the xfer region,
+        // we want to update the xfer region,
         // otherwise when we run the entry transition
         // we will be pointing to some other region.
+        // NOTE: 8/29/16: when we exit into a state containing regions
+        // we want to exit those regions; this code is littered in a few places
+        // it makes me think this should be handled in one place elsewhere....
+        if (region.leafSet) {
+          region.leafSet.exitSet(this.ctx);
+          region.leafSet = null;
+        }
         this.region = region;
       } else {
         if (region.leafState !== null) {
@@ -294,7 +303,7 @@ angular.module('hsm', [])
     var ctx = this.ctx;
     var depth = this.lca.depth;
     return region.evalExit(ctx, function(leaf) {
-      return leaf && (leaf.depth == depth);
+      return leaf && (leaf.depth === depth);
     });
   };
   // given that the tracking state and the edge state are at equal depths:

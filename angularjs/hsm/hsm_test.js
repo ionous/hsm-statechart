@@ -303,8 +303,7 @@ describe("hsmService", function() {
   //               |                   | B/2 (4,m--5,z)
   //               | A/3 (2,k)
   // 0,(h+--1,q)
-  var makeParallel = function(first) {
-    var m = hsmService.newMachine("test", {});
+  var makeBase = function() {
     var Counter = function() {
       var counts = {
         enter: {},
@@ -377,22 +376,6 @@ describe("hsmService", function() {
       states[state.name] = state;
       return s;
     };
-    var sh = add(m.newState("h", common));
-    var sA = add(sh.newState("A", parallel));
-    var sq = add(sh.newState("q", common));
-    // j (now) comes before i
-    var sj = add(sA.newState("j", common));
-    // i switches between parallel and not parallel
-    var si = add(sA.newState("i", common));
-    var sx = add(si.newState("x", common));
-    var sB = add(si.newState("B", parallel));
-    var sk = add(sA.newState("k", common));
-    var sl = add(sB.newState("l", common));
-    var sm = add(sB.newState("m", common));
-    var sw = add(sj.newState("w", common));
-    var sy = add(sl.newState("y", common));
-    var st = add(sl.newState("t", common));
-    var sz = add(sm.newState("z", common));
     var isActive = function(val, args) {
       var fails = [];
       for (var i = 0; i < args.length; i++) {
@@ -404,24 +387,59 @@ describe("hsmService", function() {
       }
       return fails.length ? fails : true;
     };
-    var machine = m.start(states[first]);
-    return {
-      machine: machine,
-      // called "send" instead of "emit" to help with 
-      // search/replace of jasmine "it" -> "xit".
-      send: function(_arguments) {
-        var es = Array.prototype.slice.call(arguments).join("");
-        //console.log("send", es);
-        recentActions.length = 0;
-        machine.emit(es);
+    var b = {
+      addCommon: function(c, n) {
+        return add(c.newState(n, common));
       },
+      addParallel: function(c, n) {
+        return add(c.newState(n, parallel));
+      },
+      states: states,
       active: active,
       actions: recentActions,
       counter: counter,
       enters: function(s) {
         return enters[s] || 0;
       },
-    }
+      start: function(m, first) {
+        var machine = m.start(states[first]);
+        b.machine = machine;
+        // called "send" instead of "emit" to help with 
+        // search/replace of jasmine "it" -> "xit".
+        b.send = function(_arguments) {
+          var es = Array.prototype.slice.call(arguments).join("");
+          //console.log("send", es);
+          b.actions.length = 0;
+          machine.emit(es);
+        };
+        return b;
+      },
+    };
+    return b;
+  };
+
+  var makeParallel = function(first) {
+    var b = makeBase();
+    //
+    var m = hsmService.newMachine("test", {});
+    var sh = b.addCommon(m, "h");
+    var sA = b.addParallel(sh, "A");
+    var sq = b.addCommon(sh, "q");
+    // j (now) comes before i
+    var sj = b.addCommon(sA, "j");
+    // i switches between parallel and not parallel
+    var si = b.addCommon(sA, "i");
+    var sx = b.addCommon(si, "x");
+    var sB = b.addParallel(si, "B");
+    var sk = b.addCommon(sA, "k");
+    var sl = b.addCommon(sB, "l");
+    var sm = b.addCommon(sB, "m");
+    var sw = b.addCommon(sj, "w");
+    var sy = b.addCommon(sl, "y");
+    var st = b.addCommon(sl, "t");
+    var sz = b.addCommon(sm, "z");
+    //
+    return b.start(m, first);
   };
 
   it("should build parallel trees", function() {
@@ -458,6 +476,18 @@ describe("hsmService", function() {
       active: function(_arguments) {
         var got = Object.keys(this.actual.active);
         return compare(this, "active", arguments, got, true);
+      },
+      dump: function(_arguments) {
+        var gotList = Object.keys(this.actual.active);
+        var src = Array.prototype.slice.call(arguments);
+
+        src = src.sort();
+        gotList = gotList.slice().sort();
+
+        var expects = src.join(",");
+        var actually = gotList.join(",");
+        console.log(expects, actually);
+        return true;
       },
       enterExit: function(expected) {
         var p = this.actual;
@@ -844,5 +874,21 @@ describe("hsmService", function() {
       }
     });
   });
-
+  it("should allow entering a sibling region state", function() {
+    var b = makeBase();
+    //
+    var m = hsmService.newMachine("test", {});
+    var sR = b.addCommon(m, "R");
+    var sP = b.addParallel(sR, "P");
+    var sA = b.addCommon(sP, "A");
+    var sx = b.addCommon(sA, "x");
+    var sy = b.addCommon(sA, "y");
+    var sB = b.addCommon(sP, "B");
+    var sB = b.addCommon(sB, "z");
+    //
+    b.start(m);
+    expect(b).active("R", "P", "A", "x", "B", "z");
+    b.send("zy");
+    expect(b).active("R", "P", "A", "y", "B", "z");
+  });
 });
