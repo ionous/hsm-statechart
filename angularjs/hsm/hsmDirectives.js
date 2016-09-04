@@ -46,15 +46,26 @@ angular.module('hsm')
 .service("hsmCause",
   function() {
     'use strict';
-    var Cause = function(name, data) {
+    var Cause = function(name, data, defer) {
       this.name = name;
       this.data = data;
+      this.defer = defer; // can be null
     };
     Cause.prototype.toString = function() {
       return this.name;
     };
     Cause.prototype.reason = function() {
       return this.name;
+    };
+    Cause.prototype.resolve = function(value) {
+      if (this.defer) {
+        this.defer.resolve(value);
+      }
+    };
+    Cause.prototype.reject = function(reason) {
+      if (this.defer) {
+        this.defer.reject(reason);
+      }
     };
     var service = {
       normalizeName: function(name) {
@@ -64,9 +75,9 @@ angular.module('hsm')
           return offset ? letter.toUpperCase() : letter;
         });
       },
-      newCause: function(name, data) {
+      newCause: function(name, data, defer) {
         var normalizedName = service.normalizeName(name);
-        return new Cause(normalizedName, data);
+        return new Cause(normalizedName, data, defer);
       },
     };
     return service;
@@ -83,6 +94,7 @@ angular.module('hsm')
           "$source": state,
           // see aslo onEvent()
           "$evt": cause && (cause.data || cause.name),
+          "$evtname": cause && cause.name,
           "$target": target,
         };
         var ret;
@@ -194,11 +206,13 @@ angular.module('hsm')
         this.active = false;
         this.kidCount = 0;
         this.nameDepth = hsmParent.nameDepth + (this.autonamed ? 0 : 1);
-        this.parallel= opt.parallel;
+        this.parallel = opt.parallel;
         //
-        var userEnters = opt.userEnter ? [opt.userEnter] : [];
-        var userExits = opt.userExit ? [opt.userExit] : [];
+        var hsmEnter = opt.userEnter;
         var userInit = opt.userInit;
+        var hsmExit = opt.userExit;
+        var userEnters = [];
+        var userExits = [];
         //
         // create our state
         var self = this;
@@ -209,6 +223,10 @@ angular.module('hsm')
             userEnters.forEach(function(userEnter) {
               userEnter(state, cause);
             });
+            // run last so that local enters can construct resources used in hsm-enter
+            if (hsmEnter) {
+              hsmEnter(state, cause);
+            }
           },
           onInit: function(state, cause) {
             var ret;
@@ -232,7 +250,8 @@ angular.module('hsm')
             if (fns) {
               var extra = {
                 // see also makeCallback
-                "$evt": (cause.data || cause.name)
+                "$evt": (cause.data || cause.name),
+                "$evtname": cause.name
               };
               for (var i = 0; i < fns.length; i++) {
                 var fn = fns[i];
@@ -244,10 +263,15 @@ angular.module('hsm')
           },
           onExit: function(state, cause) {
             self.active = false;
-            userExits.forEach(function(userExit) {
+            // exit in reverse ordre.
+            if (hsmExit) {
+              hsmExit(state, cause);
+            }
+            for (var i = userExits.length - 1; i >= 0; i--) {
+              var userExit = userExits[i];
               userExit(state, cause);
-            });
-          }
+            }
+          },
         });
         this.onEnter = function(fn) {
           userEnters.push(fn);
@@ -308,7 +332,7 @@ angular.module('hsm')
   })
 
 .directive('hsmMachine',
-  function(hsmCause, hsmParse, hsmService, $log, $timeout) {
+  function(hsmCause, hsmParse, hsmService, $log, $q, $timeout) {
     'use strict';
     var stage = {
       default: "default",
@@ -366,16 +390,14 @@ angular.module('hsm')
       var machineScope = function(machine) {
         this.name = name;
         this.emit = function(namespace, name, data) {
-          machine.emit(namespace, name, data);
+          return machine.emit(namespace, name, data);
         };
       };
       return new machineScope(this);
     };
     hsmMachine.prototype.start = function() {
-      if (this.stage != stage.registration) {
-        var msg = "hsmMachine starting, invalid stage:";
-        $log.error(msg, this.stage);
-        throw new Error(msg);
+      if (this.stage !== stage.registration) {
+        throw new Error(["hsmMachine starting, invalid stage:", this.stage].join(" "));
       }
       this.stage = stage.initialized;
       var state;
@@ -391,33 +413,31 @@ angular.module('hsm')
       var scoped = !angular.isUndefined(_data);
       var name = scoped ? [_namespace, _name].join("-") : _namespace;
       var data = scoped ? _data : _name;
-      var cause = hsmCause.newCause(name, data);
+      var defer = $q.defer();
+      var cause = hsmCause.newCause(name, data, defer);
 
       var rest = this.stage;
-      if ((rest == stage.started) || (rest == stage.emitting)) {
+      if ((rest !== stage.started) && (rest !== stage.emitting)) {
+        defer.reject(rest);
+      } else {
         this.stage = stage.emitting;
-        try {
-          this.machine.emit(cause);
-        } catch (e) {
-          $log.error(e);
+        this.machine.emit(cause);
+        defer.promise.catch(function() {
           rest = stag.dead;
-        }
+        });
         this.stage = rest;
       }
+      return defer.promise;
     };
     // add a substate
     hsmMachine.prototype.addState = function(hsmState, hsmParent, opts) {
-      if (this.stage != stage.registration) {
-        var msg1 = "invalid registration";
-        $log.error(msg1, this.stage);
-        throw new Error(msg1);
+      if (this.stage !== stage.registration) {
+        throw new Error(["invalid registration", this.stage].join(" "));
       }
       var name = hsmState.name;
       var key = name.toLowerCase();
       if (this.states[key]) {
-        var msg2 = "duplicate state";
-        $log.error(msg2, name);
-        throw new Error(msg2);
+        throw new Error(["duplicate state", name].join(" "));
       }
       this.states[key] = hsmState;
       return hsmParent.makeKid(name, opts);
@@ -459,7 +479,6 @@ angular.module('hsm')
         };
         //
         scope[name] = hsmMachine.init(name, opt);
-
         //
         var includes = 0;
         // we have to wait for the digest to take place to get the include requested events. instead of relying side-effects ( as it so often seems to ), it would be better if angular had an actual api to manage content -- if that api were based on promises even better still.

@@ -19,7 +19,7 @@
 <body ng-app="hsm" hsm-log="logger" hsm-machine="machine" hsm-transition="logger.trans($source,$target)" hsm-enter="logger.enter($state)" hsm-exit="logger.exit($state)" hsm-init="logger.init($state)" >
   <div ng-controller="SamekPlus as plus">
     <form action="">
-      <input ng-repeat="evt in ['a','b','c','d','e','f','g','h','i']" type="button" ng-value="evt" ng-click="plus.clicked(evt)">
+      <input ng-repeat="evt in ['a','b','c','d','e','f','g','h','i']" type="button" ng-value="evt" ng-click="plus.click(evt)">
       <ul>
         <li>from default settings 'f' then 'h' sets value.</li>
         <li>'c' and 'f' toggle between s1 and s2 with different default states.</li>

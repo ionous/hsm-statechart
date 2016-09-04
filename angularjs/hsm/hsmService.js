@@ -16,9 +16,7 @@ angular.module('hsm', [])
   // validate the passed object is indeed a state.
   var checkState = function(state, message) {
     if (!(state instanceof State)) {
-      var msg = message || "state invalid";
-      $log.error(msg, state);
-      throw new Error(msg || "state invalid");
+      throw new Error(message || "state invalid");
     }
   };
 
@@ -505,9 +503,7 @@ angular.module('hsm', [])
   Machine.prototype.start = function(dst) {
     checkState(dst, "expected valid first state");
     if (this.region) {
-      var msg = "machine already running";
-      $log.error(msg, name);
-      throw new Error(msg);
+      throw new Error("already running");
     }
     // path to enter:
     var tgtPath = [];
@@ -526,9 +522,7 @@ angular.module('hsm', [])
       if (this.useQueue) {
         this.emitting.push(cause);
       } else {
-        var msg = "already emitting";
-        $log.error("error!", cause.toString(), "but", msg, this.emitting.toString());
-        throw new Error(msg);
+        cause.reject("already emitting");
       }
     } else {
       if (!this.useQueue) {
@@ -548,8 +542,9 @@ angular.module('hsm', [])
   Machine.prototype.emitone = function(cause) {
     try {
       this.emitoneUnsafe(cause);
+      cause.resolve(cause);
     } catch (e) {
-      $log.error("hsmService", this.name, "error during emit", cause.name, e);
+      cause.reject(e);
     }
   };
   Machine.prototype.emitoneUnsafe = function(cause) {

@@ -15,8 +15,8 @@ angular.module('hsm')
       }
       return v;
     };
-    plus.clicked = function(evt) {
-      $log.info("clicked", evt);
+    plus.click = function(evt) {
+      $log.info("click", evt);
       $scope.machine.emit(evt);
     };
   })
