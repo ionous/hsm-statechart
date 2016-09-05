@@ -544,6 +544,7 @@ angular.module('hsm', [])
       this.emitoneUnsafe(cause);
       cause.resolve(cause);
     } catch (e) {
+      $log.error(e);
       cause.reject(e);
     }
   };
