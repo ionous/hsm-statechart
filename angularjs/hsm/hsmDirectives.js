@@ -423,7 +423,7 @@ angular.module('hsm')
         this.stage = stage.emitting;
         this.machine.emit(cause);
         defer.promise.catch(function() {
-          rest = stag.dead;
+          rest = stage.dead;
         });
         this.stage = rest;
       }
